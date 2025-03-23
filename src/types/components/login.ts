@@ -27,4 +27,6 @@ export interface OnboardingForm {
   website: string;
   niche: string;
   competitors: string[];
+  userName: string;
+  targetAudience: string;
 }

@@ -4,9 +4,12 @@ export const validateStep = (
   currentStep: number,
   formData: OnboardingForm,
   errors: OnboardingForm,
-  setErrors: (errors: OnboardingForm) => void
+  setErrors: (errors: OnboardingForm) => void,
+  isMandatory: boolean
 ) => {
+  if (!isMandatory) return true;
   const newErrors = { ...errors };
+  console.log("newErrors: ", newErrors);
   let isValid = true;
 
   const urlRegex =
@@ -16,11 +19,21 @@ export const validateStep = (
 
   switch (currentStep) {
     case 0:
+      newErrors.userName = !formData.userName ? "User name is required" : "";
+      isValid = !newErrors.userName;
+      break;
+    case 1:
       newErrors.brandName = !formData.brandName ? "Brand name is required" : "";
       isValid = !newErrors.brandName;
       break;
 
-    case 1:
+    case 2:
+      newErrors.targetAudience = !formData.targetAudience
+        ? "Target Audience is required"
+        : "";
+      isValid = !newErrors.targetAudience;
+      break;
+    case 3:
       newErrors.website = !formData.website
         ? "Website URL is required"
         : !urlRegex.test(formData.website)
@@ -29,12 +42,12 @@ export const validateStep = (
       isValid = !newErrors.website;
       break;
 
-    case 2:
+    case 4:
       newErrors.niche = !formData.niche ? "Please select a niche" : "";
       isValid = !newErrors.niche;
       break;
 
-    case 3:
+    case 5:
       newErrors.competitors = formData.competitors.map((competitor) =>
         !competitor
           ? ((isValid = false), "Competitor URL is required")

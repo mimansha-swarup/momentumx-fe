@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from "react";
 import Stepper from "@/components/shared/steps";
 import OnboardingCard from "@/components/onboarding/card";
-import { onboardingConfig, onboardingSteps } from "@/constants/onboarding";
+import { onboardingConfig } from "@/constants/onboarding";
 import { brandName } from "@/constants/root";
 import OnboardingForm from "@/components/onboarding/form";
 import { validateStep } from "@/utils/onboarding";
@@ -11,20 +11,24 @@ const INITIAL_STATE = {
   brandName: "",
   niche: "",
   competitors: [""],
+  targetAudience: "",
+  userName: "",
 };
 
 type FormKey = keyof typeof INITIAL_STATE;
 
+const onboardingSteps = onboardingConfig.map((step) => ({
+  key: step.id,
+  label: step.stepLabel,
+}));
 const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({ ...INITIAL_STATE });
   const [errors, setErrors] = useState({ ...INITIAL_STATE });
 
-
   const isPrevDisabled = currentStep === 0;
   const isNext = currentStep !== onboardingSteps.length - 1;
   const activeStep = (onboardingSteps[currentStep] || {}).key as FormKey;
-
 
   const handleInputChange =
     (fieldName: string) =>
@@ -66,7 +70,16 @@ const Onboarding = () => {
   };
 
   const handleNext = () => {
-    if (!validateStep(currentStep, formData, errors, setErrors)) return;
+    if (
+      !validateStep(
+        currentStep,
+        formData,
+        errors,
+        setErrors,
+        onboardingConfig[currentStep].isMandatory
+      )
+    )
+      return;
     if (currentStep === onboardingSteps.length - 1) {
       // Complete onboarding
     } else {
