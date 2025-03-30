@@ -12,6 +12,7 @@ export interface OnboardingCardProps {
 
 export interface OnboardingFormProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>, index?: number) => void;
+  onKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   value: string | string[];
   error: string | string[];
   label: string;

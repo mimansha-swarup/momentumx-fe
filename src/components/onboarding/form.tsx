@@ -15,6 +15,7 @@ const OnboardingForm: FC<OnboardingFormProps> = ({
   removeMultiValue,
   addMultiValue,
   placeholder,
+  onKeyPress,
 }) => {
   const renderInput = () => {
     switch (inputType) {
@@ -67,6 +68,7 @@ const OnboardingForm: FC<OnboardingFormProps> = ({
               placeholder={placeholder}
               value={value}
               onChange={onChange}
+              onKeyDown={onKeyPress}
             />
             {error && <p className="text-sm text-red-500">{error}</p>}
           </div>

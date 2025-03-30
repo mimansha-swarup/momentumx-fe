@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useState } from "react";
 import Stepper from "@/components/shared/steps";
 import OnboardingCard from "@/components/onboarding/card";
 import { onboardingConfig } from "@/constants/onboarding";
@@ -47,6 +47,12 @@ const Onboarding = () => {
       });
     };
 
+  const handleKeypress = (e: KeyboardEvent<HTMLInputElement>) => {
+    //it triggers by pressing the enter key
+    if (e.key === "Enter") {
+      handleNext();
+    }
+  };
   const addCompetitors = () => {
     setFormData((prev) => {
       return { ...prev, competitors: [...prev.competitors, ""] };
@@ -132,6 +138,7 @@ const Onboarding = () => {
             addMultiValue={!isNext ? addCompetitors : undefined}
             removeMultiValue={removeCompetitors}
             {...onboardingConfig[currentStep]}
+            onKeyPress={handleKeypress}
           />
         </OnboardingCard>
       </div>
