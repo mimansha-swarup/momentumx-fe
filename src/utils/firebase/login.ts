@@ -2,6 +2,7 @@ import {
   browserLocalPersistence,
   setPersistence,
   signInWithPopup,
+  signOut,
 } from "firebase/auth";
 import { auth, provider } from "./config";
 
@@ -26,4 +27,8 @@ export const googleLogin = async () => {
     console.error("Error logging in with Google: ", error);
     throw error;
   }
+};
+
+export const googleLogOut = () => {
+  signOut(auth);
 };

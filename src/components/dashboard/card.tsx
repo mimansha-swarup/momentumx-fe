@@ -5,7 +5,7 @@ import { IDashboardCard } from "@/types/components/dashboard";
 const DashboardCard: FC<IDashboardCard> = ({ label, value, icon }) => {
   return (
     <GlassCard>
-      <div className="flex gap-4">
+      <div className="flex gap-4 items-center">
         <div className="size-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center text-foreground">
           {icon}
         </div>
