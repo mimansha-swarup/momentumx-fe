@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import  { FC } from "react";
 import GlassCard from "../shared/glassCard";
 import { IDashboardCard } from "@/types/components/dashboard";
 
