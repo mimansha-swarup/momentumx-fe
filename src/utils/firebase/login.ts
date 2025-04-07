@@ -19,9 +19,8 @@ export const googleLogin = async () => {
   try {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
-    console.log("User logged in: ", user);
     // Set the cookie with user information for 1 hour (3600 seconds)
-    document.cookie = `user=${JSON.stringify(user)}; path=/;`;
+    // document.cookie = `user=${JSON.stringify(user)}; path=/;`;
     return user;
   } catch (error) {
     console.error("Error logging in with Google: ", error);

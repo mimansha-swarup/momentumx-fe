@@ -9,7 +9,6 @@ export const validateStep = (
 ) => {
   if (!isMandatory) return true;
   const newErrors = { ...errors };
-  console.log("newErrors: ", newErrors);
   let isValid = true;
 
   const urlRegex =
@@ -62,6 +61,5 @@ export const validateStep = (
   }
 
   setErrors(newErrors);
-  console.log("isValid: ", isValid);
   return isValid;
 };

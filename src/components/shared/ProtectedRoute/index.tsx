@@ -4,7 +4,6 @@ import { useAuth } from "@/hooks/useAuth";
 
 const ProtectedLayout = () => {
   const { user } = useAuth();
-  console.log("user: ", user);
   const location = useLocation();
 
   if (user) {
