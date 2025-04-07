@@ -88,6 +88,7 @@ const Onboarding = () => {
       return;
     if (currentStep === onboardingSteps.length - 1) {
       // Complete onboarding
+      
     } else {
       setCurrentStep((prev) => prev + 1);
     }
