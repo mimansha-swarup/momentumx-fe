@@ -11,6 +11,7 @@ import { brandName } from "@/constants/root";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { urlMapping } from "@/constants/navigate";
+import { DrawerMenu } from "./menu";
 
 const SideDrawer = () => {
   return (
@@ -46,6 +47,7 @@ const SideDrawer = () => {
           <p className="font-semibold text-md">userName</p>
           <p className="text-accent-foreground text-xs">userName</p>
         </div>
+        <DrawerMenu />
       </SidebarFooter>
     </Sidebar>
   );

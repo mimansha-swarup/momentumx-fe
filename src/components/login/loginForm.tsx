@@ -1,9 +1,8 @@
 import { Button } from "../ui/button";
 import GoogleIcon from "../../assets/svg/google.svg";
-import { useNavigate } from "react-router-dom";
+import { persistLogin } from "@/utils/firebase/login";
 
 const LoginForm = () => {
-  const navigate = useNavigate();
   return (
     <div className="flex-1 flex  flex-col justify-center items-center h-screen space-y-8">
       <div className="flex flex-col  gap-y-2 text-center">
@@ -17,7 +16,7 @@ const LoginForm = () => {
         <Button
           variant="outline"
           className="flex items-center justify-center gap-2 w-2xs"
-          onClick={() => navigate("/onboarding")}
+          onClick={persistLogin}
         >
           {" "}
           <img src={GoogleIcon} alt="google-logo" /> Log in with Google
