@@ -5,7 +5,6 @@ import { logger } from "redux-logger";
 const middlewares: Middleware[] = [];
 
 if (
-  true ||
   ["dev", "local"].includes(import.meta.env.VITE_ENV || "production")
 ) {
   middlewares.push(logger);
