@@ -1,10 +1,13 @@
 import { ChangeEvent, KeyboardEvent, useState } from "react";
 import Stepper from "@/components/shared/steps";
 import OnboardingCard from "@/components/onboarding/card";
-import { onboardingConfig } from "@/constants/onboarding";
+import { ONBOARDING_FORM_ID, onboardingConfig } from "@/constants/onboarding";
 import { brandName } from "@/constants/root";
 import OnboardingForm from "@/components/onboarding/form";
 import { validateStep } from "@/utils/onboarding";
+import { onboardingService } from "../../service/onboarding";
+import { useAuthCredential } from "@/hooks/useAuth";
+import { Navigate } from "react-router-dom";
 
 const INITIAL_STATE = {
   website: "",
@@ -15,21 +18,26 @@ const INITIAL_STATE = {
   userName: "",
 };
 
-type FormKey = keyof typeof INITIAL_STATE;
-
 const onboardingSteps = onboardingConfig.map((step) => ({
   key: step.id,
   label: step.stepLabel,
 }));
+
+const onboardingServiceInstance = new onboardingService();
 const Onboarding = () => {
+  const { user } = useAuthCredential();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({ ...INITIAL_STATE });
   const [errors, setErrors] = useState({ ...INITIAL_STATE });
 
   const isPrevDisabled = currentStep === 0;
   const isNext = currentStep !== onboardingSteps.length - 1;
-  const activeStep = (onboardingSteps[currentStep] || {}).key as FormKey;
+  const activeStep = (onboardingSteps[currentStep] || {})
+    .key as `${ONBOARDING_FORM_ID}`;
 
+  if (user?.niche) {
+    <Navigate to="/dashboard" replace />;
+  }
   const handleInputChange =
     (fieldName: string) =>
     (e: ChangeEvent<HTMLInputElement>, index?: number) => {
@@ -77,18 +85,13 @@ const Onboarding = () => {
 
   const handleNext = () => {
     if (
-      !validateStep(
-        currentStep,
-        formData,
-        errors,
-        setErrors,
-        onboardingConfig[currentStep].isMandatory
-      )
+      !validateStep(onboardingConfig[currentStep], formData, errors, setErrors)
     )
       return;
     if (currentStep === onboardingSteps.length - 1) {
       // Complete onboarding
-      
+      console.log(formData);
+      onboardingServiceInstance.saveOnboardingData(formData);
     } else {
       setCurrentStep((prev) => prev + 1);
     }

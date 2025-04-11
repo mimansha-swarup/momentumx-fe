@@ -12,8 +12,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { urlMapping } from "@/constants/navigate";
 import { DrawerMenu } from "./menu";
+import { useAuthCredential } from "@/hooks/useAuth";
 
 const SideDrawer = () => {
+  const { user } = useAuthCredential();
   return (
     <Sidebar>
       <SidebarHeader className="text-2xl font-semibold p-4 pt-8 text-center border-b  mx-4">
@@ -40,12 +42,12 @@ const SideDrawer = () => {
 
       <SidebarFooter className="flex flex-row items-center gap-4 py-4  px-0 border-t mx-4">
         <Avatar>
-          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+          <AvatarImage src={user?.photoURL} alt="@shadcn" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
         <div>
-          <p className="font-semibold text-md">userName</p>
-          <p className="text-accent-foreground text-xs">userName</p>
+          <p className="font-semibold text-md">{user?.name}</p>
+          <p className="text-accent-foreground text-xs">{user?.userName}</p>
         </div>
         <DrawerMenu />
       </SidebarFooter>

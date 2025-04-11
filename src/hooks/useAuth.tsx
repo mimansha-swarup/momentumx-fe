@@ -1,40 +1,37 @@
-// useAuth.js
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { onAuthStateChanged, User } from "firebase/auth";
+import { useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/utils/firebase/config";
+import { useAppDispatch, useAppSelector } from "./useRedux";
+import {
+  currentUser,
+  // setLoading,
+  setUser,
+  userLoading,
+} from "@/utils/feature/user/user.slice";
+import { getUser } from "@/utils/feature/user/user.thunk";
 
-const INITIAL_STATE = {
-  user: null,
-  loading: true,
-};
-const AuthContext = createContext<{ user: User | null; loading: boolean }>(
-  INITIAL_STATE
-);
-
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+export const useAuthenticate = () => {
+  const dispatch = useAppDispatch();
+  // const user = useAppSelector(currentUser);
 
   useEffect(() => {
+    // dispatch(setLoading(true));
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
-      setLoading(false);
+      if (firebaseUser) {
+        dispatch(getUser());
+        // dispatch(setLoading(false));
+      } else {
+        dispatch(setUser(null));
+        // dispatch(setLoading(false));
+      }
     });
 
     return () => unsubscribe();
   }, []);
-
-  return (
-    <AuthContext.Provider value={{ user, loading }}>
-      {children}
-    </AuthContext.Provider>
-  );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuthCredential = () => {
+  const user = useAppSelector(currentUser);
+  const loading = useAppSelector(userLoading);
+  return { user, loading };
+};

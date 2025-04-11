@@ -1,7 +1,7 @@
-import axios, { CreateAxiosDefaults } from "axios";
-import { auth } from "./firebase/config";
+import axios from "axios";
+import { getAuth } from "firebase/auth";
 const getApiDomain = () => {
-  const env = process.env.VITE_ENV || "production";
+  const env = import.meta.env.VITE_ENV || "production";
 
   switch (env) {
     case "dev":
@@ -12,17 +12,24 @@ const getApiDomain = () => {
   }
 };
 
-const user = auth.currentUser;
+// const user = auth.currentUser;
+const apiDomain = getApiDomain();
 
-export const baseFetch = async (options: CreateAxiosDefaults = {}) => {
-  const apiDomain = getApiDomain();
-  const token = user?.getIdToken() || null;
-  return axios.create({
-    baseURL: apiDomain,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      ...(options.headers ?? {}),
-    },
-    ...options,
-  });
-};
+const baseFetch = axios.create({
+  baseURL: apiDomain,
+});
+
+baseFetch.interceptors.request.use(
+  async (config) => {
+    const user = getAuth().currentUser;
+    const token = await user?.getIdToken();
+    console.log("token: ", token, user);
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+export { baseFetch };
