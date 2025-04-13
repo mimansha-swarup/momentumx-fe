@@ -26,7 +26,7 @@ export const urlMapping = [
     name: "setting",
     label: "Settings",
     icon: Settings,
-    route: "/setting",
+    route: "/profile",
     subRoutes: [],
   },
 ];

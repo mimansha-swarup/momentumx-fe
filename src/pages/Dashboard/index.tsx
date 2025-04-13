@@ -3,6 +3,7 @@ import RootLayout from "@/components/shared/rootLayout";
 import GeneratedContent from "@/components/dashboard/generatedContent";
 import Greetings from "@/components/dashboard/greetings";
 import { DASHBOARD_CARD } from "@/constants/dashboard";
+import Header from "@/components/shared/header";
 
 const sampleTopics = [
   {
@@ -31,9 +32,7 @@ const Dashboard = () => {
   return (
     <RootLayout>
       <div className="w-[90%] mx-auto pt-4 pb-20">
-        <div className="flex items-center justify-between w-full">
-          <h1 className="text-2xl font-semibold">Dashboard</h1>
-        </div>
+        <Header title={"Dashboard"} />
 
         <Greetings />
 

@@ -9,6 +9,7 @@ export const validateStep = (
   setErrors: (errors: OnboardingForm) => void
 ) => {
   const { isMandatory } = currentStep;
+  console.log("currentStep: ", currentStep);
   if (!isMandatory) return true;
   const newErrors = { ...errors };
   let isValid = true;
@@ -62,6 +63,7 @@ export const validateStep = (
       break;
   }
 
+  console.log("newErrors: ", newErrors, isValid);
   setErrors(newErrors);
   return isValid;
 };

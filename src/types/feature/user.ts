@@ -9,6 +9,7 @@ export interface IUserProfile {
   targetAudience: string;
   uid: string;
   userName: string;
+  website: string;
 }
 
 export interface IUserInitialState {

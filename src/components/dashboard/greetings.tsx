@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 const Greetings = () => {
   const navigate = useNavigate();
   return (
-    <div className="flex items-center flex-wrap-reverse justify-between w-full gap-6  pt-18 mb-10">
+    <div className="flex items-center flex-wrap-reverse justify-between w-full gap-6  mb-10">
       <div>
         <h2 className="text-3xl font-semibold mb-2">Welcome back!</h2>
         <p>Get AI generated topics that are not bookish</p>

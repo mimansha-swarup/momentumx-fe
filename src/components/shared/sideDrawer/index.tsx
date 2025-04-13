@@ -13,9 +13,25 @@ import { cn } from "@/lib/utils";
 import { urlMapping } from "@/constants/navigate";
 import { DrawerMenu } from "./menu";
 import { useAuthCredential } from "@/hooks/useAuth";
+import { useLocation, useNavigate } from "react-router-dom";
 
+type RouteObjType = (typeof urlMapping)[number];
 const SideDrawer = () => {
   const { user } = useAuthCredential();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  console.log("pathname: ", pathname);
+  // const currentPath = useLocation().pathname;
+
+  const handleNavigation = (url: string) => () => {
+    navigate(url);
+  };
+  const isActive = (routeObj: RouteObjType) => {
+    return (
+      (routeObj?.subRoutes as string[])?.includes(pathname) ||
+      pathname === routeObj.route
+    );
+  };
   return (
     <Sidebar>
       <SidebarHeader className="text-2xl font-semibold p-4 pt-8 text-center border-b  mx-4">
@@ -24,11 +40,14 @@ const SideDrawer = () => {
       <SidebarContent>
         <SidebarMenu className="p-3 mt-10">
           {urlMapping?.map((urlObj) => (
-            <SidebarMenuItem key={urlObj.name}>
+            <SidebarMenuItem
+              key={urlObj.name}
+              onClick={handleNavigation(urlObj.route)}
+            >
               <span
                 className={cn(
-                  "flex font-semibold text-md cursor-pointer hover:bg-gray-100 !p-3 gap-2 items-center rounded-xl",
-                  urlObj.name === "dashboard" && "bg-primary/10 text-primary"
+                  "flex font-semibold text-md cursor-pointer hover:bg-gray-100 !p-3 gap-2 items-center rounded-xl transition-all duration-200 ease-in-out",
+                  isActive(urlObj) && "bg-primary/10 text-primary"
                 )}
               >
                 {" "}
