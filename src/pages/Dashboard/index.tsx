@@ -5,7 +5,7 @@ import Greetings from "@/components/dashboard/greetings";
 import { DASHBOARD_CARD } from "@/constants/dashboard";
 import Header from "@/components/shared/header";
 
-const sampleTopics = [
+export const sampleTopics = [
   {
     id: "1",
     title: "Productivity Mastery",

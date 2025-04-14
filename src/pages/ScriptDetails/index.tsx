@@ -2,14 +2,14 @@ import Header from "@/components/shared/header";
 import RootLayout from "@/components/shared/rootLayout";
 import React from "react";
 
-const TitlePage = () => {
+const ScriptDetails = () => {
   return (
     <RootLayout>
       <div className="w-[90%] mx-auto pt-4 pb-20">
-        <Header title={"Titles"} />
+        <Header title={"Script"} />
       </div>
     </RootLayout>
   );
 };
 
-export default TitlePage;
+export default ScriptDetails;

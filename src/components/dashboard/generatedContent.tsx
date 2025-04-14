@@ -3,15 +3,20 @@ import GlassCard from "../shared/glassCard";
 import { Button } from "../ui/button";
 import { FileText, Sparkles } from "lucide-react";
 import { IGeneratedContentProps } from "@/types/components/dashboard";
-
+import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 const GeneratedContent: FC<IGeneratedContentProps> = ({
   heading,
+  headingClassName = "",
   list,
 }) => {
+  const navigate = useNavigate();
   return (
     <div>
-      <h2 className="text-2xl font-semibold">{heading}</h2>
+      <h2 className={cn("text-2xl font-semibold", headingClassName)}>
+        {heading}
+      </h2>
       {list?.length === 0 ? (
         <p className="text-gray-500 text-sm">No generated content available</p>
       ) : (
@@ -38,6 +43,7 @@ const GeneratedContent: FC<IGeneratedContentProps> = ({
                     size={"sm"}
                     variant={"outline"}
                     className="hover:scale-110 "
+                    onClick={() => navigate(`/script/23543564`)}
                   >
                     <FileText /> Show Script
                   </Button>
