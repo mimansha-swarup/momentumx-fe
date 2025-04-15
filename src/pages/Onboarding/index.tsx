@@ -1,51 +1,41 @@
-import { ChangeEvent, KeyboardEvent, useState } from "react";
+import { KeyboardEvent, useState } from "react";
 import Stepper from "@/components/shared/steps";
 import OnboardingCard from "@/components/onboarding/card";
-import { onboardingConfig } from "@/constants/onboarding";
+import { ONBOARDING_FORM_ID, onboardingConfig } from "@/constants/onboarding";
 import { brandName } from "@/constants/root";
 import OnboardingForm from "@/components/onboarding/form";
-import { validateStep } from "@/utils/onboarding";
-
-const INITIAL_STATE = {
-  website: "",
-  brandName: "",
-  niche: "",
-  competitors: [""],
-  targetAudience: "",
-  userName: "",
-};
-
-type FormKey = keyof typeof INITIAL_STATE;
+import { onboardingService } from "../../service/onboarding";
+import { useAuthCredential } from "@/hooks/useAuth";
+import { Navigate } from "react-router-dom";
+import useUserProfile from "@/hooks/useUserProfile";
 
 const onboardingSteps = onboardingConfig.map((step) => ({
   key: step.id,
   label: step.stepLabel,
 }));
+
+const onboardingServiceInstance = new onboardingService();
 const Onboarding = () => {
+  const { user } = useAuthCredential();
   const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState({ ...INITIAL_STATE });
-  const [errors, setErrors] = useState({ ...INITIAL_STATE });
+  const [isLoading, setIsLoading] = useState(false);
+  const {
+    handleInputChange,
+    removeCompetitors,
+    addCompetitors,
+    validate,
+    formData,
+    errors,
+  } = useUserProfile();
 
   const isPrevDisabled = currentStep === 0;
   const isNext = currentStep !== onboardingSteps.length - 1;
-  const activeStep = (onboardingSteps[currentStep] || {}).key as FormKey;
+  const activeStep = (onboardingSteps[currentStep] || {})
+    .key as `${ONBOARDING_FORM_ID}`;
 
-  const handleInputChange =
-    (fieldName: string) =>
-    (e: ChangeEvent<HTMLInputElement>, index?: number) => {
-      setFormData((prev) => {
-        if (
-          fieldName === "competitors" &&
-          Number.isInteger(index) &&
-          index !== undefined
-        ) {
-          const newCompetitors = [...prev.competitors];
-          newCompetitors[index] = e.target.value;
-          return { ...prev, competitors: newCompetitors };
-        }
-        return { ...prev, [fieldName]: e.target.value };
-      });
-    };
+  if (user?.niche) {
+    <Navigate to="/dashboard" replace />;
+  }
 
   const handleKeypress = (e: KeyboardEvent<HTMLInputElement>) => {
     //it triggers by pressing the enter key
@@ -53,41 +43,13 @@ const Onboarding = () => {
       handleNext();
     }
   };
-  const addCompetitors = () => {
-    setFormData((prev) => {
-      return { ...prev, competitors: [...prev.competitors, ""] };
-    });
-    setErrors((prev) => {
-      return { ...prev, competitors: [...prev.competitors, ""] };
-    });
-  };
 
-  const removeCompetitors = (index: number) => () => {
-    setFormData((prev) => {
-      const newCompetitors = [...prev.competitors];
-      newCompetitors.splice(index, 1);
-      return { ...prev, competitors: newCompetitors };
-    });
-    setErrors((prev) => {
-      const newErrors = [...prev.competitors];
-      newErrors.splice(index, 1);
-      return { ...prev, competitors: newErrors };
-    });
-  };
-
-  const handleNext = () => {
-    if (
-      !validateStep(
-        currentStep,
-        formData,
-        errors,
-        setErrors,
-        onboardingConfig[currentStep].isMandatory
-      )
-    )
-      return;
+  const handleNext = async () => {
+    if (!validate(onboardingConfig[currentStep])) return;
     if (currentStep === onboardingSteps.length - 1) {
-      // Complete onboarding
+      setIsLoading(true);
+      await onboardingServiceInstance.saveOnboardingData(formData);
+      setIsLoading(false);
     } else {
       setCurrentStep((prev) => prev + 1);
     }
@@ -130,6 +92,7 @@ const Onboarding = () => {
           showNext={isNext}
           title={onboardingConfig[currentStep].title}
           description={onboardingConfig[currentStep].description}
+          isLoading={isLoading}
         >
           <OnboardingForm
             onChange={handleInputChange(activeStep)}

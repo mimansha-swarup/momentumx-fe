@@ -8,11 +8,12 @@ export interface OnboardingCardProps {
   children: React.ReactNode;
   disablePrevious?: boolean;
   showNext?: boolean;
+  isLoading?: boolean;
 }
 
-export interface OnboardingFormProps {
+export interface IOnboardingFormProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>, index?: number) => void;
-  onKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onKeyPress?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   value: string | string[];
   error: string | string[];
   label: string;
@@ -21,6 +22,7 @@ export interface OnboardingFormProps {
   placeholder: string;
   removeMultiValue?: (index: number) => () => void;
   addMultiValue?: () => void;
+  className?: string;
 }
 
 export interface OnboardingForm {

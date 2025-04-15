@@ -19,14 +19,14 @@ export const urlMapping = [
     name: "script",
     label: "Scripts",
     icon: FileText,
-    route: "/script",
-    subRoutes: [],
+    route: "/scripts",
+    subRoutes: ["/script"],
   },
   {
     name: "setting",
     label: "Settings",
     icon: Settings,
-    route: "/setting",
+    route: "/profile",
     subRoutes: [],
   },
 ];

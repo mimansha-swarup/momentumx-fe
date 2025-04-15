@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, LoaderCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   Card,
@@ -19,43 +19,16 @@ const OnboardingCard: FC<OnboardingCardProps> = ({
   onNext,
   onPrevious,
   children,
+  isLoading,
 }) => {
   return (
     <div className="flex flex-1 items-center justify-center p-6">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>
-            {title}
-            {/* {currentStep === 1 && "What's your website?"}
-          {currentStep === 2 && "What's your brand name?"}
-          {currentStep === 3 && "What's your niche?"}
-          {currentStep === 4 && "Who are your YouTube competitors?"} */}
-          </CardTitle>
-          <CardDescription>
-            {description}
-            {/* {currentStep === 1 && "Enter your website URL to get started"}
-          {currentStep === 2 && "Tell us the name of your brand"}
-          {currentStep === 3 && "Select the category that best describes your content"}
-          {currentStep === 4 && "Add links to YouTube channels similar to yours"} */}
-          </CardDescription>
+          <CardTitle>{title}</CardTitle>
+          <CardDescription>{description}</CardDescription>
         </CardHeader>
-        <CardContent>
-          {children}
-
-          {/* <div className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="website">Website URL</label>
-              <Input
-                id="website"
-                name="website"
-                placeholder="https://example.com"
-                // value={formData.website}
-                // onChange={handleInputChange}
-              />
-              {/* {errors.website && <p className="text-sm text-red-500">{errors.website}</p>} 
-            </div>
-          </div> */}
-        </CardContent>
+        <CardContent>{children}</CardContent>
         <CardFooter className="flex justify-between">
           <Button
             variant="outline"
@@ -66,6 +39,9 @@ const OnboardingCard: FC<OnboardingCardProps> = ({
             Back
           </Button>
           <Button onClick={onNext}>
+            {isLoading && !showNext && (
+              <LoaderCircle className="animate-spin" />
+            )}
             {showNext ? "Next" : "Complete"}
             {showNext && <ArrowRight className="ml-1 h-4 w-4" />}
           </Button>
