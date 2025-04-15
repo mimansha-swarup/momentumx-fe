@@ -11,7 +11,7 @@ const Profile = () => {
     <RootLayout>
       <div className=" min-h-screen md:w-[90%] mx-auto  pt-4 pb-20">
         <Header title="Profile" />
-        <GlassCard className=" flex flex-col gap-6 md:gap-7 mx-auto md:w-3/4 !shadow-none !border-none !p-0 ">
+        <GlassCard className=" flex flex-col gap-6 md:gap-7 mx-auto  md:p-10 !shadow-none bg-sidebar  ">
           <UserDetails user={user} />
 
           <UserSettings user={user} />

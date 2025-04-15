@@ -31,15 +31,16 @@ export const onboardingConfig = [
     isMandatory: true,
   },
   {
-    stepLabel: "Audience",
-    title: "What's your Target Audience?",
-    description: "Tell us about your audience",
-    id: ONBOARDING_FORM_ID.TARGET_AUDIENCE,
-    label: "Target Audience",
-    placeholder: "Developers, Kids, etc",
+    stepLabel: "Niche",
+    title: "What's your niche?",
+    description: "Select the category that best describes your content",
+    id: ONBOARDING_FORM_ID.NICHE,
+    label: "Your Niche",
+    placeholder: "Enter a niche",
     inputType: "text",
     isMandatory: true,
   },
+  
   {
     stepLabel: "Website",
     title: "What's your website?",
@@ -51,15 +52,17 @@ export const onboardingConfig = [
     isMandatory: false,
   },
   {
-    stepLabel: "Niche",
-    title: "What's your niche?",
-    description: "Select the category that best describes your content",
-    id: ONBOARDING_FORM_ID.NICHE,
-    label: "Your Niche",
-    placeholder: "Enter a niche",
+    stepLabel: "Audience",
+    title: "What's your Target Audience?",
+    description: "Tell us about your audience",
+    id: ONBOARDING_FORM_ID.TARGET_AUDIENCE,
+    label: "Target Audience",
+    placeholder: "Developers, Kids, etc",
     inputType: "text",
     isMandatory: true,
+    className: "col-span-2"
   },
+  
   {
     stepLabel: "Competitors",
     title: "Who are your YouTube competitors?",

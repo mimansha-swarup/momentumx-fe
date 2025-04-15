@@ -6,15 +6,11 @@ import ListShimmer from "@/components/titles/listShimmer";
 import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { rootTitle } from "@/utils/feature/titles/titles.slice";
-import {
-  generateTitles,
-} from "@/utils/feature/titles/titles.thunk";
+import { generateTitles } from "@/utils/feature/titles/titles.thunk";
 import { Plus } from "lucide-react";
 
 const TitlePage = () => {
-  // const [isLoading, setIsLoading] = useState(false);
-  const { isLoading: isTitleFetching, data } = useAppSelector(rootTitle);
-  console.log("data: ", data);
+  const { isLoading: isTitleFetching } = useAppSelector(rootTitle);
 
   const dispatch = useAppDispatch();
 
@@ -23,7 +19,7 @@ const TitlePage = () => {
   };
   return (
     <RootLayout>
-      <div className="w-[90%] mx-auto pt-4 pb-20">
+      <div className="md:w-[90%] mx-auto pt-4 pb-20">
         <Header title={"Titles"} />
         <div className="flex">
           <Button

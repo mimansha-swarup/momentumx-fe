@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, LoaderCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   Card,
@@ -19,22 +19,16 @@ const OnboardingCard: FC<OnboardingCardProps> = ({
   onNext,
   onPrevious,
   children,
+  isLoading,
 }) => {
   return (
     <div className="flex flex-1 items-center justify-center p-6">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>
-            {title}
-          </CardTitle>
-          <CardDescription>
-            {description}
-          </CardDescription>
+          <CardTitle>{title}</CardTitle>
+          <CardDescription>{description}</CardDescription>
         </CardHeader>
-        <CardContent>
-          {children}
-
-        </CardContent>
+        <CardContent>{children}</CardContent>
         <CardFooter className="flex justify-between">
           <Button
             variant="outline"
@@ -45,6 +39,9 @@ const OnboardingCard: FC<OnboardingCardProps> = ({
             Back
           </Button>
           <Button onClick={onNext}>
+            {isLoading && !showNext && (
+              <LoaderCircle className="animate-spin" />
+            )}
             {showNext ? "Next" : "Complete"}
             {showNext && <ArrowRight className="ml-1 h-4 w-4" />}
           </Button>

@@ -29,8 +29,8 @@ const GeneratedContent: FC<IGeneratedContentProps> = ({
               className=" flex justify-between flex-wrap gap-4 items-center border-l- border-l--primary"
             >
               <div>
-                <h3 className="text-lg font-semibold">{item.title}</h3>
-                <p className="text-gray-600 text-sm">
+                <h3 className="font-semibold text-base">{item.title}</h3>
+                <p className="text-gray-600 text-xs">
                   created on: {formatToSimpleDate(item.createdAt)}
                 </p>
               </div>

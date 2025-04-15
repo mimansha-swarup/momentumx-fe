@@ -1,5 +1,5 @@
 import { onboardingConfig } from "../../constants/onboarding/index";
-export type OnboardingConfigType = (typeof onboardingConfig)[0];
+export type OnboardingConfigType = (typeof onboardingConfig)[number];
 
 export interface IOnboardingPayload {
   website: string;

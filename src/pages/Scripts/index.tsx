@@ -23,7 +23,7 @@ const ScriptPage = () => {
   console.log(scriptId);
   return (
     <RootLayout>
-      <div className="w-[90%] mx-auto pt-4 pb-20">
+      <div className="md:w-[90%] mx-auto pt-4 pb-20">
         <Header title={"Script"} />
         {/* <div className="flex">
           <Button className="ml-auto" variant={"outline"}>
