@@ -3,7 +3,8 @@ import { ReactElement } from "react";
 export interface IGeneratedTopic {
   title: string;
   id: string;
-  created: string;
+  createdAt: string;
+  createdBy: string;
 }
 export interface IGeneratedContentProps {
   heading: string;

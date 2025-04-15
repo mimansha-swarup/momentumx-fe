@@ -1,17 +1,25 @@
 import Header from "@/components/shared/header";
 import RootLayout from "@/components/shared/rootLayout";
-import { AlertDestructive } from "@/components/titles/alertMessage";
+// import { AlertDestructive } from "@/components/titles/alertMessage";
 import TitleList from "@/components/titles/list";
 import ListShimmer from "@/components/titles/listShimmer";
 import { Button } from "@/components/ui/button";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { rootTitle } from "@/utils/feature/titles/titles.slice";
+import {
+  generateTitles,
+} from "@/utils/feature/titles/titles.thunk";
 import { Plus } from "lucide-react";
-import { useState } from "react";
 
 const TitlePage = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
+  const { isLoading: isTitleFetching, data } = useAppSelector(rootTitle);
+  console.log("data: ", data);
 
-  const generateTitles = async () => {
-    setIsLoading((prev) => !prev);
+  const dispatch = useAppDispatch();
+
+  const generateTitle = async () => {
+    dispatch(generateTitles());
   };
   return (
     <RootLayout>
@@ -21,15 +29,15 @@ const TitlePage = () => {
           <Button
             size={"lg"}
             className="rounded-3xl py-3 !px-6 hover:scale-105 ml-auto"
-            onClick={generateTitles}
+            onClick={generateTitle}
           >
             {" "}
             <Plus /> Generate New Titles
           </Button>
         </div>
-        {!isLoading && <AlertDestructive />}
+        {/* {!isLoading && <AlertDestructive />} */}
 
-        {isLoading && <ListShimmer className="my-6" count={5} />}
+        {isTitleFetching && <ListShimmer className="my-6" count={10} />}
 
         <TitleList />
       </div>

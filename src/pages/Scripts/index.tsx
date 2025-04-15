@@ -2,18 +2,23 @@ import Header from "@/components/shared/header";
 import RootLayout from "@/components/shared/rootLayout";
 import { useSearchParams } from "react-router-dom";
 import React from "react";
-import { Download, FileText, Sparkles } from "lucide-react";
+// import { Download, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { sampleTopics } from "../Dashboard";
 import GlassCard from "@/components/shared/glassCard";
 import { generateRandomScript } from "@/utils/onboarding";
+import { useAppSelector } from "@/hooks/useRedux";
+import { getTitlesData } from "@/utils/feature/titles/titles.slice";
+import { IGeneratedTopic } from "@/types/components/dashboard";
+import { FileText } from "lucide-react";
 
-const scripts = sampleTopics?.map((topic) => ({
-  ...topic,
-  script: generateRandomScript(topic.title),
-}));
+const scripts = (sampleTopics: IGeneratedTopic[]) =>
+  sampleTopics?.map((topic) => ({
+    ...topic,
+    script: generateRandomScript(topic.title),
+  }));
 const ScriptPage = () => {
   const [urlSearchParams] = useSearchParams();
+  const titles = useAppSelector(getTitlesData);
   const scriptId = urlSearchParams.get("scriptId") || "0";
   console.log(scriptId);
   return (
@@ -28,7 +33,7 @@ const ScriptPage = () => {
         </div> */}
 
         <div className="grid gap-6 sm:grid-cols-2 md:grid-rows-3">
-          {scripts?.map((item, index) => (
+          {scripts((titles ?? [])?.slice(-5))?.map((item, index) => (
             <GlassCard
               key={index}
               className=" flex justify-between flex-wrap gap-4 items-center border-l- border-l--primary"
@@ -36,7 +41,7 @@ const ScriptPage = () => {
               <div>
                 <h3 className="text-lg font-semibold">{item.title}</h3>
                 <p className="text-gray-600 text-xs">
-                  created on: {item.created}
+                  created on: {item.createdAt}
                 </p>
                 <p className="text-gray-600 line-clamp-4 mt-2">{item.script}</p>
               </div>
