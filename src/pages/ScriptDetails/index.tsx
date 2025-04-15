@@ -1,6 +1,6 @@
 import Header from "@/components/shared/header";
 import RootLayout from "@/components/shared/rootLayout";
-import React from "react";
+// import React from "react";
 
 const ScriptDetails = () => {
   return (

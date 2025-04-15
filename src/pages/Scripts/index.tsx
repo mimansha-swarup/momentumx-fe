@@ -1,7 +1,7 @@
 import Header from "@/components/shared/header";
 import RootLayout from "@/components/shared/rootLayout";
 import { useSearchParams } from "react-router-dom";
-import React from "react";
+// import React from "react";
 // import { Download, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GlassCard from "@/components/shared/glassCard";
