@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import GeneratedContent from "../dashboard/generatedContent";
 import { useAppSelector } from "@/hooks/useRedux";
 import { getTitlesData } from "@/utils/feature/titles/titles.slice";

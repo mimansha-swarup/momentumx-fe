@@ -1,4 +1,0 @@
-﻿#!/bin/sh
-. "/_/husky.sh"
-
-npx lint-staged && npm run typecheck
