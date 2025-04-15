@@ -1,4 +1,3 @@
-import ProfileSection from "@/components/profile/section";
 import UserDetails from "@/components/profile/userDetails";
 import UserSettings from "@/components/profile/userSettings";
 import GlassCard from "@/components/shared/glassCard";
