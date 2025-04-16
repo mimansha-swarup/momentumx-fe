@@ -5,7 +5,7 @@ const getApiDomain = () => {
 
   switch (env) {
     case "dev":
-      return "https://metric-tracker.netlify.app";
+      return "https://momentumx-be.onrender.com";
     case "local":
     default: // in future add prod in default
       return "http://localhost:3000";
