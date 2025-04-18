@@ -6,6 +6,7 @@ import { IGeneratedContentProps } from "@/types/components/dashboard";
 import { cn } from "@/lib/utils";
 // import { useNavigate } from "react-router-dom";
 import { formatToSimpleDate } from "@/utils/titles";
+import EmptyState from "../shared/emptyState";
 
 const GeneratedContent: FC<IGeneratedContentProps> = ({
   heading,
@@ -19,8 +20,12 @@ const GeneratedContent: FC<IGeneratedContentProps> = ({
         {heading}
       </h2>
       {list?.length === 0 ? (
-        <p className="text-gray-500 text-sm">No generated content available</p>
+        <EmptyState
+          description="No generated content available"
+          className="mt-4"
+        />
       ) : (
+        // <p className="text-gray-500 text-sm">No generated content available</p>
         <div className="flex flex-col gap-4 mt-4">
           {list?.map((item) => (
             <GlassCard

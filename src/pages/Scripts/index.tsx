@@ -10,6 +10,7 @@ import { useAppSelector } from "@/hooks/useRedux";
 import { getTitlesData } from "@/utils/feature/titles/titles.slice";
 import { IGeneratedTopic } from "@/types/components/dashboard";
 import { FileText } from "lucide-react";
+import EmptyState from "@/components/shared/emptyState";
 
 const scripts = (sampleTopics: IGeneratedTopic[]) =>
   sampleTopics?.map((topic) => ({
@@ -31,6 +32,13 @@ const ScriptPage = () => {
             Download Script
           </Button>
         </div> */}
+
+        {!titles?.length && (
+          <EmptyState
+            description="No generated content available"
+            className="mt-4"
+          />
+        )}
 
         <div className="grid gap-6 sm:grid-cols-2 md:grid-rows-3">
           {scripts((titles ?? [])?.slice(-5))?.map((item, index) => (
