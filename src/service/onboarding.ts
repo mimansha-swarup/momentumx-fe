@@ -27,8 +27,8 @@ export class onboardingService {
       // if (!response.ok) {
       //   throw new Error("Network response was not ok");
       // }
-      // const data = await response.json();
-      // return data;
+
+      return response.data;
     } catch (error) {
       console.error("Error fetching onboarding data:", error);
       throw error;

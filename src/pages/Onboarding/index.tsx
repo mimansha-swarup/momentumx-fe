@@ -6,8 +6,10 @@ import { brandName } from "@/constants/root";
 import OnboardingForm from "@/components/onboarding/form";
 import { onboardingService } from "../../service/onboarding";
 import { useAuthCredential } from "@/hooks/useAuth";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import useUserProfile from "@/hooks/useUserProfile";
+import { useAppDispatch } from "@/hooks/useRedux";
+import { getUser } from "@/utils/feature/user/user.thunk";
 
 const onboardingSteps = onboardingConfig.map((step) => ({
   key: step.id,
@@ -27,6 +29,9 @@ const Onboarding = () => {
     formData,
     errors,
   } = useUserProfile();
+
+  const navigate = useNavigate();
+  const disptach = useAppDispatch();
 
   const isPrevDisabled = currentStep === 0;
   const isNext = currentStep !== onboardingSteps.length - 1;
@@ -48,7 +53,12 @@ const Onboarding = () => {
     if (!validate(onboardingConfig[currentStep])) return;
     if (currentStep === onboardingSteps.length - 1) {
       setIsLoading(true);
-      await onboardingServiceInstance.saveOnboardingData(formData);
+      const res = await onboardingServiceInstance.saveOnboardingData(formData);
+      if (res.success) {
+        disptach(getUser());
+
+        navigate("/dashboard");
+      }
       setIsLoading(false);
     } else {
       setCurrentStep((prev) => prev + 1);
