@@ -20,8 +20,6 @@ const SideDrawer = () => {
   const { user } = useAuthCredential();
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  console.log("pathname: ", pathname);
-  // const currentPath = useLocation().pathname;
 
   const handleNavigation = (url: string) => () => {
     navigate(url);

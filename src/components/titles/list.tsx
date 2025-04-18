@@ -10,8 +10,6 @@ const TitleList = () => {
   const groupedTitles = useMemo(() => {
     return titles ? groupTitles(titles) : {};
   }, [titles]);
-
-  console.log("GroupedTitles", groupedTitles);
   return (
     <div>
       <div className="flex flex-col gap-8">

@@ -4,7 +4,7 @@ import { auth } from "@/utils/firebase/config";
 import { useAppDispatch, useAppSelector } from "./useRedux";
 import {
   currentUser,
-  // setLoading,
+  setLoading,
   setUser,
   userLoading,
 } from "@/utils/feature/user/user.slice";
@@ -15,15 +15,20 @@ export const useAuthenticate = () => {
   // const user = useAppSelector(currentUser);
 
   useEffect(() => {
-    // dispatch(setLoading(true));
+    dispatch(setLoading(true));
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
-        dispatch(getUser());
-        // dispatch(setLoading(false));
+        const {
+          metadata: { creationTime, lastSignInTime },
+        } = firebaseUser;
+        console.log("firebaseUser: ", firebaseUser);
+        if (creationTime === lastSignInTime) {
+          dispatch(setUser(firebaseUser));
+        } else dispatch(getUser());
       } else {
         dispatch(setUser(null));
-        // dispatch(setLoading(false));
       }
+      dispatch(setLoading(false));
     });
 
     return () => unsubscribe();

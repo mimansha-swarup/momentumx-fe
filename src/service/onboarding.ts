@@ -24,7 +24,6 @@ export class onboardingService {
   async saveOnboardingData(payload: IOnboardingPayload) {
     try {
       const response = await baseFetch.patch(this.urls.SAVE_FORM, payload);
-      console.log("response: ", response);
       // if (!response.ok) {
       //   throw new Error("Network response was not ok");
       // }

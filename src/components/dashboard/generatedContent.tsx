@@ -12,7 +12,6 @@ const GeneratedContent: FC<IGeneratedContentProps> = ({
   headingClassName = "",
   list,
 }) => {
-  console.log("list: ", list);
   // const navigate = useNavigate();
   return (
     <div>

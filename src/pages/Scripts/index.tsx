@@ -1,6 +1,6 @@
 import Header from "@/components/shared/header";
 import RootLayout from "@/components/shared/rootLayout";
-import { useSearchParams } from "react-router-dom";
+// import { useSearchParams } from "react-router-dom";
 // import React from "react";
 // import { Download, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,10 +17,10 @@ const scripts = (sampleTopics: IGeneratedTopic[]) =>
     script: generateRandomScript(topic.title),
   }));
 const ScriptPage = () => {
-  const [urlSearchParams] = useSearchParams();
+  // const [urlSearchParams] = useSearchParams();
   const titles = useAppSelector(getTitlesData);
-  const scriptId = urlSearchParams.get("scriptId") || "0";
-  console.log(scriptId);
+  // const scriptId = urlSearchParams.get("scriptId") || "0";
+
   return (
     <RootLayout>
       <div className="md:w-[90%] mx-auto pt-4 pb-20">

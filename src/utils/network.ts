@@ -23,7 +23,6 @@ baseFetch.interceptors.request.use(
   async (config) => {
     const user = getAuth().currentUser;
     const token = await user?.getIdToken();
-    console.log("token: ", token, user);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
