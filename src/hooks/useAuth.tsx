@@ -9,6 +9,7 @@ import {
   userLoading,
 } from "@/utils/feature/user/user.slice";
 import { getUser } from "@/utils/feature/user/user.thunk";
+import { getIsNewUser } from "@/utils";
 
 export const useAuthenticate = () => {
   const dispatch = useAppDispatch();
@@ -18,11 +19,7 @@ export const useAuthenticate = () => {
     dispatch(setLoading(true));
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
-        const {
-          metadata: { creationTime, lastSignInTime },
-        } = firebaseUser;
-        console.log("firebaseUser: ", firebaseUser);
-        if (creationTime === lastSignInTime) {
+        if (getIsNewUser()) {
           dispatch(setUser(firebaseUser));
         } else dispatch(getUser());
       } else {

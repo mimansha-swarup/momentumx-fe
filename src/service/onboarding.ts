@@ -1,5 +1,6 @@
 import { IOnboardingPayload } from "@/types/components/onboarding";
 import { baseFetch } from "@/utils/network";
+import { handleToast } from "@/utils/toast";
 
 const URLS = {
   SAVE_FORM: "/v1/user/onboarding",
@@ -24,9 +25,9 @@ export class onboardingService {
   async saveOnboardingData(payload: IOnboardingPayload) {
     try {
       const response = await baseFetch.patch(this.urls.SAVE_FORM, payload);
-      // if (!response.ok) {
-      //   throw new Error("Network response was not ok");
-      // }
+      console.log("response: ", response);
+
+      handleToast(response.data);
 
       return response.data;
     } catch (error) {

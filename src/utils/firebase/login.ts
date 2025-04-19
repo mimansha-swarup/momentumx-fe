@@ -1,10 +1,12 @@
 import {
   browserLocalPersistence,
+  getAdditionalUserInfo,
   setPersistence,
   signInWithPopup,
   signOut,
 } from "firebase/auth";
 import { auth, provider } from "./config";
+import { IS_NEW_USER } from "@/constants/root";
 
 export const persistLogin = async () => {
   setPersistence(auth, browserLocalPersistence)
@@ -18,9 +20,11 @@ export const persistLogin = async () => {
 export const googleLogin = async () => {
   try {
     const result = await signInWithPopup(auth, provider);
+    const userInfo = getAdditionalUserInfo(result);
     const user = result.user;
-    // Set the cookie with user information for 1 hour (3600 seconds)
-    // document.cookie = `user=${JSON.stringify(user)}; path=/;`;
+    if (userInfo?.isNewUser) {
+      localStorage.setItem(IS_NEW_USER, "true");
+    }
     return user;
   } catch (error) {
     console.error("Error logging in with Google: ", error);

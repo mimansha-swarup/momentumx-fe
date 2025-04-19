@@ -24,7 +24,7 @@ export const validateStep = (
 
   steps.forEach((step) => {
     const { isMandatory, id } = step;
-    if (!isMandatory) return;
+    if (!isMandatory && !formData[id]) return;
 
     switch (id) {
       case ONBOARDING_FORM_ID.USER_NAME:

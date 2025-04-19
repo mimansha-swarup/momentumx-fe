@@ -2,7 +2,7 @@ import { KeyboardEvent, useState } from "react";
 import Stepper from "@/components/shared/steps";
 import OnboardingCard from "@/components/onboarding/card";
 import { ONBOARDING_FORM_ID, onboardingConfig } from "@/constants/onboarding";
-import { brandName } from "@/constants/root";
+import { brandName, IS_NEW_USER } from "@/constants/root";
 import OnboardingForm from "@/components/onboarding/form";
 import { onboardingService } from "../../service/onboarding";
 import { useAuthCredential } from "@/hooks/useAuth";
@@ -55,8 +55,8 @@ const Onboarding = () => {
       setIsLoading(true);
       const res = await onboardingServiceInstance.saveOnboardingData(formData);
       if (res.success) {
+        localStorage.removeItem(IS_NEW_USER);
         disptach(getUser());
-
         navigate("/dashboard");
       }
       setIsLoading(false);

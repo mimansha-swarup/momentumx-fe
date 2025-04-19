@@ -1,4 +1,5 @@
 import { baseFetch } from "@/utils/network";
+import { handleToast } from "@/utils/toast";
 
 const URLS = {
   titles: "/v1/content/topics",
@@ -12,6 +13,7 @@ export class TitleService {
   async generateTitles() {
     try {
       const response = await baseFetch.post(this.urls.titles);
+      handleToast(response.data);
       return response.data;
     } catch {
       console.error("Error while generating Titles");
