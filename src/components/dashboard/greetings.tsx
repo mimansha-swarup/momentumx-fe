@@ -15,7 +15,7 @@ const Greetings = () => {
         size={"lg"}
         className="rounded-3xl py-3 !px-6 hover:scale-105 ml-auto"
         onClick={() => {
-          navigate("/onboarding");
+          navigate("/title");
         }}
       >
         {" "}
