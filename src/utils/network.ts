@@ -1,6 +1,6 @@
 import axios from "axios";
 import { getAuth } from "firebase/auth";
-const getApiDomain = () => {
+export const getApiDomain = () => {
   const env = import.meta.env.VITE_ENV || "production";
 
   switch (env) {
@@ -30,5 +30,6 @@ baseFetch.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
+
 
 export { baseFetch };

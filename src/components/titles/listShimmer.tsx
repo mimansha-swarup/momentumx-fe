@@ -3,10 +3,10 @@ import { ListShimmerProps } from "@/types/components/title";
 import { FC } from "react";
 import GlassCard from "../shared/glassCard";
 
-const ListShimmer: FC<ListShimmerProps> = ({ className, count = 3 }) => {
+const ListShimmer: FC<ListShimmerProps> = ({ className, count = 3 ,showTitle=false }) => {
   return (
     <div className={cn("space-y-4", className)}>
-      <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-42"></div>
+      {showTitle && <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-42" />}
       {Array.from({ length: count }).map((_, index) => (
         <GlassCard
           key={index}

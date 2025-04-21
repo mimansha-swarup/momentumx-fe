@@ -1,24 +1,41 @@
-import { baseFetch } from "@/utils/network";
-import { handleToast } from "@/utils/toast";
+import { addTitle, markDone } from "@/utils/feature/titles/titles.slice";
+import { auth } from "@/utils/firebase/config";
+import { baseFetch, getApiDomain } from "@/utils/network";
+import { AppDispatch } from "@/utils/store";
 
 const URLS = {
   titles: "/v1/content/topics",
+  streamTitles: "/v1/content/stream/topics",
 };
-export class TitleService {
+class TitleService {
   private urls;
   constructor() {
     this.urls = URLS;
   }
 
-  async generateTitles() {
-    try {
-      const response = await baseFetch.post(this.urls.titles);
-      handleToast(response.data);
-      return response.data;
-    } catch {
-      console.error("Error while generating Titles");
-    }
-  }
+  startStreamingTitles = async (dispatch: AppDispatch) => {
+    const token = await auth.currentUser?.getIdToken();
+    const evtSource = new EventSource(
+      getApiDomain() + this.urls.streamTitles + `?token=${token}`
+    );
+
+    evtSource.onmessage = (e) => {
+      const title = JSON.parse(e.data);
+      dispatch(addTitle(title));
+    };
+
+    evtSource.addEventListener("done", () => {
+      dispatch(markDone());
+      evtSource.close();
+    });
+
+    evtSource.onerror = (e) => {
+      console.log("SSE Error:", e);
+      evtSource.close(); // close on error (or add retry)
+    };
+
+    return evtSource; // optionally return for later closing
+  };
 
   async getGeneratedData() {
     try {
@@ -29,3 +46,5 @@ export class TitleService {
     }
   }
 }
+
+export const titleService = new TitleService();

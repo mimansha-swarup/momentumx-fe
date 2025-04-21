@@ -1,19 +1,22 @@
 import { FC } from "react";
 import GlassCard from "../shared/glassCard";
-// import { Button } from "../ui/button";
-// import { FileText, Sparkles } from "lucide-react";
 import { IGeneratedContentProps } from "@/types/components/dashboard";
 import { cn } from "@/lib/utils";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { formatToSimpleDate } from "@/utils/titles";
 import EmptyState from "../shared/emptyState";
+import ListShimmer from "../titles/listShimmer";
+import { Sparkles, FileText } from "lucide-react";
+import { Button } from "../ui/button";
 
 const GeneratedContent: FC<IGeneratedContentProps> = ({
   heading,
   headingClassName = "",
   list,
+  listRef,
+  loading,
 }) => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   return (
     <div>
       <h2 className={cn("text-2xl font-semibold", headingClassName)}>
@@ -26,7 +29,8 @@ const GeneratedContent: FC<IGeneratedContentProps> = ({
         />
       ) : (
         // <p className="text-gray-500 text-sm">No generated content available</p>
-        <div className="flex flex-col gap-4 mt-4">
+        <div className="flex flex-col gap-4 mt-4" ref={listRef}>
+          {loading && <ListShimmer count={1} />}
           {list?.map((item) => (
             <GlassCard
               key={item.id}
@@ -38,23 +42,23 @@ const GeneratedContent: FC<IGeneratedContentProps> = ({
                   created on: {formatToSimpleDate(item.createdAt)}
                 </p>
               </div>
-              {/* <div className="ml-auto">
-                {true ? (
-                  <Button size={"sm"} className="hover:scale-110">
-                    <Sparkles />
-                    Generate{" "}
-                  </Button>
-                ) : (
+              <div className="ml-auto">
+                {item?.isScriptGenerated ? (
                   <Button
                     size={"sm"}
                     variant={"outline"}
                     className="hover:scale-110 "
-                    onClick={() => navigate(`/script/23543564`)}
+                    onClick={() => navigate(`/script/${item.id}`)}
                   >
                     <FileText /> Show Script
                   </Button>
+                ) : (
+                  <Button size={"sm"} className="hover:scale-110">
+                    <Sparkles />
+                    Generate{" "}
+                  </Button>
                 )}
-              </div> */}
+              </div>
             </GlassCard>
           ))}
         </div>

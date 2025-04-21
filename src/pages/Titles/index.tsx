@@ -1,21 +1,20 @@
 import Header from "@/components/shared/header";
 import RootLayout from "@/components/shared/rootLayout";
-// import { AlertDestructive } from "@/components/titles/alertMessage";
 import TitleList from "@/components/titles/list";
-import ListShimmer from "@/components/titles/listShimmer";
 import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
-import { rootTitle } from "@/utils/feature/titles/titles.slice";
-import { generateTitles } from "@/utils/feature/titles/titles.thunk";
-import { Plus } from "lucide-react";
+import { titleService } from "@/service/titles";
+import { resetState, titlesLoading } from "@/utils/feature/titles/titles.slice";
+import { LoaderCircle, Plus } from "lucide-react";
 
 const TitlePage = () => {
-  const { isLoading: isTitleFetching } = useAppSelector(rootTitle);
+  const isTitleFetched = useAppSelector(titlesLoading);
 
   const dispatch = useAppDispatch();
 
   const generateTitle = async () => {
-    dispatch(generateTitles());
+    dispatch(resetState()); // reset before starting
+    titleService.startStreamingTitles(dispatch);
   };
   return (
     <RootLayout>
@@ -24,16 +23,19 @@ const TitlePage = () => {
         <div className="flex">
           <Button
             size={"lg"}
+            disabled={isTitleFetched}
             className="rounded-3xl py-3 !px-6 hover:scale-105 ml-auto"
             onClick={generateTitle}
           >
             {" "}
-            <Plus /> Generate New Titles
+            {isTitleFetched ? (
+              <LoaderCircle className="animate-spin " />
+            ) : (
+              <Plus />
+            )}
+            Generate New Titles
           </Button>
         </div>
-        {/* {!isLoading && <AlertDestructive />} */}
-
-        {isTitleFetching && <ListShimmer className="my-6" count={10} />}
 
         <TitleList />
       </div>
