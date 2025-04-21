@@ -21,11 +21,11 @@ export const useAuthenticate = () => {
       if (firebaseUser) {
         if (getIsNewUser()) {
           dispatch(setUser(firebaseUser));
+          dispatch(setLoading(false));
         } else dispatch(getUser());
       } else {
         dispatch(setUser(null));
       }
-      dispatch(setLoading(false));
     });
 
     return () => unsubscribe();
