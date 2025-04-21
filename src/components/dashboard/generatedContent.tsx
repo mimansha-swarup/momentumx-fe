@@ -14,9 +14,13 @@ const GeneratedContent: FC<IGeneratedContentProps> = ({
   headingClassName = "",
   list,
   listRef,
-  loading,
+  loading: contentLoading,
 }) => {
   const navigate = useNavigate();
+
+  const handleScriptGeneration = async (id: string, title: string) => {
+    navigate(`/script/${id}?title=${encodeURIComponent(title)}`);
+  };
   return (
     <div>
       <h2 className={cn("text-2xl font-semibold", headingClassName)}>
@@ -30,7 +34,7 @@ const GeneratedContent: FC<IGeneratedContentProps> = ({
       ) : (
         // <p className="text-gray-500 text-sm">No generated content available</p>
         <div className="flex flex-col gap-4 mt-4" ref={listRef}>
-          {loading && <ListShimmer count={1} />}
+          {contentLoading && <ListShimmer count={1} />}
           {list?.map((item) => (
             <GlassCard
               key={item.id}
@@ -53,7 +57,11 @@ const GeneratedContent: FC<IGeneratedContentProps> = ({
                     <FileText /> Show Script
                   </Button>
                 ) : (
-                  <Button size={"sm"} className="hover:scale-110">
+                  <Button
+                    size={"sm"}
+                    className="hover:scale-110"
+                    onClick={() => handleScriptGeneration(item.id, item.title)}
+                  >
                     <Sparkles />
                     Generate{" "}
                   </Button>

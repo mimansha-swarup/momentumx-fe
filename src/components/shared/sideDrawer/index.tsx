@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { urlMapping } from "@/constants/navigate";
 import { DrawerMenu } from "./menu";
 import { useAuthCredential } from "@/hooks/useAuth";
-import { useLocation, useNavigate } from "react-router-dom";
+import { matchPath, useLocation, useNavigate } from "react-router-dom";
 
 type RouteObjType = (typeof urlMapping)[number];
 const SideDrawer = () => {
@@ -25,11 +25,15 @@ const SideDrawer = () => {
     navigate(url);
   };
   const isActive = (routeObj: RouteObjType) => {
-    return (
-      (routeObj?.subRoutes as string[])?.includes(pathname) ||
-      pathname === routeObj.route
+    // First check direct match
+    if (pathname === routeObj.route) return true;
+
+    // Then check if any subRoutes match, including dynamic patterns
+    return (routeObj?.subRoutes as string[])?.some((subRoute) =>
+      matchPath({ path: subRoute, end: false }, pathname)
     );
   };
+
   return (
     <Sidebar>
       <SidebarHeader className="text-2xl font-semibold p-4 pt-8 text-center border-b  mx-4">

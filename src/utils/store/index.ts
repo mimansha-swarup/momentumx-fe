@@ -1,7 +1,8 @@
 import { configureStore, Middleware } from "@reduxjs/toolkit";
-import userReducer from "../feature/user/user.slice";
 import { logger } from "redux-logger";
+import userReducer from "../feature/user/user.slice";
 import titlesReducer from "../feature/titles/titles.slice";
+import scriptsReducer from "../feature/scripts/script.slice";
 
 const middlewares: Middleware[] = [];
 
@@ -13,9 +14,7 @@ export const store = configureStore({
   reducer: {
     user: userReducer,
     titles: titlesReducer,
-    // posts: postsReducer,
-    // comments: commentsReducer,
-    // users: usersReducer,
+    scripts: scriptsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(middlewares),

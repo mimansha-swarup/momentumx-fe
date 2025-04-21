@@ -5,22 +5,25 @@ import RootLayout from "@/components/shared/rootLayout";
 // import { Download, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GlassCard from "@/components/shared/glassCard";
-import { generateRandomScript } from "@/utils/onboarding";
-import { useAppSelector } from "@/hooks/useRedux";
-import { getTitlesData } from "@/utils/feature/titles/titles.slice";
-import { IGeneratedTopic } from "@/types/components/dashboard";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { FileText } from "lucide-react";
 import EmptyState from "@/components/shared/emptyState";
+import { useEffect } from "react";
+import { rootScripts } from "@/utils/feature/scripts/script.slice";
+import { retrieveScripts } from "@/utils/feature/scripts/script.thunk";
+import { useNavigate } from "react-router-dom";
+import { stripMarkdown } from "@/utils/scripts";
 
-const scripts = (sampleTopics: IGeneratedTopic[]) =>
-  sampleTopics?.map((topic) => ({
-    ...topic,
-    script: generateRandomScript(topic.title),
-  }));
 const ScriptPage = () => {
-  // const [urlSearchParams] = useSearchParams();
-  const titles = useAppSelector(getTitlesData);
-  // const scriptId = urlSearchParams.get("scriptId") || "0";
+  const navigate = useNavigate();
+  const { data: scripts } = useAppSelector(rootScripts);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (!scripts || !scripts?.length) {
+      dispatch(retrieveScripts());
+    }
+  }, []);
 
   return (
     <RootLayout>
@@ -33,7 +36,7 @@ const ScriptPage = () => {
           </Button>
         </div> */}
 
-        {!titles?.length && (
+        {!scripts?.length && (
           <EmptyState
             description="No generated content available"
             className="mt-4"
@@ -41,9 +44,9 @@ const ScriptPage = () => {
         )}
 
         <div className="grid gap-6 sm:grid-cols-2 md:grid-rows-3">
-          {scripts((titles ?? [])?.slice(-5))?.map((item, index) => (
+          {scripts?.map((item) => (
             <GlassCard
-              key={index}
+              key={item.id}
               className=" flex justify-between flex-wrap gap-4 items-center border-l- border-l--primary"
             >
               <div>
@@ -51,18 +54,19 @@ const ScriptPage = () => {
                 <p className="text-gray-600 text-xs">
                   created on: {item.createdAt}
                 </p>
-                <p className="text-gray-600 line-clamp-4 mt-2">{item.script}</p>
+                <p className="text-gray-600 line-clamp-4 mt-2">
+                  {stripMarkdown(item.script || "")}
+                </p>
               </div>
               <div className="w-full px-6">
                 <Button
                   size={"sm"}
                   variant={"outline"}
                   className="hover:scale-110  w-full"
-                  // onClick={() => navigate(`/script?scriptId=23543564`)}
+                  onClick={() => navigate(`/script/${item.id}`)}
                 >
                   <FileText /> View{" "}
                 </Button>
-                {/* )} */}
               </div>
             </GlassCard>
           ))}
