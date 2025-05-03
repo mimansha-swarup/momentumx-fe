@@ -25,6 +25,7 @@ export const useAuthenticate = () => {
         } else dispatch(getUser());
       } else {
         dispatch(setUser(null));
+        dispatch(setLoading(false));
       }
     });
 
