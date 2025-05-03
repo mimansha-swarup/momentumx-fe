@@ -63,7 +63,7 @@ const ScriptPage = () => {
                   size={"sm"}
                   variant={"outline"}
                   className="hover:scale-110  w-full"
-                  onClick={() => navigate(`/script/${item.id}`)}
+                  onClick={() => navigate(`/app/script/${item.id}`)}
                 >
                   <FileText /> View{" "}
                 </Button>

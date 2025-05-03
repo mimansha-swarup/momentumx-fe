@@ -39,7 +39,7 @@ const Onboarding = () => {
     .key as `${ONBOARDING_FORM_ID}`;
 
   if (user?.niche) {
-    <Navigate to="/dashboard" replace />;
+    <Navigate to="/app/dashboard" replace />;
   }
 
   const handleKeypress = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -57,7 +57,7 @@ const Onboarding = () => {
       if (res.success) {
         localStorage.removeItem(IS_NEW_USER);
         disptach(getUser());
-        navigate("/dashboard");
+        navigate("/app/dashboard");
       }
       setIsLoading(false);
     } else {

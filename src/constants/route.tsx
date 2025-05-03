@@ -1,5 +1,6 @@
 import ProtectedLayout from "@/components/shared/ProtectedRoute";
 import Dashboard from "@/pages/Dashboard";
+import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
 import Onboarding from "@/pages/Onboarding";
 import Profile from "@/pages/Profile";
@@ -10,8 +11,9 @@ import { createBrowserRouter } from "react-router-dom";
 
 export const localRouter = createBrowserRouter([
   { path: "/login", element: <Login /> },
+  { path: "/", element: <Landing /> },
   {
-    path: "/",
+    path: "/app",
     element: <ProtectedLayout />,
     children: [
       { path: "onboarding", element: <Onboarding /> },

@@ -64,7 +64,7 @@ const SideDrawer = () => {
       <SidebarFooter className="flex flex-row items-center gap-4 py-4  px-0 border-t mx-4">
         <Avatar>
           <AvatarImage src={user?.photoURL} alt="@shadcn" />
-          <AvatarFallback>CN</AvatarFallback>
+          <AvatarFallback>{user?.name?.[0] || "A"}</AvatarFallback>
         </Avatar>
         <div>
           <p className="font-semibold text-md">{user?.name}</p>

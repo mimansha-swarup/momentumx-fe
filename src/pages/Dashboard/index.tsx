@@ -8,13 +8,19 @@ import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { getTitlesData } from "@/utils/feature/titles/titles.slice";
 import { retrieveTitles } from "@/utils/feature/titles/titles.thunk";
 import { useEffect } from "react";
+import { getScriptsData } from "@/utils/feature/scripts/script.slice";
+import { retrieveScripts } from "@/utils/feature/scripts/script.thunk";
 
 const Dashboard = () => {
   const titles = useAppSelector(getTitlesData);
+  const scripts = useAppSelector(getScriptsData);
   const dispatch = useAppDispatch();
   useEffect(() => {
     if (!titles) {
       dispatch(retrieveTitles());
+    }
+    if (!scripts) {
+      dispatch(retrieveScripts());
     }
   }, []);
 
@@ -27,9 +33,11 @@ const Dashboard = () => {
         <Greetings />
 
         <div className=" animate-fade-in grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 md:gap-6 mb-12 ">
-          {DASHBOARD_CARD((titles?.length ?? 0).toString(), "0", "FREE")?.map(
-            (card) => <DashboardCard key={card.id} {...card} />
-          )}
+          {DASHBOARD_CARD(
+            (titles?.length ?? 0).toString(),
+            (scripts?.length ?? 0).toString(),
+            "FREE"
+          )?.map((card) => <DashboardCard key={card.id} {...card} />)}
         </div>
 
         <div>

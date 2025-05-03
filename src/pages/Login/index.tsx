@@ -8,7 +8,7 @@ const Login = () => {
   const { state } = useLocation();
 
   if (user)
-    return <Navigate to={state?.form?.pathname || "/dashboard"} replace />;
+    return <Navigate to={state?.form?.pathname || "/app/dashboard"} replace />;
   return (
     <section className="w-screen h-screen">
       <div className="flex p-0">

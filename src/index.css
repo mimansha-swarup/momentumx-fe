@@ -4,6 +4,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+* {
+  font-family: "Roboto", sans-serif;
+  font-optical-sizing: auto;
+}
+
 :root {
   --background: hsl(0 0% 100%);
   --foreground: hsl(20 14.3% 4.1%);

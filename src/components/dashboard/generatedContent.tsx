@@ -19,7 +19,7 @@ const GeneratedContent: FC<IGeneratedContentProps> = ({
   const navigate = useNavigate();
 
   const handleScriptGeneration = async (id: string, title: string) => {
-    navigate(`/script/${id}?title=${encodeURIComponent(title)}`);
+    navigate(`/app/script/${id}?title=${encodeURIComponent(title)}`);
   };
   return (
     <div>
@@ -52,7 +52,7 @@ const GeneratedContent: FC<IGeneratedContentProps> = ({
                     size={"sm"}
                     variant={"outline"}
                     className="hover:scale-110 "
-                    onClick={() => navigate(`/script/${item.id}`)}
+                    onClick={() => navigate(`/app/script/${item.id}`)}
                   >
                     <FileText /> Show Script
                   </Button>

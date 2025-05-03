@@ -8,8 +8,8 @@ const ProtectedLayout = () => {
 
   if (loading) {
     return <div className="h-screen w-screen bg-background">Loading...</div>;
-  } else if (user && !user?.niche && location.pathname !== "/onboarding") {
-    return <Navigate to={`/onboarding`} />;
+  } else if (user && !user?.niche && location.pathname !== "/app/onboarding") {
+    return <Navigate to={`/app/onboarding`} />;
   } else if (!user) {
     return <Navigate to={`/login`} replace state={{ from: location }} />;
   }
