@@ -1,17 +1,5 @@
-import { IGeneratedTopic } from "@/types/components/dashboard";
 
-export const groupTitles = (titles: IGeneratedTopic[]) => {
-  if (!titles) return {};
-  return titles?.reduce((acc, curr) => {
-    const date = formatDateToWords(curr.createdAt);
-    if (acc[date]) {
-      acc[date] = [...acc[date], curr];
-    } else {
-      acc[date] = [curr];
-    }
-    return acc;
-  }, {} as Record<string, IGeneratedTopic[]>);
-};
+
 export function formatDateToWords(dateString: string) {
   const date = new Date(dateString);
 

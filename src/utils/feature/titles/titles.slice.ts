@@ -17,7 +17,16 @@ const titlesSlice = createSlice({
       state.isLoading = true;
     },
     addTitle: (state, action) => {
-      state.data = [action.payload, ...(state.data ?? [])];
+      state.data = {
+        ...state.data,
+        meta: {
+          ...action.payload?.meta,
+        },
+        lists: [
+          ...(state?.data?.lists ?? []),
+          ...(action?.payload?.list ?? []),
+        ],
+      };
     },
 
     markDone: (state) => {

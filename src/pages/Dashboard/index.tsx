@@ -24,7 +24,9 @@ const Dashboard = () => {
     }
   }, []);
 
-  const recentTitles = titles ? [...titles]?.slice(-5) : [];
+  const recentTitles = titles?.lists
+    ? [...(titles?.lists ?? [])]?.slice(-5)
+    : [];
   return (
     <RootLayout>
       <div className="md:w-[90%] mx-auto pt-4 pb-20">
@@ -34,7 +36,7 @@ const Dashboard = () => {
 
         <div className=" animate-fade-in grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 md:gap-6 mb-12 ">
           {DASHBOARD_CARD(
-            (titles?.length ?? 0).toString(),
+            (titles?.lists?.length ?? 0).toString(),
             (scripts?.length ?? 0).toString(),
             "FREE"
           )?.map((card) => <DashboardCard key={card.id} {...card} />)}
