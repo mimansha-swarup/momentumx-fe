@@ -11,7 +11,9 @@ export const MarkdownPreview = ({ content }: { content: string }) => {
       components={{
         h1: ({ children }) => <h1>{children}</h1>, // skip headers in preview
         h2: ({ children }) => <h2>{children}</h2>,
-        p: ({ children }) => <p className=" leading-5 my-3">{children}</p>,
+        p: ({ children }) => (
+          <p className=" leading-6 my-3 text-base">{children}</p>
+        ),
         strong: ({ children }) => (
           <strong className="font-semibold">{children}</strong>
         ),

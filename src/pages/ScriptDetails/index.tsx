@@ -5,6 +5,8 @@ import RootLayout from "@/components/shared/rootLayout";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { scriptService } from "@/service/script";
 import { getScriptsData } from "@/utils/feature/scripts/script.slice";
+import { retrieveScripts } from "@/utils/feature/scripts/script.thunk";
+import { retrieveTitles } from "@/utils/feature/titles/titles.thunk";
 import { useEffect, useRef, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 // import React from "react";
@@ -28,10 +30,14 @@ const ScriptDetails = () => {
       block: "end",
     });
   };
+
   useEffect(() => {
     if (!scriptRecord) {
-      // dispatch(retrieveScripts());
-      scriptService.startStreamingScripts(scriptId, updateScript, dispatch);
+      const onDone = () => {
+        dispatch(retrieveScripts());
+        dispatch(retrieveTitles());
+      };
+      scriptService.startStreamingScripts(scriptId, updateScript, onDone);
     } else {
       setScript(scriptRecord.script);
     }

@@ -25,7 +25,7 @@ const TitleList = () => {
     }
   }, [groupedTitles, isTitleFetched]);
 
-  const groupedTitlesKey = Object?.keys(groupedTitles)?.reverse();
+  const groupedTitlesKey = Object?.keys(groupedTitles);
   return (
     <div>
       <div className="flex flex-col gap-8">
