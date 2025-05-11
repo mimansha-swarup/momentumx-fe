@@ -9,15 +9,17 @@ export const MarkdownPreview = ({ content }: { content: string }) => {
       // className="prose prose-invert max-w-none dark:prose-invert"
       remarkPlugins={[remarkGfm, remarkBreak]}
       components={{
-        h1: ({ children }) => <h1>{children}</h1>, // skip headers in preview
-        h2: ({ children }) => <h2>{children}</h2>,
+        h1: ({ children }) => <h1 className="unselectable">{children}</h1>, // skip headers in preview
+        h2: ({ children }) => <h2 className="unselectable">{children}</h2>,
         p: ({ children }) => (
-          <p className=" leading-6 my-3 text-base">{children}</p>
+          <p className=" leading-6 my-3 text-base unselectable">{children}</p>
         ),
         strong: ({ children }) => (
-          <strong className="font-semibold">{children}</strong>
+          <strong className="font-semibold unselectable ">{children}</strong>
         ),
-        em: ({ children }) => <em className="italic">{children}</em>,
+        em: ({ children }) => (
+          <em className="italic unselectable">{children}</em>
+        ),
       }}
     />
   );

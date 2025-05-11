@@ -32,6 +32,10 @@ const ScriptDetails = () => {
   };
 
   useEffect(() => {
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault();
+    };
+    document.body.addEventListener("contextmenu", handleContextMenu);
     if (!scriptRecord) {
       const onDone = () => {
         dispatch(retrieveScripts());
@@ -41,6 +45,10 @@ const ScriptDetails = () => {
     } else {
       setScript(scriptRecord.script);
     }
+
+    return () => {
+      document.body.removeEventListener("contextmenu", handleContextMenu);
+    };
   }, [scriptId]);
   return (
     <RootLayout>
@@ -48,7 +56,7 @@ const ScriptDetails = () => {
         <Header title={`Script - ${scriptRecord?.title || title}`} />
 
         <GlassCard>
-          <div ref={divRef}>
+          <div ref={divRef} className="unselectable">
             <MarkdownPreview content={script} />
           </div>
         </GlassCard>

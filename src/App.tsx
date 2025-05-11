@@ -1,4 +1,5 @@
 import { RouterProvider } from "react-router-dom";
+import "./App.css"
 
 import { localRouter } from "./constants/route";
 import { useAuthenticate } from "./hooks/useAuth";
