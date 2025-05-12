@@ -11,7 +11,7 @@ const Try = () => {
   };
   return (
     <section className="py-16 md:py-24" id="how-it-works">
-      <div className="container px-4 md:px-6">
+      <div className="container px-4 md:px-6 mx-auto">
         <div className="flex flex-col items-center text-center space-y-4 max-w-3xl mx-auto">
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
             Ready to Transform Your YouTube Content?

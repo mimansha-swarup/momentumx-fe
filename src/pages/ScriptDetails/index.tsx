@@ -5,6 +5,8 @@ import RootLayout from "@/components/shared/rootLayout";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { scriptService } from "@/service/script";
 import { getScriptsData } from "@/utils/feature/scripts/script.slice";
+import { retrieveScripts } from "@/utils/feature/scripts/script.thunk";
+import { retrieveTitles } from "@/utils/feature/titles/titles.thunk";
 import { useEffect, useRef, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 // import React from "react";
@@ -28,13 +30,25 @@ const ScriptDetails = () => {
       block: "end",
     });
   };
+
   useEffect(() => {
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault();
+    };
+    document.body.addEventListener("contextmenu", handleContextMenu);
     if (!scriptRecord) {
-      // dispatch(retrieveScripts());
-      scriptService.startStreamingScripts(scriptId, updateScript, dispatch);
+      const onDone = () => {
+        dispatch(retrieveScripts());
+        dispatch(retrieveTitles());
+      };
+      scriptService.startStreamingScripts(scriptId, updateScript, onDone);
     } else {
       setScript(scriptRecord.script);
     }
+
+    return () => {
+      document.body.removeEventListener("contextmenu", handleContextMenu);
+    };
   }, [scriptId]);
   return (
     <RootLayout>
@@ -42,7 +56,7 @@ const ScriptDetails = () => {
         <Header title={`Script - ${scriptRecord?.title || title}`} />
 
         <GlassCard>
-          <div ref={divRef}>
+          <div ref={divRef} className="unselectable">
             <MarkdownPreview content={script} />
           </div>
         </GlassCard>

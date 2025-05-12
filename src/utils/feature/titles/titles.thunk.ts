@@ -11,6 +11,7 @@ export const retrieveTitles = createAsyncThunk(
       const response = await titleService.getGeneratedData();
       return response.data;
     } catch (error) {
+      console.log('error: ', error);
       return thunkAPI.rejectWithValue(error);
     }
   }

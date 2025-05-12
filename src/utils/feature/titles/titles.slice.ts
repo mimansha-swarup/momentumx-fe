@@ -33,6 +33,16 @@ const titlesSlice = createSlice({
       state.isDone = true;
       state.isLoading = false;
     },
+    markContentGeneration: (state, action) => {
+      state.data = (state.data ?? [])?.map((title) =>
+        action.payload !== title.id
+          ? title
+          : {
+              ...title,
+              isScriptGenerated: true,
+            }
+      );
+    },
   },
   extraReducers: (builder) => {
     // Add reducers for additional action types here, and handle loading state as needed

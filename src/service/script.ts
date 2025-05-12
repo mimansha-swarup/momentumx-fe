@@ -1,8 +1,6 @@
-import { retrieveScripts } from "@/utils/feature/scripts/script.thunk";
-import { retrieveTitles } from "@/utils/feature/titles/titles.thunk";
 import { auth } from "@/utils/firebase/config";
 import { baseFetch, getApiDomain } from "@/utils/network";
-import { AppDispatch } from "@/utils/store";
+
 const URLS = {
   scripts: "/v1/content/scripts",
   streamScript: "/v1/content/stream/scripts/{scriptId}",
@@ -17,7 +15,7 @@ class ScriptService {
   startStreamingScripts = async (
     id: string,
     setter: (prev: string) => void,
-    dispatch: AppDispatch
+    onDone: () => void
   ) => {
     const token = await auth.currentUser?.getIdToken();
     const url = this.urls.streamScript.replace("{scriptId}", id);
@@ -31,8 +29,9 @@ class ScriptService {
 
     evtSource.addEventListener("done", () => {
       // dispatch(markDone());
-      dispatch(retrieveScripts());
-      dispatch(retrieveTitles());
+      console.log("fone");
+
+      onDone?.();
 
       evtSource.close();
     });
