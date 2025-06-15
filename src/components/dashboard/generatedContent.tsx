@@ -19,7 +19,7 @@ const GeneratedContent: FC<IGeneratedContentProps> = ({
   const navigate = useNavigate();
 
   const handleScriptGeneration = async (id: string, title: string) => {
-    navigate(`/app/script/${id}?title=${encodeURIComponent(title)}`);
+    navigate(`/app/script/${id}?title=${encodeURIComponent(title)}#new`);
   };
   return (
     <div>
@@ -63,7 +63,7 @@ const GeneratedContent: FC<IGeneratedContentProps> = ({
                     onClick={() => handleScriptGeneration(item.id, item.title)}
                   >
                     <Sparkles />
-                    Generate{" "}
+                    Generate
                   </Button>
                 )}
               </div>

@@ -10,6 +10,11 @@ export interface IUserProfile {
   uid: string;
   userName: string;
   website: string;
+  stats: {
+    topics: number;
+    scripts: number;
+    credits: number;
+  };
 }
 
 export interface IUserInitialState {

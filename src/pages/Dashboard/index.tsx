@@ -10,21 +10,27 @@ import { retrieveTitles } from "@/utils/feature/titles/titles.thunk";
 import { useEffect } from "react";
 import { getScriptsData } from "@/utils/feature/scripts/script.slice";
 import { retrieveScripts } from "@/utils/feature/scripts/script.thunk";
+import { currentUser } from "@/utils/feature/user/user.slice";
 
 const Dashboard = () => {
   const titles = useAppSelector(getTitlesData);
   const scripts = useAppSelector(getScriptsData);
+  const { stats = { topics: 0, scripts: 0, credits: 0 } } =
+    useAppSelector(currentUser) ?? {};
   const dispatch = useAppDispatch();
   useEffect(() => {
     if (!titles) {
-      dispatch(retrieveTitles());
+      dispatch(retrieveTitles({ isFresh: true }));
     }
     if (!scripts) {
       dispatch(retrieveScripts());
     }
   }, []);
 
-  const recentTitles = titles ? [...titles]?.slice(-5) : [];
+  const recentTitles = titles?.lists
+    ? [...(titles?.lists ?? [])]?.slice(0, 5)
+    : [];
+
   return (
     <RootLayout>
       <div className="md:w-[90%] mx-auto pt-4 pb-20">
@@ -34,15 +40,15 @@ const Dashboard = () => {
 
         <div className=" animate-fade-in grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 md:gap-6 mb-12 ">
           {DASHBOARD_CARD(
-            (titles?.length ?? 0).toString(),
-            (scripts?.length ?? 0).toString(),
-            "FREE"
+            (stats?.topics ?? 0).toString(),
+            (stats?.scripts ?? 0).toString(),
+            stats?.credits?.toString() ?? "FREE"
           )?.map((card) => <DashboardCard key={card.id} {...card} />)}
         </div>
 
         <div>
           <GeneratedContent
-            heading={"Recently Generated"}
+            heading={"Recently Generated Titles"}
             list={recentTitles}
           />
         </div>

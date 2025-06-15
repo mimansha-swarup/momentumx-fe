@@ -6,22 +6,28 @@ import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { scriptService } from "@/service/script";
 import { getScriptsData } from "@/utils/feature/scripts/script.slice";
 import { retrieveScripts } from "@/utils/feature/scripts/script.thunk";
-import { retrieveTitles } from "@/utils/feature/titles/titles.thunk";
+import {
+  getTitlesData,
+  markScriptGenerated,
+} from "@/utils/feature/titles/titles.slice";
 import { useEffect, useRef, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useLocation, useParams, useSearchParams } from "react-router-dom";
 // import React from "react";
 
 const ScriptDetails = () => {
   const { scriptId = "" } = useParams();
   const [searchParams] = useSearchParams();
 
-  const scripts = useAppSelector(getScriptsData);
+  const { lists: titleLists = [] } = useAppSelector(getTitlesData) || {};
+  const scriptRecord = useAppSelector(getScriptsData) || [];
   const dispatch = useAppDispatch();
   const [script, setScript] = useState("");
   const divRef = useRef<HTMLDivElement>(null);
+  const { hash } = useLocation();
+  const titleFromUrl = decodeURIComponent(searchParams.get("title") || "");
 
-  const scriptRecord = scripts?.find((script) => script.id === scriptId);
-  const title = decodeURIComponent(searchParams.get("title") || "");
+  const titleRecord = titleLists?.find((title) => title.id === scriptId);
+  const title = titleRecord?.title;
 
   const updateScript = (newScript: string) => {
     setScript((prev) => prev + newScript);
@@ -36,14 +42,24 @@ const ScriptDetails = () => {
       e.preventDefault();
     };
     document.body.addEventListener("contextmenu", handleContextMenu);
-    if (!scriptRecord) {
+    // edit logic and create a get if record is not present then fetch it TODO:
+    if (!hash) {
+      const scriptObject = scriptRecord.find(
+        (script) => script.id === scriptId
+      );
+      if (scriptObject ) {
+        setScript(scriptObject.script);
+      } else {
+        scriptService.getScriptById(scriptId).then(({ data }) => {
+          setScript(data.script);
+        });
+      }
+    } else {
+      dispatch(markScriptGenerated(scriptId));
       const onDone = () => {
         dispatch(retrieveScripts());
-        dispatch(retrieveTitles());
       };
       scriptService.startStreamingScripts(scriptId, updateScript, onDone);
-    } else {
-      setScript(scriptRecord.script);
     }
 
     return () => {
@@ -53,7 +69,7 @@ const ScriptDetails = () => {
   return (
     <RootLayout>
       <div className="md:w-[90%] mx-auto pt-4 pb-20">
-        <Header title={`Script - ${scriptRecord?.title || title}`} />
+        <Header title={`Script - ${title || titleFromUrl}`} />
 
         <GlassCard>
           <div ref={divRef} className="unselectable">
