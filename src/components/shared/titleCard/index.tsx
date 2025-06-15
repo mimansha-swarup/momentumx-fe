@@ -15,7 +15,7 @@ const TitleCard: FC<IGeneratedTopic> = ({
   const navigate = useNavigate();
 
   const handleScriptGeneration = async (id: string, title: string) => {
-    navigate(`/app/script/${id}?title=${encodeURIComponent(title)}`);
+    navigate(`/app/script/${id}?title=${encodeURIComponent(title)}#new`);
   };
   return (
     <GlassCard
@@ -44,8 +44,7 @@ const TitleCard: FC<IGeneratedTopic> = ({
             className="hover:scale-110"
             onClick={() => handleScriptGeneration(id, title)}
           >
-            <Sparkles />
-            Generate{" "}
+            <Sparkles /> Generate{" "}
           </Button>
         )}
       </div>
