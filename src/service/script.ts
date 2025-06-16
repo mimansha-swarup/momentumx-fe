@@ -4,7 +4,7 @@ import { baseFetch, getApiDomain } from "@/utils/network";
 const URLS = {
   scripts: "/v1/content/scripts",
   streamScript: "/v1/content/stream/scripts/{scriptId}",
-  scriptById: "/v1/content/stream/script/{scriptId}",
+  scriptById: "/v1/content/script/{scriptId}",
 };
 class ScriptService {
   private urls;
@@ -47,6 +47,15 @@ class ScriptService {
   async getGeneratedScript() {
     try {
       const response = await baseFetch.get(this.urls.scripts);
+      return response.data;
+    } catch {
+      console.error("Error while fetching saved titles");
+    }
+  }
+
+  async getScriptById(id: string) {
+    try {
+      const response = await baseFetch.get(this.urls.scriptById.replace("{scriptId}", id));
       return response.data;
     } catch {
       console.error("Error while fetching saved titles");

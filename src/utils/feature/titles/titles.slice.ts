@@ -1,10 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
-import { retrieveTitles } from "./titles.thunk";
-import { ITitleState } from "@/types/feature/title";
+import { generateTitles, retrieveTitles } from "./titles.thunk";
+import { ITitleState, TitleFilters } from "@/types/feature/title";
 
 const initialState: ITitleState = {
   data: null,
+  params: {
+    filter: TitleFilters.ALL,
+    searchText: "",
+  },
   isLoading: false,
   isDone: false,
 };
@@ -17,22 +21,40 @@ const titlesSlice = createSlice({
       state.isLoading = true;
     },
     addTitle: (state, action) => {
-      state.data = [action.payload, ...(state.data ?? [])];
+      state.data = {
+        ...state.data,
+        meta: {
+          ...action.payload?.meta,
+        },
+        lists: [
+          ...(state?.data?.lists ?? []),
+          ...(action?.payload?.list ?? []),
+        ],
+      };
+    },
+    resetTitle: (state) => {
+      state.data = null;
     },
 
     markDone: (state) => {
       state.isDone = true;
       state.isLoading = false;
     },
-    markContentGeneration: (state, action) => {
-      state.data = (state.data ?? [])?.map((title) =>
-        action.payload !== title.id
-          ? title
-          : {
-              ...title,
-              isScriptGenerated: true,
-            }
-      );
+
+    updateFilter: (state, action) => {
+      state.params = {
+        ...state.params,
+        ...action.payload,
+      };
+    },
+    markScriptGenerated: (state, action) => {
+      if (state.data?.lists) {
+        state.data.lists = state.data?.lists?.map((title) =>
+          title.id === action.payload
+            ? { ...title, isScriptGenerated: true }
+            : title
+        );
+      }
     },
   },
   extraReducers: (builder) => {
@@ -43,16 +65,59 @@ const titlesSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(retrieveTitles.fulfilled, (state, action) => {
-        state.data = action.payload;
+        const { isFresh, data } = action.payload ?? {};
+        if (isFresh) {
+          state.data = data;
+        } else {
+          const { lists = [], meta } = data ?? {};
+          state.data = {
+            ...state.data,
+            meta: {
+              ...state.data?.meta,
+              ...meta,
+            },
+            lists: [...(state.data?.lists ?? []), ...lists],
+          };
+        }
         state.isLoading = false;
       })
       .addCase(retrieveTitles.rejected, (state) => {
         state.isLoading = false;
+      })
+      .addCase(generateTitles.pending, (state) => {
+        state.isDone = true;
+      })
+      .addCase(generateTitles.fulfilled, (state, action) => {
+        state.isDone = false;
+        state.data = {
+          ...state.data,
+          meta: {
+            nextCursor: {
+              createdAt: state.data?.meta?.nextCursor?.createdAt ?? "",
+              docId: state.data?.meta?.nextCursor?.docId ?? "",
+            },
+            hasNextPage: state.data?.meta?.hasNextPage ?? false,
+          },
+          lists: [
+            ...(action.payload?.data ?? []),
+            ...(state.data?.lists ?? []),
+          ],
+        };
+      })
+      .addCase(generateTitles.rejected, (state) => {
+        state.isDone = false;
       });
   },
 });
 
-export const { resetState, addTitle, markDone } = titlesSlice.actions;
+export const {
+  resetState,
+  addTitle,
+  markDone,
+  resetTitle,
+  updateFilter,
+  markScriptGenerated,
+} = titlesSlice.actions;
 
 export const rootTitle = (state: RootState) => state.titles;
 export const getTitlesData = (state: RootState) => state.titles.data;
