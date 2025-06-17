@@ -2,6 +2,8 @@ export const brandName = "Ideofy";
 
 export const IS_NEW_USER = "isNewUser";
 
+export const LOGGED_IN = "loggedin"
+
 export const problems = [
   {
     heading: "Running Out of Ideas",

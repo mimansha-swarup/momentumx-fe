@@ -2,9 +2,14 @@ import GlassCard from "@/components/shared/glassCard";
 import Header from "@/components/shared/header";
 import { MarkdownPreview } from "@/components/shared/MarkdownRenderer";
 import RootLayout from "@/components/shared/rootLayout";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { scriptService } from "@/service/script";
-import { getScriptsData } from "@/utils/feature/scripts/script.slice";
+import {
+  markDone,
+  resetState,
+  rootScripts,
+} from "@/utils/feature/scripts/script.slice";
 import { retrieveScripts } from "@/utils/feature/scripts/script.thunk";
 import {
   getTitlesData,
@@ -19,15 +24,22 @@ const ScriptDetails = () => {
   const [searchParams] = useSearchParams();
 
   const { lists: titleLists = [] } = useAppSelector(getTitlesData) || {};
-  const scriptRecord = useAppSelector(getScriptsData) || [];
+  const {
+    isDone,
+    data: scriptRecord = [],
+    isLoading,
+  } = useAppSelector(rootScripts);
   const dispatch = useAppDispatch();
   const [script, setScript] = useState("");
+  const [title, setTitle] = useState("");
   const divRef = useRef<HTMLDivElement>(null);
   const { hash } = useLocation();
   const titleFromUrl = decodeURIComponent(searchParams.get("title") || "");
 
   const titleRecord = titleLists?.find((title) => title.id === scriptId);
-  const title = titleRecord?.title;
+  useEffect(() => {
+    setTitle(titleRecord?.title || titleFromUrl);
+  }, [titleRecord || titleFromUrl]);
 
   const updateScript = (newScript: string) => {
     setScript((prev) => prev + newScript);
@@ -44,11 +56,12 @@ const ScriptDetails = () => {
     document.body.addEventListener("contextmenu", handleContextMenu);
     // edit logic and create a get if record is not present then fetch it TODO:
     if (!hash) {
-      const scriptObject = scriptRecord.find(
+      const scriptObject = scriptRecord?.find(
         (script) => script.id === scriptId
       );
-      if (scriptObject ) {
+      if (scriptObject) {
         setScript(scriptObject.script);
+        setTitle(scriptObject?.title);
       } else {
         scriptService.getScriptById(scriptId).then(({ data }) => {
           setScript(data.script);
@@ -56,7 +69,9 @@ const ScriptDetails = () => {
       }
     } else {
       dispatch(markScriptGenerated(scriptId));
+      dispatch(resetState());
       const onDone = () => {
+        dispatch(markDone());
         dispatch(retrieveScripts());
       };
       scriptService.startStreamingScripts(scriptId, updateScript, onDone);
@@ -69,11 +84,15 @@ const ScriptDetails = () => {
   return (
     <RootLayout>
       <div className="md:w-[90%] mx-auto pt-4 pb-20">
-        <Header title={`Script - ${title || titleFromUrl}`} />
+        <Header title={`Script - ${title}`} />
 
         <GlassCard>
           <div ref={divRef} className="unselectable">
-            <MarkdownPreview content={script} />
+            {(!isDone || isLoading) && !script ? (
+              <Skeleton className="w-25 h-2" />
+            ) : (
+              <MarkdownPreview content={script} />
+            )}
           </div>
         </GlassCard>
       </div>

@@ -14,10 +14,11 @@ import { urlMapping } from "@/constants/navigate";
 import { DrawerMenu } from "./menu";
 import { useAuthCredential } from "@/hooks/useAuth";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type RouteObjType = (typeof urlMapping)[number];
 const SideDrawer = () => {
-  const { user } = useAuthCredential();
+  const { user, loading } = useAuthCredential();
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
@@ -66,10 +67,17 @@ const SideDrawer = () => {
           <AvatarImage src={user?.photoURL} alt="@shadcn" />
           <AvatarFallback>{user?.name?.[0] || "A"}</AvatarFallback>
         </Avatar>
-        <div>
-          <p className="font-semibold text-md">{user?.name}</p>
-          <p className="text-accent-foreground text-xs">{user?.userName}</p>
-        </div>
+        {loading ? (
+          <div>
+            <Skeleton className="h-2 w-28 bg-accent-foreground/25" />
+            <Skeleton className="h-2 w-20 bg-accent-foreground/25 mt-1" />
+          </div>
+        ) : (
+          <div>
+            <p className="font-semibold text-md">{user?.name}</p>
+            <p className="text-accent-foreground text-xs">{user?.userName}</p>
+          </div>
+        )}
         <DrawerMenu />
       </SidebarFooter>
     </Sidebar>

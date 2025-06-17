@@ -6,7 +6,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { auth, provider } from "./config";
-import { IS_NEW_USER } from "@/constants/root";
+import { IS_NEW_USER, LOGGED_IN } from "@/constants/root";
 
 export const persistLogin = async () => {
   setPersistence(auth, browserLocalPersistence)
@@ -34,4 +34,5 @@ export const googleLogin = async () => {
 
 export const googleLogOut = () => {
   signOut(auth);
+  localStorage.removeItem(LOGGED_IN);
 };

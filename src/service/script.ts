@@ -28,9 +28,6 @@ class ScriptService {
     };
 
     evtSource.addEventListener("done", () => {
-      // dispatch(markDone());
-      console.log("fone");
-
       onDone?.();
 
       evtSource.close();
