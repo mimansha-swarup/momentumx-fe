@@ -1,4 +1,3 @@
-import React from "react";
 import RootLayout from "../rootLayout";
 import { LoaderCircle } from "lucide-react";
 
