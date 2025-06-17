@@ -5,25 +5,16 @@ import RootLayout from "@/components/shared/rootLayout";
 // import { Download, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GlassCard from "@/components/shared/glassCard";
-import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { useAppSelector } from "@/hooks/useRedux";
 import { FileText } from "lucide-react";
 import EmptyState from "@/components/shared/emptyState";
-import { useEffect } from "react";
 import { rootScripts } from "@/utils/feature/scripts/script.slice";
-import { retrieveScripts } from "@/utils/feature/scripts/script.thunk";
 import { useNavigate } from "react-router-dom";
 import { stripMarkdown } from "@/utils/scripts";
 
 const ScriptPage = () => {
   const navigate = useNavigate();
   const { data: scripts } = useAppSelector(rootScripts);
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    if (!scripts || !scripts?.length) {
-      dispatch(retrieveScripts());
-    }
-  }, []);
 
   return (
     <RootLayout>

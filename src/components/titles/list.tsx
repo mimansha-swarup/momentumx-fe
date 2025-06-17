@@ -79,9 +79,9 @@ const TitleList = ({
       className={` overflow-y-auto -mx-5 flex flex-col gap-8 h-[calc(100vh-228px)] pb-4 px-2 ${isScrolled ? "shadow-[inset_0_8px_8px_-4px_rgba(0,0,0,0.1)]" : ""}`}
       ref={listRef}
     >
-      {isTitleDone && (
+      {(isTitleDone || isTitleFetched) && (
         <div id="generating-titles">
-          <ListShimmer count={10} />
+          <ListShimmer count={5} />
         </div>
       )}
       {!lists.length && !isTitleFetched ? (

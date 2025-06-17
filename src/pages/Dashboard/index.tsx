@@ -4,28 +4,14 @@ import GeneratedContent from "@/components/dashboard/generatedContent";
 import Greetings from "@/components/dashboard/greetings";
 import { DASHBOARD_CARD } from "@/constants/dashboard";
 import Header from "@/components/shared/header";
-import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { useAppSelector } from "@/hooks/useRedux";
 import { getTitlesData } from "@/utils/feature/titles/titles.slice";
-import { retrieveTitles } from "@/utils/feature/titles/titles.thunk";
-import { useEffect } from "react";
-import { getScriptsData } from "@/utils/feature/scripts/script.slice";
-import { retrieveScripts } from "@/utils/feature/scripts/script.thunk";
 import { currentUser } from "@/utils/feature/user/user.slice";
 
 const Dashboard = () => {
   const titles = useAppSelector(getTitlesData);
-  const scripts = useAppSelector(getScriptsData);
   const { stats = { topics: 0, scripts: 0, credits: 0 } } =
     useAppSelector(currentUser) ?? {};
-  const dispatch = useAppDispatch();
-  useEffect(() => {
-    if (!titles) {
-      dispatch(retrieveTitles({ isFresh: true }));
-    }
-    if (!scripts) {
-      dispatch(retrieveScripts());
-    }
-  }, []);
 
   const recentTitles = titles?.lists
     ? [...(titles?.lists ?? [])]?.slice(0, 5)
