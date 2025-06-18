@@ -17,7 +17,7 @@ import {
 } from "@/utils/feature/titles/titles.slice";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
-// import React from "react";
+
 
 const ScriptDetails = () => {
   const { scriptId = "" } = useParams();

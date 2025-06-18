@@ -56,7 +56,7 @@ const TitlePage = () => {
   };
   return (
     <RootLayout>
-      <div className="md:w-[90%]  mx-auto pt-4 relative">
+      <div className="md:w-[90%]  mx-auto md:pt-4 relative">
         <Header title={"Titles"} />
         <div className="-mt-6">
           <div className="flex justify-between mb-4 flex-wrap-reverse gap-2">

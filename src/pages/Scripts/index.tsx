@@ -19,7 +19,7 @@ const ScriptPage = () => {
 
   return (
     <RootLayout>
-      <div className="md:w-[90%] mx-auto pt-4 pb-20">
+      <div className="md:w-[90%] mx-auto md:pt-4 pb-20">
         <Header title={"Script"} />
         {/* <div className="flex">
           <Button className="ml-auto" variant={"outline"}>

@@ -19,7 +19,7 @@ const Dashboard = () => {
 
   return (
     <RootLayout>
-      <div className="md:w-[90%] mx-auto pt-4 pb-20">
+      <div className="md:w-[90%] mx-auto  pb-20">
         <Header title={"Dashboard"} />
 
         <Greetings />

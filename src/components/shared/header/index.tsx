@@ -6,14 +6,14 @@ const Header = ({ title }: { title: string }) => {
   const { toggleSidebar } = useSidebar();
   return (
     <div className="flex items-center w-full pb-14">
+      <h1 className="text-2xl font-semibold">{title}</h1>
       <Button
-        className=" block md:hidden mr-2"
+        className="ml-auto block md:hidden"
         variant={"ghost"}
         onClick={toggleSidebar}
       >
-        <Menu className=" size-4 " />
+        <Menu className="size-4 " />
       </Button>
-      <h1 className="text-2xl font-semibold">{title}</h1>
     </div>
   );
 };
