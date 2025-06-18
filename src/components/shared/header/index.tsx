@@ -8,13 +8,13 @@ const Header = ({
   showBack = false,
 }: {
   title: string;
-  showBack: boolean;
+  showBack?: boolean;
 }) => {
   const navigate = useNavigate();
   const { toggleSidebar } = useSidebar();
   const navigateToScript = () => navigate("/app/scripts");
   return (
-    <div className="flex items-center w-full pb-14">
+    <div className="flex items-center w-full pl-4 md:pl-0 pb-10 md:pb-14">
       {showBack && (
         <Button
           className="mr-3 !p-0"
