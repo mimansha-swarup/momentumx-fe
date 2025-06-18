@@ -84,7 +84,7 @@ const ScriptDetails = () => {
   return (
     <RootLayout>
       <div className="md:w-[90%] mx-auto pt-4 pb-20">
-        <Header title={`Script - ${title}`} />
+        <Header title={`Script - ${title}`} showBack />
 
         <GlassCard>
           <div ref={divRef} className="unselectable">
