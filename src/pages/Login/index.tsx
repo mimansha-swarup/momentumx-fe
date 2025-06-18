@@ -12,7 +12,7 @@ const Login = () => {
   return (
     <section className="w-screen h-screen">
       <div className="flex p-0">
-        <div className=" bg-black h-screen flex-1 " />
+        <div className=" bg-black h-screen flex-1 hidden md:block " />
         <Separator orientation="vertical" />
         <LoginForm />
       </div>

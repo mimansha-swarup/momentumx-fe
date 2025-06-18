@@ -47,7 +47,7 @@ const Hero = () => {
               No credit card required. Start creating in 30 seconds.
             </p>
           </div>
-          <div className="relative h-[350px] rounded-xl overflow-hidden border shadow-xl flex">
+          <div className="relative h-[203px] md:h-[350px] rounded-xl overflow-hidden border shadow-xl flex">
             <img
               src="https://cdn.hashnode.com/res/hashnode/image/upload/v1746249283037/ee95fbe4-296a-4d1d-97cb-d64b40def19d.png"
               alt={`${brandName} Dashboard Preview`}
