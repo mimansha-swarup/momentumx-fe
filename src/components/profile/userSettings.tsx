@@ -29,7 +29,7 @@ const UserSettings: React.FC<IUserDetailsProps> = ({ user }) => {
       return;
     }
     setIsLoading(true);
-    await onboardingServiceInstance.saveOnboardingData(userSettings);
+    await onboardingServiceInstance.updateProfile(userSettings);
     setIsLoading(false);
   };
 

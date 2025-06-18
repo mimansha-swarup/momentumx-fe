@@ -35,4 +35,16 @@ export class onboardingService {
       throw error;
     }
   }
+  async updateProfile(payload: IOnboardingPayload) {
+    try {
+      const response = await baseFetch.patch(this.urls.PROFILE, payload);
+
+      handleToast(response.data);
+
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching onboarding data:", error);
+      throw error;
+    }
+  }
 }

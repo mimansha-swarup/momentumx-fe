@@ -72,7 +72,7 @@ const ScriptDetails = () => {
       dispatch(resetState());
       const onDone = () => {
         dispatch(markDone());
-        dispatch(retrieveScripts());
+        setTimeout(() => dispatch(retrieveScripts()), 5000);
       };
       scriptService.startStreamingScripts(scriptId, updateScript, onDone);
     }
@@ -89,7 +89,15 @@ const ScriptDetails = () => {
         <GlassCard>
           <div ref={divRef} className="unselectable">
             {(!isDone || isLoading) && !script ? (
-              <Skeleton className="w-25 h-2" />
+              <div className="flex flex-col gap-3">
+                <Skeleton className="w-25 h-3 bg-accent-foreground/25" />
+                <Skeleton className="w-55 h-3 bg-accent-foreground/25" />
+                <Skeleton className="w-35 h-3 bg-accent-foreground/25" />
+                <Skeleton className="w-45 h-3 bg-accent-foreground/25" />
+                <Skeleton className="w-55 h-3 bg-accent-foreground/25" />
+                <Skeleton className="w-25 h-3 bg-accent-foreground/25" />
+                <Skeleton className="w-35 h-3 bg-accent-foreground/25" />
+              </div>
             ) : (
               <MarkdownPreview content={script} />
             )}
