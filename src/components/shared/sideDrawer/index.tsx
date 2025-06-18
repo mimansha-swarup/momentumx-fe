@@ -15,15 +15,18 @@ import { DrawerMenu } from "./menu";
 import { useAuthCredential } from "@/hooks/useAuth";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSidebar } from "@/components/ui/sidebar";
 
 type RouteObjType = (typeof urlMapping)[number];
 const SideDrawer = () => {
   const { user, loading } = useAuthCredential();
+  const { toggleSidebar } = useSidebar();
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
   const handleNavigation = (url: string) => () => {
     navigate(url);
+    if (window.innerWidth <= 765) toggleSidebar();
   };
   const isActive = (routeObj: RouteObjType) => {
     // First check direct match
