@@ -16,6 +16,7 @@ import { useAuthCredential } from "@/hooks/useAuth";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSidebar } from "@/components/ui/sidebar";
+import { extractYouTubeHandle } from "@/utils/onboarding";
 
 type RouteObjType = (typeof urlMapping)[number];
 const SideDrawer = () => {
@@ -37,6 +38,8 @@ const SideDrawer = () => {
       matchPath({ path: subRoute, end: false }, pathname)
     );
   };
+
+  const extractedUserName = extractYouTubeHandle(user?.userName || "");
 
   return (
     <Sidebar>
@@ -68,7 +71,9 @@ const SideDrawer = () => {
       <SidebarFooter className="flex flex-row items-center gap-4 py-4  px-0 border-t mx-4">
         <Avatar>
           <AvatarImage src={user?.photoURL} alt="@shadcn" />
-          <AvatarFallback>{user?.name?.[0] || "A"}</AvatarFallback>
+          <AvatarFallback>
+            {user?.name?.[0] || extractedUserName?.[0]}
+          </AvatarFallback>
         </Avatar>
         {loading ? (
           <div>
@@ -78,7 +83,9 @@ const SideDrawer = () => {
         ) : (
           <div>
             <p className="font-semibold text-md">{user?.name}</p>
-            <p className="text-accent-foreground text-xs">{user?.userName}</p>
+            <p className="text-accent-foreground text-xs">
+              @{extractedUserName}
+            </p>
           </div>
         )}
         <DrawerMenu />

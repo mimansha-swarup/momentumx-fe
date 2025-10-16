@@ -23,6 +23,7 @@ export interface IOnboardingFormProps {
   removeMultiValue?: (index: number) => () => void;
   addMultiValue?: () => void;
   className?: string;
+  valueFormatter?: (val: unknown) => string | number;
 }
 
 export interface OnboardingForm {

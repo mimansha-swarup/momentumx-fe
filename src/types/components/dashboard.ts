@@ -4,6 +4,7 @@ export interface IGeneratedTopic {
   title: string;
   id: string;
   createdAt: string;
+  updatedAt?: string;
   createdBy: string;
   isScriptGenerated: boolean;
 }

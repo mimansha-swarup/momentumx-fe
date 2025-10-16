@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
-import { generateTitles, retrieveTitles } from "./titles.thunk";
+import { editTitles, generateTitles, retrieveTitles } from "./titles.thunk";
 import { ITitleState, TitleFilters } from "@/types/feature/title";
 
 const initialState: ITitleState = {
@@ -106,7 +106,17 @@ const titlesSlice = createSlice({
       })
       .addCase(generateTitles.rejected, (state) => {
         state.isDone = false;
-      });
+      })
+
+      .addCase(editTitles.fulfilled, (state, action) => {
+        if (!state.data?.lists) return;
+        state.data = {
+          ...state.data,
+          lists: state.data.lists.map((title) =>
+            title.id === action.payload.id ? action.payload : title
+          ),
+        };
+      })
   },
 });
 

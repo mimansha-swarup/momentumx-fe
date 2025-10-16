@@ -90,6 +90,7 @@ export const renderUserForm = ({
   onChange,
   removeMultiValue,
   onKeyPress = () => null,
+  valueFormatter,
   className = "",
 }: IOnboardingFormProps) => {
   switch (inputType) {
@@ -121,7 +122,7 @@ export const renderUserForm = ({
               <Input
                 id={`competitor-${index}`}
                 placeholder={placeholder}
-                value={multiValue}
+                value={valueFormatter ? valueFormatter(multiValue) : multiValue}
                 onChange={(e) => onChange(e, index)}
                 className="mt-4"
               />
@@ -142,7 +143,7 @@ export const renderUserForm = ({
             id={id}
             name={id}
             placeholder={placeholder}
-            value={value}
+            value={valueFormatter ? valueFormatter(value) : value}
             onChange={onChange}
             onKeyDown={onKeyPress}
           />
@@ -151,3 +152,9 @@ export const renderUserForm = ({
       );
   }
 };
+
+export function extractYouTubeHandle(url: string) {
+  const regex = /(?:https?:\/\/)?(?:www\.)?youtube\.com\/@([a-zA-Z0-9._-]+)/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
+}

@@ -53,6 +53,7 @@ const UserSettings: React.FC<IUserDetailsProps> = ({ user }) => {
               removeMultiValue: removeCompetitors,
               value: userSettings[multipleTextInput.id],
               error: error[multipleTextInput.id],
+              valueFormatter: (value) => (value as { url: string }).url,
             })}
           <Button
             variant="outline"

@@ -27,3 +27,15 @@ export const generateTitles = createAsyncThunk(
     }
   }
 );
+export const editTitles = createAsyncThunk(
+  "titles/editTitles",
+  async ({ titleId, ...record }: Record<string, unknown>, thunkAPI) => {
+    try {
+      const response = await titleService.editTitle(titleId as string, record);
+      return response.data;
+    } catch (error) {
+      console.log("error: ", error);
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
