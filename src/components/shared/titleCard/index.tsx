@@ -3,7 +3,7 @@ import { formatDateToWords } from "@/utils/titles";
 import { FileText, LoaderCircle, Sparkles } from "lucide-react";
 import GlassCard from "../glassCard";
 import { useNavigate } from "react-router-dom";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { IGeneratedTopic } from "@/types/components/dashboard";
 import { Input } from "@/components/ui/input";
 import { useAppDispatch } from "@/hooks/useRedux";
@@ -19,9 +19,13 @@ const TitleCard: FC<IGeneratedTopic> = ({
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [titleText, setTitleText] = useState(title);
+  const [titleText, setTitleText] = useState("");
 
   const dispatch = useAppDispatch();
+
+  useEffect(()=>{
+    setTitleText(title)
+  },[title])
 
   const toggleEditing = () => {
     setIsEditing((prev) => !prev);

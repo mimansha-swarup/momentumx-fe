@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { markdownToHtml } from "@/utils/markdown";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import { LoaderCircle } from "lucide-react";
@@ -17,7 +17,11 @@ const MyEditor: FC<IEditorProps> = ({
   onCancel,
   loading,
 }) => {
-  const [text, setText] = useState(markdownToHtml(toEditText));
+  const [text, setText] = useState("");
+
+  useEffect(() => {
+    setText(markdownToHtml(toEditText));
+  }, [toEditText]);
   return (
     <div>
       <ReactQuill theme="snow" value={text} onChange={setText} />
