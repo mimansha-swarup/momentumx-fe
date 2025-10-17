@@ -19,7 +19,9 @@ class ScriptService {
   ) => {
     const token = await auth.currentUser?.getIdToken();
     const url = this.urls.streamScript.replace("{scriptId}", id);
-    const evtSource = new EventSource(getApiDomain() + url + `?token=${token}`);
+    const evtSource = new EventSource(
+      getApiDomain(true) + url + `?token=${token}`
+    );
 
     evtSource.onmessage = (e) => {
       const script = JSON.parse(e.data);
@@ -52,7 +54,9 @@ class ScriptService {
 
   async getScriptById(id: string) {
     try {
-      const response = await baseFetch.get(this.urls.scriptById.replace("{scriptId}", id));
+      const response = await baseFetch.get(
+        this.urls.scriptById.replace("{scriptId}", id)
+      );
       return response.data;
     } catch {
       console.error("Error while fetching saved titles");

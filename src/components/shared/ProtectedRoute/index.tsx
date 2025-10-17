@@ -6,9 +6,10 @@ import RootLoader from "../Loader";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { getTitlesData } from "@/utils/feature/titles/titles.slice";
 import { getScriptsData } from "@/utils/feature/scripts/script.slice";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { retrieveTitles } from "@/utils/feature/titles/titles.thunk";
 import { retrieveScripts } from "@/utils/feature/scripts/script.thunk";
+import { getApiDomain } from "@/utils/network";
 
 const ProtectedLayout = () => {
   const { user, loading } = useAuthCredential();
@@ -19,6 +20,8 @@ const ProtectedLayout = () => {
   const titles = useAppSelector(getTitlesData);
   const scripts = useAppSelector(getScriptsData);
   const dispatch = useAppDispatch();
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   useEffect(() => {
     if (user && user?.niche) {
       if (!titles) {
@@ -29,6 +32,21 @@ const ProtectedLayout = () => {
       }
     }
   }, [user]);
+
+  useEffect(() => {
+    const executeFn = () => {
+      console.log("Executed");
+      fetch(getApiDomain(true) + "/v1/health")
+        .then(() => console.log("Ping sent to keep server awake"))
+        .catch(console.error);
+    };
+    executeFn();
+    intervalRef.current = setInterval(executeFn, 13 * 60 * 1000); // every 13 minutes
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
 
   if (loading) {
     return <RootLoader />;

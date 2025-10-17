@@ -1,11 +1,11 @@
 import axios from "axios";
 import { getAuth } from "firebase/auth";
-export const getApiDomain = () => {
+export const getApiDomain = (isLongResponse = false) => {
   const env = import.meta.env.VITE_ENV || "production";
-
+  if (isLongResponse) return "https://momentumx-be.onrender.com";
   switch (env) {
     case "dev":
-      return "https://momentumx-be.vercel.app";
+      return "https://momentumx-be.onrender.com";
     case "local":
     default: // in future add prod in default
       return "http://localhost:3000";
