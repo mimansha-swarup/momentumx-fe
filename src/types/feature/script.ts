@@ -1,10 +1,9 @@
-
-
 export interface IGeneratedScript {
   title: string;
   script: string;
   id: string;
   createdAt: string;
+  updatedAt?: string;
   createdBy: string;
 }
 

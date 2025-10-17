@@ -5,6 +5,7 @@ const URLS = {
   scripts: "/v1/content/scripts",
   streamScript: "/v1/content/stream/scripts/{scriptId}",
   scriptById: "/v1/content/script/{scriptId}",
+  editScript: "/v1/content/script/edit/{scriptId}",
 };
 class ScriptService {
   private urls;
@@ -56,6 +57,17 @@ class ScriptService {
     try {
       const response = await baseFetch.get(
         this.urls.scriptById.replace("{scriptId}", id)
+      );
+      return response.data;
+    } catch {
+      console.error("Error while fetching saved titles");
+    }
+  }
+  async editScript(id: string, data: Record<string, string | number>) {
+    try {
+      const response = await baseFetch.patch(
+        this.urls.editScript.replace("{scriptId}", id),
+        data
       );
       return response.data;
     } catch {

@@ -42,11 +42,7 @@ const TitleCard: FC<IGeneratedTopic> = ({
       toggleLoading();
       await dispatch(
         editTitles({
-          titleId: id,
-          id,
           title: titleText,
-          createdAt: new Date(createdAt),
-          isScriptGenerated,
           updatedAt: Date.now(),
         })
       );

@@ -13,3 +13,22 @@ export const retrieveScripts = createAsyncThunk(
     }
   }
 );
+
+export const editScript = createAsyncThunk(
+  "scripts/editScript",
+  async (
+    { scriptId, ...script }: Record<string, string | number>,
+    thunkAPI
+  ) => {
+    try {
+      const response = await scriptService.editScript(
+        scriptId as string,
+        script
+      );
+      return response.data;
+    } catch (error) {
+      console.log("error: ", error);
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);

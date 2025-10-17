@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
-import { retrieveScripts } from "./script.thunk";
+import { editScript, retrieveScripts } from "./script.thunk";
 import { IScriptState } from "@/types/feature/script";
 
 const initialState: IScriptState = {
@@ -36,6 +36,18 @@ const scriptsSlice = createSlice({
       })
       .addCase(retrieveScripts.rejected, (state) => {
         state.isLoading = false;
+      })
+      .addCase(editScript.fulfilled, (state, action) => {
+        if (state.data)
+          state.data = state.data?.map((script) => {
+            if (script.id === action.payload.scriptId) {
+              return {
+                ...script,
+                script: action.payload.script,
+              };
+            }
+            return script;
+          });
       });
   },
 });
