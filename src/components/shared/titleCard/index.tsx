@@ -42,6 +42,7 @@ const TitleCard: FC<IGeneratedTopic> = ({
       toggleLoading();
       await dispatch(
         editTitles({
+          titleId: id,
           title: titleText,
           updatedAt: Date.now(),
         })
@@ -80,6 +81,7 @@ const TitleCard: FC<IGeneratedTopic> = ({
           <Button size={"sm"} variant={"secondary"} onClick={toggleEditing}>
             Cancel
           </Button>
+
           <Button
             size={"sm"}
             variant={"outline"}
@@ -91,14 +93,14 @@ const TitleCard: FC<IGeneratedTopic> = ({
         </div>
       ) : (
         <div className="ml-auto flex gap-2">
-          <Button
+          {!isScriptGenerated && (<Button
             size={"sm"}
             variant={"secondary"}
             className="group-hover:scale-110 "
             onClick={toggleEditing}
           >
             Edit
-          </Button>
+          </Button>)}
           {isScriptGenerated ? (
             <Button
               size={"sm"}
