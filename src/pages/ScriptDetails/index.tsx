@@ -98,10 +98,16 @@ const ScriptDetails = () => {
     setIsUpdating((prev) => !prev);
   };
 
-  const onSave = (scriptContent: string) => {
+  const onSave = async (scriptContent: string) => {
     try {
       toggleUpdatingMode();
-      dispatch(editScript({ scriptId, script: htmlToMarkdown(scriptContent), updatedAt: Date.now() }));
+      await dispatch(
+        editScript({
+          scriptId,
+          script: htmlToMarkdown(scriptContent),
+          updatedAt: Date.now(),
+        })
+      );
     } catch (error) {
       console.log("Error :", error);
     } finally {
