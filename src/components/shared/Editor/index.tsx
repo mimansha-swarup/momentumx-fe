@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { markdownToHtml } from "@/utils/markdown";
-import React, { FC, useState } from "react";
+import { FC, useState } from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import { LoaderCircle } from "lucide-react";
