@@ -56,7 +56,7 @@ const Onboarding = () => {
       const res = await onboardingServiceInstance.saveOnboardingData(formData);
       if (res.success) {
         localStorage.removeItem(IS_NEW_USER);
-        disptach(getUser());
+        await disptach(getUser());
         navigate("/app/dashboard");
       }
       setIsLoading(false);

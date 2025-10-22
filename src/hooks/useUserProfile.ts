@@ -5,7 +5,6 @@ import { ChangeEvent, useCallback, useEffect, useState } from "react";
 
 const INITIAL_STATE = {
   website: "",
-  brandName: "",
   niche: "",
   competitors: [""],
   targetAudience: "",
@@ -14,12 +13,13 @@ const INITIAL_STATE = {
 
 const getInitialState = (user: IUserProfile | null) => ({
   website: user?.website || "",
-  brandName: user?.brandName || "",
   niche: user?.niche || "",
   competitors: user?.competitors || [""],
   targetAudience: user?.targetAudience || "",
   userName: user?.userName || "",
 });
+
+export type  errorStateType= ReturnType<typeof getInitialState>;
 export const useUserProfile = (preFilledState?: IUserProfile | null) => {
   const [formData, setFormData] = useState({ ...INITIAL_STATE });
   const [errors, setErrors] = useState({ ...INITIAL_STATE });
@@ -67,6 +67,7 @@ export const useUserProfile = (preFilledState?: IUserProfile | null) => {
     });
   };
 
+  console.log("FormData", formData);
   const validate = useCallback(
     (userData: OnboardingConfigType | OnboardingConfigType[]) =>
       validateStep(userData, formData, errors, setErrors),

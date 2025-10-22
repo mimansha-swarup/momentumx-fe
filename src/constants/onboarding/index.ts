@@ -1,8 +1,5 @@
-import { brandName } from "../root";
-
 export const enum ONBOARDING_FORM_ID {
   USER_NAME = "userName",
-  BRAND_NAME = "brandName",
   TARGET_AUDIENCE = "targetAudience",
   WEBSITE = "website",
   NICHE = "niche",
@@ -11,22 +8,12 @@ export const enum ONBOARDING_FORM_ID {
 
 export const onboardingConfig = [
   {
-    stepLabel: "User Name",
-    title: "What's your user name?",
-    description: "Tell us about your username",
+    stepLabel: "Channel",
+    title: "What's your Channel url?",
+    description: "Tell us about your channel url",
     id: ONBOARDING_FORM_ID.USER_NAME,
-    label: "User Name",
-    placeholder: "@username",
-    inputType: "text",
-    isMandatory: true,
-  },
-  {
-    stepLabel: "Brand",
-    title: "What's your brand name?",
-    description: "Tell us the name of your brand",
-    id: ONBOARDING_FORM_ID.BRAND_NAME,
-    label: "Brand Name",
-    placeholder: brandName,
+    label: "Channel",
+    placeholder: "https://www.youtube.com/@userhandle",
     inputType: "text",
     isMandatory: true,
   },
@@ -40,7 +27,7 @@ export const onboardingConfig = [
     inputType: "text",
     isMandatory: true,
   },
-  
+
   {
     stepLabel: "Website",
     title: "What's your website?",
@@ -60,9 +47,9 @@ export const onboardingConfig = [
     placeholder: "Developers, Kids, etc",
     inputType: "text",
     isMandatory: true,
-    className: "col-span-2"
+    className: "col-span-2",
   },
-  
+
   {
     stepLabel: "Competitors",
     title: "Who are your YouTube competitors?",

@@ -2,7 +2,6 @@ import MyEditor from "@/components/shared/Editor";
 import GlassCard from "@/components/shared/glassCard";
 import Header from "@/components/shared/header";
 import { MarkdownPreview } from "@/components/shared/MarkdownRenderer";
-import RootLayout from "@/components/shared/rootLayout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
@@ -23,11 +22,18 @@ import {
 import { htmlToMarkdown } from "@/utils/markdown";
 import { Pencil } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useLocation, useParams, useSearchParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 
 const ScriptDetails = () => {
   const { scriptId = "" } = useParams();
   const [searchParams] = useSearchParams();
+  const { hash } = useLocation();
+  const navigate = useNavigate();
 
   const { lists: titleLists = [] } = useAppSelector(getTitlesData) || {};
   const {
@@ -41,7 +47,6 @@ const ScriptDetails = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const divRef = useRef<HTMLDivElement>(null);
-  const { hash } = useLocation();
 
   const titleFromUrl = decodeURIComponent(searchParams.get("title") || "");
 
@@ -81,7 +86,10 @@ const ScriptDetails = () => {
       dispatch(resetState());
       const onDone = () => {
         dispatch(markDone());
-        setTimeout(() => dispatch(retrieveScripts()), 5000);
+        setTimeout(() => {
+          navigate(`/app/script/${scriptId}`);
+          dispatch(retrieveScripts());
+        }, 3000);
       };
       scriptService.startStreamingScripts(scriptId, updateScript, onDone);
     }
@@ -117,45 +125,43 @@ const ScriptDetails = () => {
   };
 
   return (
-    <RootLayout>
-      <div className="md:w-[90%] mx-auto pt-4 pb-20">
-        <Header title={`Script - ${title}`} showBack />
+    <div className="md:w-[90%] mx-auto pt-4 pb-20">
+      <Header title={`Script - ${title}`} showBack />
 
-        {!isEditMode && (
-          <div className="flex mb-2 justify-end">
-            <Button onClick={toggleEditMode}>
-              <Pencil /> Edit
-            </Button>
+      {!isEditMode && (
+        <div className="flex mb-2 justify-end">
+          <Button onClick={toggleEditMode}>
+            <Pencil /> Edit
+          </Button>
+        </div>
+      )}
+      {isEditMode ? (
+        <MyEditor
+          toEditText={script}
+          onSave={onSave}
+          onCancel={toggleEditMode}
+          loading={isUpdating}
+        />
+      ) : (
+        <GlassCard>
+          <div ref={divRef} className="unselectable">
+            {(!isDone || isLoading) && !script ? (
+              <div className="flex flex-col gap-3">
+                <Skeleton className="w-25 h-3 bg-accent-foreground/25" />
+                <Skeleton className="w-55 h-3 bg-accent-foreground/25" />
+                <Skeleton className="w-35 h-3 bg-accent-foreground/25" />
+                <Skeleton className="w-45 h-3 bg-accent-foreground/25" />
+                <Skeleton className="w-55 h-3 bg-accent-foreground/25" />
+                <Skeleton className="w-25 h-3 bg-accent-foreground/25" />
+                <Skeleton className="w-35 h-3 bg-accent-foreground/25" />
+              </div>
+            ) : (
+              <MarkdownPreview content={script} />
+            )}
           </div>
-        )}
-        {isEditMode ? (
-          <MyEditor
-            toEditText={script}
-            onSave={onSave}
-            onCancel={toggleEditMode}
-            loading={isUpdating}
-          />
-        ) : (
-          <GlassCard>
-            <div ref={divRef} className="unselectable">
-              {(!isDone || isLoading) && !script ? (
-                <div className="flex flex-col gap-3">
-                  <Skeleton className="w-25 h-3 bg-accent-foreground/25" />
-                  <Skeleton className="w-55 h-3 bg-accent-foreground/25" />
-                  <Skeleton className="w-35 h-3 bg-accent-foreground/25" />
-                  <Skeleton className="w-45 h-3 bg-accent-foreground/25" />
-                  <Skeleton className="w-55 h-3 bg-accent-foreground/25" />
-                  <Skeleton className="w-25 h-3 bg-accent-foreground/25" />
-                  <Skeleton className="w-35 h-3 bg-accent-foreground/25" />
-                </div>
-              ) : (
-                <MarkdownPreview content={script} />
-              )}
-            </div>
-          </GlassCard>
-        )}
-      </div>
-    </RootLayout>
+        </GlassCard>
+      )}
+    </div>
   );
 };
 

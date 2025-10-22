@@ -27,10 +27,9 @@ export interface IOnboardingFormProps {
 }
 
 export interface OnboardingForm {
-  brandName: string;
+  userName: string;
   website: string;
   niche: string;
-  competitors: string[];
-  userName: string;
+  competitors: string[] | { url: string }[];
   targetAudience: string;
 }

@@ -10,6 +10,7 @@ import { useEffect, useRef } from "react";
 import { retrieveTitles } from "@/utils/feature/titles/titles.thunk";
 import { retrieveScripts } from "@/utils/feature/scripts/script.thunk";
 import { getApiDomain } from "@/utils/network";
+import RootLayout from "../rootLayout";
 
 const ProtectedLayout = () => {
   const { user, loading } = useAuthCredential();
@@ -31,7 +32,7 @@ const ProtectedLayout = () => {
         dispatch(retrieveScripts());
       }
     }
-  }, [user]);
+  }, [user?.uid]);
 
   useEffect(() => {
     const executeFn = () => {
@@ -56,7 +57,14 @@ const ProtectedLayout = () => {
     return <Navigate to={`/login`} replace state={{ from: location }} />;
   }
 
-  return <Outlet />;
+  if (location.pathname === "/app/onboarding") {
+    return <Outlet />;
+  }
+  return (
+    <RootLayout>
+      <Outlet />
+    </RootLayout>
+  );
 };
 
 export default ProtectedLayout;

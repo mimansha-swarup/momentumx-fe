@@ -6,21 +6,22 @@ import { OnboardingConfigType } from "@/types/components/onboarding";
 import { Label } from "@/components/ui/label";
 import { Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { errorStateType } from "@/hooks/useUserProfile";
 
 export const validateStep = (
   currentStep: OnboardingConfigType | OnboardingConfigType[],
   formData: OnboardingForm,
-  errors: OnboardingForm,
-  setErrors: (errors: OnboardingForm) => void
+  errors: errorStateType,
+  setErrors: (errors: errorStateType) => void
 ) => {
+  console.log("FormData i validate step", formData);
   const steps = Array.isArray(currentStep) ? currentStep : [currentStep];
   const newErrors = { ...errors };
   let isValid = true;
 
   const urlRegex =
     /^(https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/\S*)?$/;
-  const youtubeRegex =
-    /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/[a-zA-Z0-9@\-_]+/;
+  const youtubeRegex = /^https:\/\/www\.youtube\.com\/@[a-zA-Z0-9_-]+$/;
 
   steps.forEach((step) => {
     const { isMandatory, id } = step;
@@ -28,15 +29,14 @@ export const validateStep = (
 
     switch (id) {
       case ONBOARDING_FORM_ID.USER_NAME:
-        newErrors.userName = !formData.userName ? "User name is required" : "";
-        if (newErrors.userName) isValid = false;
-        break;
+        newErrors.userName = !formData.userName
+          ? "Channel url is required"
+          : !youtubeRegex.test(formData.userName)
+            ? "Please enter a valid YouTube Channel"
+            : "";
 
-      case ONBOARDING_FORM_ID.BRAND_NAME:
-        newErrors.brandName = !formData.brandName
-          ? "Brand name is required"
-          : "";
-        if (newErrors.brandName) isValid = false;
+        console.log("newWee", newErrors.userName);
+        if (newErrors.userName) isValid = false;
         break;
 
       case ONBOARDING_FORM_ID.TARGET_AUDIENCE:
@@ -61,13 +61,15 @@ export const validateStep = (
         break;
 
       case ONBOARDING_FORM_ID.COMPETITORS:
-        newErrors.competitors = formData.competitors.map((competitor) =>
-          !competitor
+        newErrors.competitors = formData.competitors.map((competitor) => {
+          const url =
+            typeof competitor === "string" ? competitor : competitor.url;
+          return !url
             ? ((isValid = false), "Competitor URL is required")
-            : !youtubeRegex.test(competitor)
+            : !youtubeRegex.test(url)
               ? ((isValid = false), "Please enter a valid YouTube URL")
-              : ""
-        );
+              : "";
+        });
         break;
 
       default:
@@ -93,6 +95,7 @@ export const renderUserForm = ({
   valueFormatter,
   className = "",
 }: IOnboardingFormProps) => {
+  console.log("eror", error);
   switch (inputType) {
     case "multi-text":
       if (!Array.isArray(value)) {

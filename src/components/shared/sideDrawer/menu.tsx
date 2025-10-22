@@ -32,8 +32,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { googleLogOut } from "@/utils/firebase/login";
+import { useNavigate } from "react-router-dom";
 
 export function DrawerMenu() {
+  const navigate = useNavigate();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -113,7 +115,7 @@ export function DrawerMenu() {
           <span>API</span>
         </DropdownMenuItem> */}
         {/* <DropdownMenuSeparator /> */}
-        <DropdownMenuItem onClick={googleLogOut}>
+        <DropdownMenuItem onClick={() => googleLogOut(navigate)}>
           <LogOut />
           <span>Log out</span>
           {/* <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut> */}

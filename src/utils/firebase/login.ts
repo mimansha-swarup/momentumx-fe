@@ -7,6 +7,7 @@ import {
 } from "firebase/auth";
 import { auth, provider } from "./config";
 import { IS_NEW_USER, LOGGED_IN } from "@/constants/root";
+import { NavigateFunction } from "react-router-dom";
 
 export const persistLogin = async () => {
   setPersistence(auth, browserLocalPersistence)
@@ -32,7 +33,8 @@ export const googleLogin = async () => {
   }
 };
 
-export const googleLogOut = () => {
+export const googleLogOut = (navigate: NavigateFunction) => {
   signOut(auth);
   localStorage.removeItem(LOGGED_IN);
+  navigate("/login");
 };

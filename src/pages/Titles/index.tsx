@@ -1,5 +1,4 @@
 import Header from "@/components/shared/header";
-import RootLayout from "@/components/shared/rootLayout";
 import TitleList from "@/components/titles/list";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,50 +54,48 @@ const TitlePage = () => {
     dispatch(generateTitles());
   };
   return (
-    <RootLayout>
-      <div className="md:w-[90%]  mx-auto md:pt-4 relative">
-        <Header title={"Titles"} />
-        <div className="-mt-6">
-          <div className="flex justify-between mb-4 flex-wrap-reverse gap-2">
-            <Input
-              type="search"
-              placeholder="Search Titles..."
-              className="mr-auto w-full align-middle sm:max-w-80"
-              onChange={handleSearch}
-              value={searchText}
-              onKeyDown={onEnter}
-            />
-            <Button
-              size={"lg"}
-              disabled={isTitleFetched}
-              className="rounded-3xl py-3 !px-6 hover:scale-105 ml-auto"
-              onClick={generateTitle}
-            >
-              {" "}
-              {isTitleFetched ? (
-                <LoaderCircle className="animate-spin " />
-              ) : (
-                <Plus />
-              )}
-              Generate New Titles
-            </Button>
-          </div>
-          <div className="flex items-center mb-6 gap-4">
-            {filters.map((filter) => (
-              <Button
-                key={filter.value}
-                variant={filterBy === filter.value ? "default" : "outline"}
-                onClick={onFiltersChange(filter.value)}
-              >
-                {filter.label}
-              </Button>
-            ))}
-          </div>
+    <div className="md:w-[90%]  mx-auto md:pt-4 relative">
+      <Header title={"Titles"} />
+      <div className="-mt-6">
+        <div className="flex justify-between mb-4 flex-wrap-reverse gap-2">
+          <Input
+            type="search"
+            placeholder="Search Titles..."
+            className="mr-auto w-full align-middle sm:max-w-80"
+            onChange={handleSearch}
+            value={searchText}
+            onKeyDown={onEnter}
+          />
+          <Button
+            size={"lg"}
+            disabled={isTitleFetched}
+            className="rounded-3xl py-3 !px-6 hover:scale-105 ml-auto"
+            onClick={generateTitle}
+          >
+            {" "}
+            {isTitleFetched ? (
+              <LoaderCircle className="animate-spin " />
+            ) : (
+              <Plus />
+            )}
+            Generate New Titles
+          </Button>
         </div>
-
-        <TitleList fetchList={fetchTitles} />
+        <div className="flex items-center mb-6 gap-4">
+          {filters.map((filter) => (
+            <Button
+              key={filter.value}
+              variant={filterBy === filter.value ? "default" : "outline"}
+              onClick={onFiltersChange(filter.value)}
+            >
+              {filter.label}
+            </Button>
+          ))}
+        </div>
       </div>
-    </RootLayout>
+
+      <TitleList fetchList={fetchTitles} />
+    </div>
   );
 };
 
