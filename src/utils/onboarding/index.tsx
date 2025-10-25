@@ -14,7 +14,6 @@ export const validateStep = (
   errors: errorStateType,
   setErrors: (errors: errorStateType) => void
 ) => {
-  console.log("FormData i validate step", formData);
   const steps = Array.isArray(currentStep) ? currentStep : [currentStep];
   const newErrors = { ...errors };
   let isValid = true;
@@ -35,15 +34,15 @@ export const validateStep = (
             ? "Please enter a valid YouTube Channel"
             : "";
 
-        console.log("newWee", newErrors.userName);
         if (newErrors.userName) isValid = false;
         break;
 
-      case ONBOARDING_FORM_ID.TARGET_AUDIENCE:
-        newErrors.targetAudience = !formData.targetAudience
-          ? "Target Audience is required"
-          : "";
-        if (newErrors.targetAudience) isValid = false;
+      case ONBOARDING_FORM_ID.CHANNEL_PURPOSE:
+        newErrors.purpose = formData.purpose?.map((blanks, idx) => {
+          return !blanks ? `Please fill the blank  ${idx + 1}` : "";
+        });
+
+        if (newErrors.purpose?.some((val) => !!val)) isValid = false;
         break;
 
       case ONBOARDING_FORM_ID.WEBSITE:
@@ -95,7 +94,7 @@ export const renderUserForm = ({
   valueFormatter,
   className = "",
 }: IOnboardingFormProps) => {
-  console.log("eror", error);
+  const placeholderStr = typeof placeholder === "string" ? placeholder : "";
   switch (inputType) {
     case "multi-text":
       if (!Array.isArray(value)) {
@@ -124,7 +123,7 @@ export const renderUserForm = ({
               </div>
               <Input
                 id={`competitor-${index}`}
-                placeholder={placeholder}
+                placeholder={placeholderStr}
                 value={valueFormatter ? valueFormatter(multiValue) : multiValue}
                 onChange={(e) => onChange(e, index)}
                 className="mt-4"
@@ -136,6 +135,33 @@ export const renderUserForm = ({
           </div>
         );
       });
+
+    case "fib": {
+      const mappedText = label.split("{blank}");
+      return (
+        <>
+          <div className="flex gap-1.5 flex-wrap items-end text-base ">
+            {mappedText?.map((text, idx) => (
+              <>
+                <p className="inline-block">{text}</p>
+                {mappedText.length - 1 !== idx && (
+                  <Input
+                    value={value[idx]}
+                    className=" inline-block w-[7.5rem] h-6 p-1.5"
+                    onChange={(e) => onChange(e, idx)}
+                    placeholder={placeholder[idx]}
+                  />
+                )}
+              </>
+            ))}
+          </div>
+          {Array.isArray(error) &&
+            error?.map((err) => (
+              <p className="my-0 text-sm text-[12px] text-red-500">{err}</p>
+            ))}
+        </>
+      );
+    }
     case "text":
     default:
       return (
@@ -145,7 +171,7 @@ export const renderUserForm = ({
             className="mt-4"
             id={id}
             name={id}
-            placeholder={placeholder}
+            placeholder={placeholderStr}
             value={valueFormatter ? valueFormatter(value) : value}
             onChange={onChange}
             onKeyDown={onKeyPress}

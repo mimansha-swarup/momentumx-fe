@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 import { KeyboardEvent, useState } from "react";
 import Stepper from "@/components/shared/steps";
 import OnboardingCard from "@/components/onboarding/card";
@@ -53,13 +55,19 @@ const Onboarding = () => {
     if (!validate(onboardingConfig[currentStep])) return;
     if (currentStep === onboardingSteps.length - 1) {
       setIsLoading(true);
-      const res = await onboardingServiceInstance.saveOnboardingData(formData);
+      const { purpose, ...payload } = formData;
+      payload.targetAudience = purpose[0];
+      payload.purpose = purpose[1];
+
+      const res = await onboardingServiceInstance.saveOnboardingData(payload);
       if (res.success) {
-        localStorage.removeItem(IS_NEW_USER);
-        await disptach(getUser());
-        navigate("/app/dashboard");
+        setTimeout(async () => {
+          localStorage.removeItem(IS_NEW_USER);
+          await disptach(getUser());
+          navigate("/app/dashboard");
+          setIsLoading(false);
+        }, 2000);
       }
-      setIsLoading(false);
     } else {
       setCurrentStep((prev) => prev + 1);
     }

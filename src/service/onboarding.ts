@@ -24,8 +24,8 @@ export class onboardingService {
   }
   async saveOnboardingData(payload: IOnboardingPayload) {
     try {
+      console.log("payloaad", payload);
       const response = await baseFetch.patch(this.urls.SAVE_FORM, payload);
-      console.log("response: ", response);
 
       handleToast(response.data);
 

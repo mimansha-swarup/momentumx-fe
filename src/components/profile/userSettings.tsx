@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { onboardingConfig } from "@/constants/onboarding";
+import { ONBOARDING_FORM_ID, onboardingConfig } from "@/constants/onboarding";
 import { Button } from "../ui/button";
 import { IUserDetailsProps } from "@/types/components/profile";
 import { renderUserForm } from "@/utils/onboarding";
@@ -7,7 +7,15 @@ import useUserProfile from "@/hooks/useUserProfile";
 import { LoaderCircle, PlusCircle } from "lucide-react";
 import { onboardingService } from "@/service/onboarding";
 
-const inputList = [...onboardingConfig];
+const inputList = [
+  ...onboardingConfig.filter(
+    (el) => el.id !== ONBOARDING_FORM_ID.CHANNEL_PURPOSE
+  ),
+];
+const purposeObj = onboardingConfig.filter(
+  (el) => el.id === ONBOARDING_FORM_ID.CHANNEL_PURPOSE
+)[0];
+
 const multipleTextInput = inputList.pop();
 
 const onboardingServiceInstance = new onboardingService();
@@ -35,6 +43,15 @@ const UserSettings: React.FC<IUserDetailsProps> = ({ user }) => {
 
   return (
     <div>
+      <div className="text-base text-[12px] mb-10  font-medium">
+        {renderUserForm({
+          ...purposeObj,
+          onChange: handleInputChange(purposeObj.id),
+          removeMultiValue: removeCompetitors,
+          value: userSettings[purposeObj.id],
+          error: error[purposeObj.id],
+        })}
+      </div>
       <div className="grid gap-6  md:grid-cols-2 items-start">
         {inputList?.map((record) =>
           renderUserForm({
@@ -53,7 +70,10 @@ const UserSettings: React.FC<IUserDetailsProps> = ({ user }) => {
               removeMultiValue: removeCompetitors,
               value: userSettings[multipleTextInput.id],
               error: error[multipleTextInput.id],
-              valueFormatter: (value) => (value as { url: string }).url,
+              valueFormatter: (value) =>
+                typeof value === "string"
+                  ? value
+                  : (value as { url: string }).url,
             })}
           <Button
             variant="outline"

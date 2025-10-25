@@ -19,7 +19,7 @@ export interface IOnboardingFormProps {
   label: string;
   id: string;
   inputType: string;
-  placeholder: string;
+  placeholder: string | string[];
   removeMultiValue?: (index: number) => () => void;
   addMultiValue?: () => void;
   className?: string;
@@ -31,5 +31,5 @@ export interface OnboardingForm {
   website: string;
   niche: string;
   competitors: string[] | { url: string }[];
-  targetAudience: string;
+  purpose: string[];
 }

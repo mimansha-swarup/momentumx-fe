@@ -1,9 +1,10 @@
 export const enum ONBOARDING_FORM_ID {
   USER_NAME = "userName",
-  TARGET_AUDIENCE = "targetAudience",
+  // TARGET_AUDIENCE = "targetAudience",
   WEBSITE = "website",
   NICHE = "niche",
   COMPETITORS = "competitors",
+  CHANNEL_PURPOSE = "purpose",
 }
 
 export const onboardingConfig = [
@@ -27,6 +28,17 @@ export const onboardingConfig = [
     inputType: "text",
     isMandatory: true,
   },
+  {
+    stepLabel: "Purpose",
+    title: "What’s your channel’s purpose?",
+    description:
+      "Share your channel's purpose — e.g., 'I help new developers land their first tech job.'",
+    id: ONBOARDING_FORM_ID.CHANNEL_PURPOSE,
+    placeholder: ["audience", "purpose"],
+    inputType: "fib",
+    isMandatory: true,
+    label: "I help {blank} to achieve {blank} from my experience.",
+  },
 
   {
     stepLabel: "Website",
@@ -38,17 +50,17 @@ export const onboardingConfig = [
     inputType: "text",
     isMandatory: false,
   },
-  {
-    stepLabel: "Audience",
-    title: "What's your Target Audience?",
-    description: "Tell us about your audience",
-    id: ONBOARDING_FORM_ID.TARGET_AUDIENCE,
-    label: "Target Audience",
-    placeholder: "Developers, Kids, etc",
-    inputType: "text",
-    isMandatory: true,
-    className: "col-span-2",
-  },
+  // {
+  //   stepLabel: "Audience",
+  //   title: "What's your Target Audience?",
+  //   description: "Tell us about your audience",
+  //   id: ONBOARDING_FORM_ID.TARGET_AUDIENCE,
+  //   label: "Target Audience",
+  //   placeholder: "Developers, Kids, etc",
+  //   inputType: "text",
+  //   isMandatory: true,
+  //   className: "col-span-2",
+  // },
 
   {
     stepLabel: "Competitors",

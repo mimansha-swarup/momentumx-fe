@@ -1,6 +1,10 @@
 export interface IUserProfile {
   brandName: string;
-  competitors: string[]; // assuming it's always an array of URLs
+  competitors: {
+    id: string;
+    titles: string[];
+    url: string;
+  }[]; // assuming it's always an array of URLs
   createdAt: string; // or Firebase Timestamp if using Firestore directly
   email: string;
   name: string;
@@ -10,6 +14,7 @@ export interface IUserProfile {
   uid: string;
   userName: string;
   website: string;
+  purpose: string;
   stats: {
     topics: number;
     scripts: number;
