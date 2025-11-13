@@ -7,9 +7,12 @@ export const enum ONBOARDING_FORM_ID {
   CHANNEL_PURPOSE = "purpose",
 }
 
+// export const onboardingConfig ={
+//   section1: [
+// }
 export const onboardingConfig = [
   {
-    stepLabel: "Channel",
+    stepLabel: "Business",
     title: "What's your Channel url?",
     description: "Tell us about your channel url",
     id: ONBOARDING_FORM_ID.USER_NAME,
@@ -19,7 +22,7 @@ export const onboardingConfig = [
     isMandatory: true,
   },
   {
-    stepLabel: "Niche",
+    stepLabel: "Audience",
     title: "What's your niche?",
     description: "Select the category that best describes your content",
     id: ONBOARDING_FORM_ID.NICHE,
@@ -29,7 +32,7 @@ export const onboardingConfig = [
     isMandatory: true,
   },
   {
-    stepLabel: "Purpose",
+    stepLabel: "Positioning",
     title: "What’s your channel’s purpose?",
     description:
       "Share your channel's purpose — e.g., 'I help new developers land their first tech job.'",
@@ -41,7 +44,7 @@ export const onboardingConfig = [
   },
 
   {
-    stepLabel: "Website",
+    stepLabel: "Production",
     title: "What's your website?",
     description: "Enter your website URL to get started",
     id: ONBOARDING_FORM_ID.WEBSITE,
@@ -63,7 +66,7 @@ export const onboardingConfig = [
   // },
 
   {
-    stepLabel: "Competitors",
+    stepLabel: "Integration",
     title: "Who are your YouTube competitors?",
     description: "Add links to YouTube channels similar to yours",
     id: ONBOARDING_FORM_ID.COMPETITORS,

@@ -81,105 +81,260 @@ export const validateStep = (
   return isValid;
 };
 
+// export const renderUserForm = ({
+//   inputType,
+//   placeholder,
+//   label,
+//   id,
+//   value,
+//   error,
+//   onChange,
+//   removeMultiValue,
+//   onKeyPress = () => null,
+//   valueFormatter,
+//   className = "",
+// }: IOnboardingFormProps) => {
+//   const placeholderStr = typeof placeholder === "string" ? placeholder : "";
+//   switch (inputType) {
+//     case "multi-text":
+//       if (!Array.isArray(value)) {
+//         return <></>;
+//       }
+//       return value?.map((multiValue, index) => {
+//         return (
+//           <div key={index} className="flex items-start space-x-2">
+//             <div className="flex-1 space-y-2 mb-4">
+//               <div className="flex items-center justify-between">
+//                 <Label htmlFor={`competitor-${index}`}>
+//                   {index === 0
+//                     ? "YouTube Competitor"
+//                     : `YouTube Competitor ${index + 1}`}
+//                 </Label>
+//                 {value.length > 1 && (
+//                   <Button
+//                     variant="ghost"
+//                     size="icon"
+//                     className=""
+//                     onClick={removeMultiValue?.(index)}
+//                   >
+//                     <Trash2 className="h-5 w-5" />
+//                   </Button>
+//                 )}
+//               </div>
+//               <Input
+//                 id={`competitor-${index}`}
+//                 placeholder={placeholderStr}
+//                 value={valueFormatter ? valueFormatter(multiValue) : multiValue}
+//                 onChange={(e) => onChange(e, index)}
+//                 className="mt-4"
+//               />
+//               {error[index] && (
+//                 <p className="text-sm text-red-500">{error[index]}</p>
+//               )}
+//             </div>
+//           </div>
+//         );
+//       });
+
+//     case "fib": {
+//       const mappedText = label.split("{blank}");
+//       return (
+//         <>
+//           <div className="flex gap-1.5 flex-wrap items-end text-base ">
+//             {mappedText?.map((text, idx) => (
+//               <>
+//                 <p className="inline-block">{text}</p>
+//                 {mappedText.length - 1 !== idx && (
+//                   <Input
+//                     value={value[idx]}
+//                     className=" inline-block w-[7.5rem] h-6 p-1.5"
+//                     onChange={(e) => onChange(e, idx)}
+//                     placeholder={placeholder[idx]}
+//                   />
+//                 )}
+//               </>
+//             ))}
+//           </div>
+//           {Array.isArray(error) &&
+//             error?.map((err) => (
+//               <p className="my-0 text-sm text-[12px] text-red-500">{err}</p>
+//             ))}
+//         </>
+//       );
+//     }
+//     case "text":
+//     default:
+//       return (
+//         <div className={cn("space-y-2", className)}>
+//           <Label htmlFor={id}>{label}</Label>
+//           <Input
+//             className="mt-4"
+//             id={id}
+//             name={id}
+//             placeholder={placeholderStr}
+//             value={valueFormatter ? valueFormatter(value) : value}
+//             onChange={onChange}
+//             onKeyDown={onKeyPress}
+//           />
+//           {error && <p className="text-sm text-red-500">{error}</p>}
+//         </div>
+//       );
+//   }
+// };
+
 export const renderUserForm = ({
-  inputType,
-  placeholder,
-  label,
-  id,
+  question,
   value,
-  error,
-  onChange,
-  removeMultiValue,
-  onKeyPress = () => null,
-  valueFormatter,
-  className = "",
-}: IOnboardingFormProps) => {
-  const placeholderStr = typeof placeholder === "string" ? placeholder : "";
-  switch (inputType) {
-    case "multi-text":
-      if (!Array.isArray(value)) {
-        return <></>;
-      }
-      return value?.map((multiValue, index) => {
+  updateField,
+  formState,
+  errors,
+}: {
+  question: any;
+  value: any;
+  updateField: (path: string, value: any) => void;
+  formState: any;
+  errors: Record<string, string>;
+}) => {
+  const renderInput = () => {
+    switch (question.type) {
+      case "text":
         return (
-          <div key={index} className="flex items-start space-x-2">
-            <div className="flex-1 space-y-2 mb-4">
-              <div className="flex items-center justify-between">
-                <Label htmlFor={`competitor-${index}`}>
-                  {index === 0
-                    ? "YouTube Competitor"
-                    : `YouTube Competitor ${index + 1}`}
-                </Label>
-                {value.length > 1 && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className=""
-                    onClick={removeMultiValue?.(index)}
-                  >
-                    <Trash2 className="h-5 w-5" />
-                  </Button>
-                )}
-              </div>
-              <Input
-                id={`competitor-${index}`}
-                placeholder={placeholderStr}
-                value={valueFormatter ? valueFormatter(multiValue) : multiValue}
-                onChange={(e) => onChange(e, index)}
-                className="mt-4"
-              />
-              {error[index] && (
-                <p className="text-sm text-red-500">{error[index]}</p>
-              )}
-            </div>
+          <input
+            type="text"
+            value={value || ""}
+            onChange={(e) => updateField(question.path, e.target.value)}
+            placeholder={question.placeholder || ""}
+            className="w-full border p-2 rounded-md"
+          />
+        );
+
+      case "textarea":
+        return (
+          <textarea
+            value={value || ""}
+            onChange={(e) => updateField(question.path, e.target.value)}
+            className="w-full border p-2 rounded-md"
+            rows={question.rows || 4}
+            placeholder={question.placeholder || ""}
+          />
+        );
+
+      case "radio":
+        return (
+          <div className="space-y-2">
+            {question.options.map((opt: any) => (
+              <label
+                key={opt.value}
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <input
+                  type="radio"
+                  name={question.id}
+                  value={opt.value}
+                  checked={value === opt.value}
+                  onChange={() => updateField(question.path, opt.value)}
+                />
+                <span>{opt.label}</span>
+              </label>
+            ))}
           </div>
         );
-      });
 
-    case "fib": {
-      const mappedText = label.split("{blank}");
-      return (
-        <>
-          <div className="flex gap-1.5 flex-wrap items-end text-base ">
-            {mappedText?.map((text, idx) => (
-              <>
-                <p className="inline-block">{text}</p>
-                {mappedText.length - 1 !== idx && (
-                  <Input
-                    value={value[idx]}
-                    className=" inline-block w-[7.5rem] h-6 p-1.5"
-                    onChange={(e) => onChange(e, idx)}
-                    placeholder={placeholder[idx]}
-                  />
-                )}
-              </>
+      case "checkbox":
+        return (
+          <div className="space-y-2">
+            {question.options.map((opt: any) => (
+              <label key={opt.value} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={value?.includes(opt.value)}
+                  onChange={(e) => {
+                    const newArr = e.target.checked
+                      ? [...(value || []), opt.value]
+                      : (value || []).filter((v) => v !== opt.value);
+                    updateField(question.path, newArr);
+                  }}
+                />
+                <span>{opt.label}</span>
+              </label>
             ))}
           </div>
-          {Array.isArray(error) &&
-            error?.map((err) => (
-              <p className="my-0 text-sm text-[12px] text-red-500">{err}</p>
+        );
+
+      case "dropdown":
+        return (
+          <select
+            value={value || ""}
+            onChange={(e) => updateField(question.path, e.target.value)}
+            className="w-full border p-2 rounded-md"
+          >
+            <option value="">Select...</option>
+            {question.options.map((opt: any) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
             ))}
-        </>
-      );
+          </select>
+        );
+
+      default:
+        return null;
     }
-    case "text":
-    default:
-      return (
-        <div className={cn("space-y-2", className)}>
-          <Label htmlFor={id}>{label}</Label>
-          <Input
-            className="mt-4"
-            id={id}
-            name={id}
-            placeholder={placeholderStr}
-            value={valueFormatter ? valueFormatter(value) : value}
-            onChange={onChange}
-            onKeyDown={onKeyPress}
-          />
-          {error && <p className="text-sm text-red-500">{error}</p>}
-        </div>
-      );
-  }
+  };
+
+  // Helper to get subfield value
+  const getValueByPath = (obj: Record<string, unknown>, path: string) => {
+    return path.split(".").reduce((acc, key) => acc?.[key], obj);
+  };
+
+  return (
+    <div key={question.id} className="mb-6">
+      {/* <label className="block font-medium text-gray-800 mb-2">
+        {question.label}
+      </label> */}
+
+      {renderInput()}
+
+      {/* Conditional sub-fields */}
+      {question.conditional &&
+        value === question.conditional.triggerValue &&
+        question.conditional.fields.map((sub: any) => (
+          <div key={sub.id} className="ml-4 mt-3">
+            <label className="block text-sm text-gray-700 mb-1">
+              {sub.label}
+            </label>
+            <input
+              type="text"
+              value={getValueByPath(formState, sub.path || "") || ""}
+              onChange={(e) =>
+                updateField(
+                  sub.path || `${question.path}.${sub.id}`,
+                  e.target.value
+                )
+              }
+              className="w-full border p-2 rounded-md"
+            />
+          </div>
+        ))}
+
+      {/* Helper Text */}
+      {question.helperText && (
+        <p className="text-sm text-gray-500 mt-2">{question.helperText}</p>
+      )}
+
+      {/* Example */}
+      {question.example && (
+        <p className="text-xs italic text-gray-400 mt-1">
+          Example: {question.example}
+        </p>
+      )}
+
+      {/* Validation error */}
+      {errors[question.id] && (
+        <p className="text-red-500 text-sm mt-1">{errors[question.id]}</p>
+      )}
+    </div>
+  );
 };
 
 export function extractYouTubeHandle(url: string) {

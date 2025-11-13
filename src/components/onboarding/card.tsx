@@ -23,8 +23,8 @@ const OnboardingCard: FC<OnboardingCardProps> = ({
 }) => {
   return (
     <div className="flex flex-1 items-center justify-center p-6">
-      <Card className="w-full max-w-md">
-        <CardHeader>
+      <Card className="w-[34rem] gap-0">
+        <CardHeader className="mb-6">
           <CardTitle>{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
