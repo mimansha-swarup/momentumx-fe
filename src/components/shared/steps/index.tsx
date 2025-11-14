@@ -7,6 +7,7 @@ const Stepper: FC<StepperProps> = ({
   orientation = "vertical", // default to vertical
   steps = [],
   activeStep,
+  handleStepperChange,
 }) => {
   return (
     <div
@@ -31,7 +32,10 @@ const Stepper: FC<StepperProps> = ({
                 : "items-center"
             )}
           >
-            <div className="flex items-center">
+            <div
+              className="flex items-center"
+              onClick={() => handleStepperChange(stepIndex)}
+            >
               <div
                 className={cn(
                   "flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium shrink-0",

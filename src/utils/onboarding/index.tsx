@@ -289,9 +289,9 @@ export const renderUserForm = ({
 
   return (
     <div key={question.id} className="mb-6">
-      {/* <label className="block font-medium text-gray-800 mb-2">
+      <label className="block font-medium text-gray-800 mb-2">
         {question.label}
-      </label> */}
+      </label>
 
       {renderInput()}
 
@@ -319,7 +319,9 @@ export const renderUserForm = ({
 
       {/* Helper Text */}
       {question.helperText && (
-        <p className="text-sm text-gray-500 mt-2">{question.helperText}</p>
+        <p className="text-sm text-gray-500 mt-2 whitespace-pre-line">
+          {question.helperText}
+        </p>
       )}
 
       {/* Example */}

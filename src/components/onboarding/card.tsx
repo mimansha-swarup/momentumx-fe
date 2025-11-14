@@ -20,9 +20,10 @@ const OnboardingCard: FC<OnboardingCardProps> = ({
   onPrevious,
   children,
   isLoading,
+  nextSectionCta = "Complete",
 }) => {
   return (
-    <div className="flex flex-1 items-center justify-center p-6">
+    <div className="flex flex-1 items-center justify-center p-6 transition-all ">
       <Card className="w-[34rem] gap-0">
         <CardHeader className="mb-6">
           <CardTitle>{title}</CardTitle>
@@ -42,7 +43,7 @@ const OnboardingCard: FC<OnboardingCardProps> = ({
             {isLoading && !showNext && (
               <LoaderCircle className="animate-spin" />
             )}
-            {showNext ? "Next" : "Complete"}
+            {showNext ? "Next" : nextSectionCta}
             {showNext && <ArrowRight className="ml-1 h-4 w-4" />}
           </Button>
         </CardFooter>

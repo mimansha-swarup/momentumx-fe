@@ -5,11 +5,11 @@ function getValueByPath(obj, path) {
   return path.split(".").reduce((acc, key) => acc?.[key], obj);
 }
 
-import { KeyboardEvent, useState } from "react";
+import { KeyboardEvent, useMemo, useState } from "react";
 import Stepper from "@/components/shared/steps";
 import OnboardingCard from "@/components/onboarding/card";
-import { ONBOARDING_FORM_ID, onboardingConfig } from "@/constants/onboarding";
-import { brandName, IS_NEW_USER } from "@/constants/root";
+import { ONBOARDING_FORM_ID } from "@/constants/onboarding";
+import { brandName } from "@/constants/root";
 import OnboardingForm from "@/components/onboarding/form";
 import { onboardingService } from "../../service/onboarding";
 import { useAuthCredential } from "@/hooks/useAuth";
@@ -18,20 +18,20 @@ import useUserProfile from "@/hooks/useUserProfile";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { getUser } from "@/utils/feature/user/user.thunk";
 
-import config from "@/constants/onboarding/config.json";
+import onboardingConfig from "@/constants/onboarding/config.json";
 import { renderUserForm } from "@/utils/onboarding";
 
-const onboardingSteps = onboardingConfig.map((step) => ({
+const onboardingSteps = onboardingConfig.sections.map((step) => ({
   key: step.id,
-  label: step.stepLabel,
+  label: step.title,
 }));
 
 const onboardingServiceInstance = new onboardingService();
 const Onboarding = () => {
   const { user } = useAuthCredential();
-  // const [currentSection, setcurrentSection] = useState(0);
-  const [currentSection, setCurrentSection] = useState(0);
-  const [activeQuestion, setActiveQuestion] = useState(0);
+  // const [currentSection, setCurrentSectionIndexIndex] = useState(0);
+  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const {
     handleInputChange,
@@ -45,12 +45,23 @@ const Onboarding = () => {
   const navigate = useNavigate();
   const disptach = useAppDispatch();
 
-  const isPrevDisabled = activeQuestion === 0;
-  const isNext = currentSection !== onboardingSteps.length - 1;
-  const activeStep = (onboardingSteps[currentSection] || {})
-    .key as `${ONBOARDING_FORM_ID}`;
+  const activeSection = useMemo(
+    () => onboardingConfig.sections[currentSectionIndex],
+    [currentSectionIndex]
+  );
+  const activeQuestion = useMemo(
+    () => activeSection.questions[currentQuestionIndex],
+    [activeSection, currentQuestionIndex]
+  );
 
-  const activeSection = config.sections[currentSection];
+  const isPrevDisabled = useMemo(
+    () => currentQuestionIndex === 0 && currentSectionIndex === 0,
+    [currentQuestionIndex, currentSectionIndex]
+  );
+  const isNext = useMemo(
+    () => currentQuestionIndex !== activeSection.questions.length - 1,
+    [activeSection.questions.length, currentQuestionIndex]
+  );
 
   if (user?.niche) {
     <Navigate to="/app/dashboard" replace />;
@@ -65,7 +76,11 @@ const Onboarding = () => {
 
   const handleNext = async () => {
     // if (!validate(onboardingConfig[currentSection])) return;
-    if (activeQuestion === activeSection.questions.length - 1) {
+    if (currentQuestionIndex === activeSection.questions.length - 1) {
+      if (onboardingSteps.length > currentSectionIndex) {
+        setCurrentQuestionIndex(0);
+        setCurrentSectionIndex((prev) => prev + 1);
+      }
       // setIsLoading(true);
       // const { purpose, ...payload } = formData;
       // payload.targetAudience = purpose[0];
@@ -80,13 +95,30 @@ const Onboarding = () => {
       //   }, 2000);
       // }
     } else {
-      setActiveQuestion((prev) => prev + 1);
+      setCurrentQuestionIndex((prev) => prev + 1);
     }
   };
+  console.log(activeQuestion, currentQuestionIndex, currentSectionIndex);
 
   const handlePrevious = () => {
-    setActiveQuestion((prev) => prev - 1);
+    if (currentSectionIndex > 0 && currentQuestionIndex === 0) {
+      console.log("here");
+      setCurrentSectionIndex((prev) => prev - 1);
+      setCurrentQuestionIndex(
+        onboardingConfig.sections[currentSectionIndex - 1].questions.length - 1
+      );
+      return;
+    }
+    setCurrentQuestionIndex((prev) => prev - 1);
   };
+
+  const onStepperChange = (stepperIndex: number) => {
+    // Add validation
+    setCurrentSectionIndex(stepperIndex);
+    setCurrentQuestionIndex(0);
+  };
+
+  // const extractYouTubeHandle;
   const { formState, updateField, validateField } = {};
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -110,19 +142,27 @@ const Onboarding = () => {
         </div>
 
         <div className="space-y-6">
-          <Stepper steps={onboardingSteps} activeStep={currentSection} />
+          <Stepper
+            steps={onboardingSteps}
+            activeStep={currentSectionIndex}
+            handleStepperChange={onStepperChange}
+          />
         </div>
       </div>
 
       <div className="flex flex-col flex-1 items-center justify-center p-6">
         {/*“Business Foundation — 3 of 6 questions (50%) complete”  */}
-        <h1 className="text-2xl font-bold mb-4">
-          {activeSection.title} - {activeQuestion + 1} of{" "}
-          {activeSection.questions.length} questions (
-          {((activeQuestion + 1) / activeSection.questions.length) * 100}%
-          complete)
-        </h1>
+        <div className="w-full ">
+          <h1 className="text-2xl font-bold mb-4">
+            {activeSection.title} - {currentQuestionIndex + 1} of{" "}
+            {activeSection.questions.length} questions (
+            {((currentQuestionIndex + 1) / activeSection.questions.length) *
+              100}
+            % complete)
+          </h1>
+        </div>
         {/* import React from "react";
+import { extractYouTubeHandle } from '../../utils/onboarding/index';
 
 export function DynamicForm({ config, formHook }) {
   */}
@@ -144,17 +184,15 @@ export function DynamicForm({ config, formHook }) {
           onPrevious={handlePrevious}
           disablePrevious={isPrevDisabled}
           showNext={isNext}
-          title={activeSection.questions[activeQuestion].label}
+          title={activeQuestion.label}
           isLoading={isLoading}
+          nextSectionCta={activeSection.ctaButton}
         >
           {/* const value = getValueByPath(formState, q.path); */}
 
           {renderUserForm({
-            question: activeSection.questions[activeQuestion],
-            value: getValueByPath(
-              formState,
-              activeSection.questions[activeQuestion].path
-            ),
+            question: activeQuestion,
+            value: getValueByPath(formState, activeQuestion.path),
             updateField,
             formState,
             errors,

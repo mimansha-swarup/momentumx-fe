@@ -2,6 +2,7 @@ import React from "react";
 
 export interface OnboardingCardProps {
   title: string;
+  nextSectionCta: string;
   description: string;
   onNext: () => void;
   onPrevious: () => void;

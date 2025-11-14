@@ -5,6 +5,7 @@
       "title": "Business Foundation",
       "subtitle": "Help us understand what you do",
       "progressOrder": 1,
+      "ctaButton": "Next: Tell us about your audience",
       "questions": [
         {
           "id": "business_type",
@@ -300,12 +301,11 @@
         {
           "id": "positioning_competitors",
           "label": "Who are 3-5 competitors or YouTube channels in your space?",
-          // list 3.5
           "type": "group",
           "groupFields": [
-            { "id": "channel", "label": "Channel Name or URL", "type": "text" },
-            { "id": "do_well", "label": "What do they do well?", "type": "text" },
-            { "id": "missing", "label": "What are they missing?", "type": "text" }
+            { "id": "channel", "path":"channel", "required":true, "label": "Channel Name or URL", "type": "text", "placeholder": "Alex Hormozi" },
+            { "id": "do_well", "path":"doWell", "maxLength": 100, "label": "What do they do well?", "type": "text", "placeholder": "Makes complex business concepts simple" },
+            { "id": "missing", "path":"missing", "maxLength": 100, "label": "What are they missing?", "type": "text", "placeholder":  "No focus on solopreneurs, everything is scale-focused" }
           ],
           "helperText": "These don't have to be direct competitors. Just people targeting a similar audience or covering similar topics.",
           "path": "positioning.competitors"
@@ -328,6 +328,7 @@
       "title": " Production Reality Check",
       "subtitle": "Let's be realistic about time and resources",
       "progressOrder": 4,
+      "ctaButton": "Final step: Integration",
       "questions": [
         {
           "id": "production_time_commitment",
@@ -425,7 +426,7 @@
                   "path": "production.team_details",
                   "type": "textarea",
                   "maxLength": 200,
-                  "label": "What roles do you have?",
+                  "label": "What roles do you have?"
                 }
               ]
             }
@@ -484,7 +485,37 @@
         {
           "id": "production_timezone",
           "path": "production.timezone",
-          "label"
+          "label": "What timezone are you in?",
+          "type": "dropdown",
+          "options": [
+            { "value": "Pacific/Honolulu", "label": "Hawaii (UTC-10:00)" },
+            { "value": "America/Anchorage", "label": "Alaska (UTC-09:00)" },
+            { "value": "America/Los_Angeles", "label": "Pacific Time — Los Angeles (UTC-08:00)" },
+            { "value": "America/Denver", "label": "Mountain Time — Denver (UTC-07:00)" },
+            { "value": "America/Chicago", "label": "Central Time — Chicago (UTC-06:00)" },
+            { "value": "America/New_York", "label": "Eastern Time — New York (UTC-05:00)" },
+            { "value": "America/Toronto", "label": "Toronto (UTC-05:00)" },
+            { "value": "America/Mexico_City", "label": "Mexico City (UTC-06:00)" },
+            { "value": "America/Bogota", "label": "Bogotá (UTC-05:00)" },
+            { "value": "America/Sao_Paulo", "label": "São Paulo (UTC-03:00)" },
+            { "value": "Atlantic/Azores", "label": "Azores (UTC-01:00)" },
+            { "value": "Europe/London", "label": "London (UTC+00:00)" },
+            { "value": "Europe/Paris", "label": "Paris (UTC+01:00)" },
+            { "value": "Europe/Berlin", "label": "Berlin (UTC+01:00)" },
+            { "value": "Europe/Istanbul", "label": "Istanbul (UTC+03:00)" },
+            { "value": "Africa/Johannesburg", "label": "Johannesburg (UTC+02:00)" },
+            { "value": "Asia/Dubai", "label": "Dubai (UTC+04:00)" },
+            { "value": "Asia/Karachi", "label": "Karachi (UTC+05:00)" },
+            { "value": "Asia/Kolkata", "label": "India Standard Time — Kolkata (UTC+05:30)" },
+            { "value": "Asia/Bangkok", "label": "Bangkok (UTC+07:00)" },
+            { "value": "Asia/Hong_Kong", "label": "Hong Kong (UTC+08:00)" },
+            { "value": "Asia/Singapore", "label": "Singapore (UTC+08:00)" },
+            { "value": "Asia/Tokyo", "label": "Tokyo (UTC+09:00)" },
+            { "value": "Australia/Sydney", "label": "Sydney (UTC+10:00)" },
+            { "value": "Pacific/Auckland", "label": "Auckland (UTC+12:00)" }
+          ]
+
+
 
         }
       ]
@@ -495,18 +526,23 @@
       "title": "Existing Assets",
       "subtitle": "Let’s see what we can build upon",
       "progressOrder": 5,
+      "ctaButton": "Review",
       "questions": [
         {
           "id": "assets_existing",
-          "label": "Do you have any of these assets already?",
+          "label": "What do you already have set up? (Select all that apply)",
           "type": "checkbox",
+          "required": true,
           "options": [
-            { "value": "website", "label": "Website" },
-            { "value": "email_list", "label": "Email list" },
-            { "value": "social_media", "label": "Social media presence" },
-            { "value": "brand_kit", "label": "Brand kit (logo, colors, fonts)" },
-            { "value": "youtube_channel", "label": "Existing YouTube channel" }
-          ],
+          { "value": "none_yet", "label": "None yet - starting from scratch" },
+          { "value": "email_list", "label": "Email list (ESP like ConvertKit, Mailchimp)" },
+          { "value": "website", "label": "Website / Landing pages" },
+          { "value": "crm", "label": "CRM (HubSpot, Pipedrive, Notion, etc.)" },
+          { "value": "calendar", "label": "Calendar booking tool (Calendly, Cal.com)" },
+          { "value": "lead_magnets", "label": "Lead magnets / Free resources" },
+          { "value": "paid_product", "label": "Paid product / Course already built" },
+          { "value": "youtube_channel", "label": "YouTube channel (even if empty)" }
+        ],
           "path": "assets.existing"
         },
         {
@@ -514,16 +550,19 @@
           "label": "Do you already have a YouTube channel?",
           "type": "radio",
           "options": [
-            { "value": "yes", "label": "Yes" },
-            { "value": "no", "label": "No" }
+            { "value": "yes_active", "label": "Yes, and I post regularly" },
+            { "value": "yes_inactive", "label": "Yes, but I haven't posted in a while" },
+            { "value": "yes_empty", "label": "Yes, but it's empty/never posted" },
+            { "value": "no_create", "label": "No, I need to create one" }
           ],
           "conditional": {
-            "triggerValue": "yes",
+            "triggerValue": ["yes_active","yes_inactive"],
             "fields": [
               {
-                "id": "youtube_url",
+                "id": "assets_youtube_url",
+                "path": "assets.youtube_url",
                 "type": "text",
-                "label": "Enter your YouTube channel URL",
+                "label": "What's your channel URL or handle?",
                 "validation": {
                   "pattern": "^(https?://)?(www\\.)?(youtube\\.com|youtu\\.be)/.+$"
                 }
@@ -531,6 +570,21 @@
             ]
           },
           "path": "assets.youtube_status"
+        },
+        {
+          "id": "assets_email_subscribers",
+          "path": "assets.email_subscribers",
+          "label": "If you have an email list, how many subscribers?",
+          "type":"dropdown",
+          "options": [
+          { "value": "no_list", "label": "I don't have a list" },
+          { "value": "under_100", "label": "Under 100" },
+          { "value": "100_to_500", "label": "100-500" },
+          { "value": "500_to_1k", "label": "500-1,000" },
+          { "value": "1k_to_5k", "label": "1,000-5,000" },
+          { "value": "5k_to_10k", "label": "5,000-10,000" },
+          { "value": "10k_plus", "label": "10,000+" }
+        ]
         },
         {
           "id": "assets_brand_status",
@@ -541,6 +595,103 @@
             { "value": "no", "label": "No" }
           ],
           "path": "assets.brand_status"
+        },
+        {
+          "id": "cta_primary_type",
+          "path": "cta.primary_type",
+          "label": " What's the main action you want viewers to take?",
+          "required": true,
+          "type": "dropdown",
+          "options": [
+            { "value": "book_call", "label": "Book a sales call / consultation" },
+            { "value": "download_lead_magnet", "label": "Download a free resource" },
+            { "value": "join_email", "label": "Join my email list" },
+            { "value": "watch_training", "label": "Watch a free training / webinar" },
+            { "value": "buy_product", "label": "Buy my product / course" },
+            { "value": "follow_social", "label": "Follow me on [platform]" },
+            { "value": "other", "label": "Other (specify)" }
+          ],
+          "conditional":[
+            {
+              "triggerValue": "other",
+              "fields": [
+                {
+                  "id": "primary_cta_other",
+                  "path": "cta.primary_description",
+                  "type": "text",
+                  "label": "Specify other call-to-action",
+                  "required": true
+                }
+              ]
+            },
+            {
+              "triggerValue": "book_call",
+              "fields": [
+                {
+                  "id": "primary_cta_url",
+                  "path": "cta.primary_url",
+                  "type": "text",
+                  "label": "What's your booking link? (e.g., Calendly URL)",
+                  "required": true
+                }
+              ]
+            },
+            {
+              "triggerValue": "download_lead_magnet",
+              "fields": [
+                {
+                  "id": "cta_primary_description",
+                  "path": "cta.primary_description",
+                  "type": "text",
+                  "label": "What's your lead magnet?",
+                  "maxLength": 100,
+                  "required": true
+                },
+                {
+                  "id": "cta_primary_url",
+                  "path": "cta.primary_url",
+                  "type": "text",
+                  "label": "Opt-in page URL?",
+                  "required": true
+                }
+              ]
+            },
+            {
+              "triggerValue": "buy_product",
+              "fields": [
+                {
+                  "id": "primary_cta_url",
+                  "path": "cta.primary_url",
+                  "type": "text",
+                  "label": "Product name and sales page URL?",
+                  "required": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "cta_copy",
+          "label": "How do you want to phrase your call-to-action?",
+          "type": "text",
+          "maxLength": 200,
+          "placeholder": "e.g., 'Grab my free LinkedIn cheat sheet - link in description' OR 'Book a free strategy call to see if we're a fit'",
+          "helperText": "Leave blank and we'll write it for you. Or give us your preferred language.",
+          "path": "cta.copy"
+        },
+        {
+          "id":"integrations_requested",
+          "path":"integrations.requested",
+          "label": "Want to connect any tools? (Optional but recommended)",
+          "type": "checkbox",
+          "options": [
+            { "value": "google_calendar", "label": "Google Calendar (for scheduling)" },
+            { "value": "notion", "label": "Notion (for project management)" },
+            { "value": "youtube_api", "label": "YouTube Analytics (for performance data)" },
+            { "value": "google_analytics", "label": "Google Analytics (for traffic tracking)" },
+            { "value": "email_esp", "label": "Email platform (ConvertKit, Mailchimp, etc.)" },
+            { "value": "none", "label": "None for now" }
+          ]
         }
       ]
     }
