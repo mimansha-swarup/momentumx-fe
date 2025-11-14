@@ -1,5 +1,8 @@
-import { onboardingConfig } from "../../constants/onboarding/index";
-export type OnboardingConfigType = (typeof onboardingConfig)[number];
+import onboardingConfig from "@/constants/onboarding/config.json";
+
+export type SectionType = (typeof onboardingConfig.sections)[number];
+export type QuestionType =
+  (typeof onboardingConfig.sections)[number]["questions"];
 
 export interface IOnboardingPayload {
   website: string;

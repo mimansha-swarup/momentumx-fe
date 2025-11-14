@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ONBOARDING_FORM_ID, onboardingConfig } from "@/constants/onboarding";
+// import { ONBOARDING_FORM_ID, onboardingConfig } from "@/constants/onboarding";
 import { Button } from "../ui/button";
 import { IUserDetailsProps } from "@/types/components/profile";
 import { renderUserForm } from "@/utils/onboarding";
@@ -7,13 +7,12 @@ import useUserProfile from "@/hooks/useUserProfile";
 import { LoaderCircle, PlusCircle } from "lucide-react";
 import { onboardingService } from "@/service/onboarding";
 
+const onboardingConfig = [{}];
 const inputList = [
-  ...onboardingConfig.filter(
-    (el) => el.id !== ONBOARDING_FORM_ID.CHANNEL_PURPOSE
-  ),
+  ...onboardingConfig.filter((el) => el.id !== "CHANNEL_PURPOSE"),
 ];
 const purposeObj = onboardingConfig.filter(
-  (el) => el.id === ONBOARDING_FORM_ID.CHANNEL_PURPOSE
+  (el) => el.id === "CHANNEL_PURPOSE"
 )[0];
 
 const multipleTextInput = inputList.pop();
@@ -43,7 +42,7 @@ const UserSettings: React.FC<IUserDetailsProps> = ({ user }) => {
 
   return (
     <div>
-      <div className="text-base text-[12px] mb-10  font-medium">
+      {/* <div className="text-base text-[12px] mb-10  font-medium">
         {renderUserForm({
           ...purposeObj,
           onChange: handleInputChange(purposeObj.id),
@@ -84,7 +83,7 @@ const UserSettings: React.FC<IUserDetailsProps> = ({ user }) => {
             Add Another Competitor
           </Button>
         </div>
-      </div>
+      </div> */}
       <Button
         className="w-full mt-8"
         disabled={isLoading}

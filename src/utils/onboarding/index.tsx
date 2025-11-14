@@ -1,12 +1,25 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ONBOARDING_FORM_ID } from "@/constants/onboarding";
+// import { ONBOARDING_FORM_ID } from "@/constants/onboarding";
 import { IOnboardingFormProps, OnboardingForm } from "@/types/components/login";
-import { OnboardingConfigType } from "@/types/components/onboarding";
+import {
+  OnboardingConfigType,
+  QuestionType,
+} from "@/types/components/onboarding";
 import { Label } from "@/components/ui/label";
 import { Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { errorStateType } from "@/hooks/useUserProfile";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export const validateStep = (
   currentStep: OnboardingConfigType | OnboardingConfigType[],
@@ -16,65 +29,65 @@ export const validateStep = (
 ) => {
   const steps = Array.isArray(currentStep) ? currentStep : [currentStep];
   const newErrors = { ...errors };
-  let isValid = true;
+  const isValid = true;
 
   const urlRegex =
     /^(https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/\S*)?$/;
   const youtubeRegex = /^https:\/\/www\.youtube\.com\/@[a-zA-Z0-9_-]+$/;
 
-  steps.forEach((step) => {
-    const { isMandatory, id } = step;
-    if (!isMandatory && !formData[id]) return;
+  // steps.forEach((step) => {
+  //   const { isMandatory, id } = step;
+  //   if (!isMandatory && !formData[id]) return;
 
-    switch (id) {
-      case ONBOARDING_FORM_ID.USER_NAME:
-        newErrors.userName = !formData.userName
-          ? "Channel url is required"
-          : !youtubeRegex.test(formData.userName)
-            ? "Please enter a valid YouTube Channel"
-            : "";
+  //   switch (id) {
+  //     case ONBOARDING_FORM_ID.USER_NAME:
+  //       newErrors.userName = !formData.userName
+  //         ? "Channel url is required"
+  //         : !youtubeRegex.test(formData.userName)
+  //           ? "Please enter a valid YouTube Channel"
+  //           : "";
 
-        if (newErrors.userName) isValid = false;
-        break;
+  //       if (newErrors.userName) isValid = false;
+  //       break;
 
-      case ONBOARDING_FORM_ID.CHANNEL_PURPOSE:
-        newErrors.purpose = formData.purpose?.map((blanks, idx) => {
-          return !blanks ? `Please fill the blank  ${idx + 1}` : "";
-        });
+  //     case ONBOARDING_FORM_ID.CHANNEL_PURPOSE:
+  //       newErrors.purpose = formData.purpose?.map((blanks, idx) => {
+  //         return !blanks ? `Please fill the blank  ${idx + 1}` : "";
+  //       });
 
-        if (newErrors.purpose?.some((val) => !!val)) isValid = false;
-        break;
+  //       if (newErrors.purpose?.some((val) => !!val)) isValid = false;
+  //       break;
 
-      case ONBOARDING_FORM_ID.WEBSITE:
-        newErrors.website = !formData.website
-          ? "Website URL is required"
-          : !urlRegex.test(formData.website)
-            ? "Please enter a valid website URL"
-            : "";
-        if (newErrors.website) isValid = false;
-        break;
+  //     case ONBOARDING_FORM_ID.WEBSITE:
+  //       newErrors.website = !formData.website
+  //         ? "Website URL is required"
+  //         : !urlRegex.test(formData.website)
+  //           ? "Please enter a valid website URL"
+  //           : "";
+  //       if (newErrors.website) isValid = false;
+  //       break;
 
-      case ONBOARDING_FORM_ID.NICHE:
-        newErrors.niche = !formData.niche ? "Please select a niche" : "";
-        if (newErrors.niche) isValid = false;
-        break;
+  //     case ONBOARDING_FORM_ID.NICHE:
+  //       newErrors.niche = !formData.niche ? "Please select a niche" : "";
+  //       if (newErrors.niche) isValid = false;
+  //       break;
 
-      case ONBOARDING_FORM_ID.COMPETITORS:
-        newErrors.competitors = formData.competitors.map((competitor) => {
-          const url =
-            typeof competitor === "string" ? competitor : competitor.url;
-          return !url
-            ? ((isValid = false), "Competitor URL is required")
-            : !youtubeRegex.test(url)
-              ? ((isValid = false), "Please enter a valid YouTube URL")
-              : "";
-        });
-        break;
+  //     case ONBOARDING_FORM_ID.COMPETITORS:
+  //       newErrors.competitors = formData.competitors.map((competitor) => {
+  //         const url =
+  //           typeof competitor === "string" ? competitor : competitor.url;
+  //         return !url
+  //           ? ((isValid = false), "Competitor URL is required")
+  //           : !youtubeRegex.test(url)
+  //             ? ((isValid = false), "Please enter a valid YouTube URL")
+  //             : "";
+  //       });
+  //       break;
 
-      default:
-        break;
-    }
-  });
+  //     default:
+  //       break;
+  //   }
+  // });
 
   console.log("newErrors: ", newErrors);
   setErrors(newErrors);
@@ -182,6 +195,9 @@ export const validateStep = (
 //   }
 // };
 
+const getValueByPath = (obj: Record<string, unknown>, path: string) => {
+  return path.split(".").reduce((acc, key) => acc?.[key], obj);
+};
 export const renderUserForm = ({
   question,
   value,
@@ -189,9 +205,9 @@ export const renderUserForm = ({
   formState,
   errors,
 }: {
-  question: any;
-  value: any;
-  updateField: (path: string, value: any) => void;
+  question: QuestionType;
+  value: unknown;
+  updateField: (path: string, value: unknown) => void;
   formState: any;
   errors: Record<string, string>;
 }) => {
@@ -199,57 +215,57 @@ export const renderUserForm = ({
     switch (question.type) {
       case "text":
         return (
-          <input
+          <Input
             type="text"
             value={value || ""}
             onChange={(e) => updateField(question.path, e.target.value)}
             placeholder={question.placeholder || ""}
             className="w-full border p-2 rounded-md"
+            required={question.required}
           />
         );
 
       case "textarea":
         return (
-          <textarea
+          <Textarea
             value={value || ""}
             onChange={(e) => updateField(question.path, e.target.value)}
             className="w-full border p-2 rounded-md"
             rows={question.rows || 4}
             placeholder={question.placeholder || ""}
+            required={question.required}
           />
         );
 
       case "radio":
         return (
-          <div className="space-y-2">
+          <RadioGroup
+            className="gap-1.5"
+            value={value}
+            onValueChange={(e) => updateField(question.path, e)}
+          >
             {question.options.map((opt: any) => (
               <label
                 key={opt.value}
                 className="flex items-center gap-2 cursor-pointer"
               >
-                <input
-                  type="radio"
-                  name={question.id}
-                  value={opt.value}
-                  checked={value === opt.value}
-                  onChange={() => updateField(question.path, opt.value)}
-                />
+                <RadioGroupItem id={opt.value} value={opt.value} />
                 <span>{opt.label}</span>
               </label>
             ))}
-          </div>
+          </RadioGroup>
         );
 
       case "checkbox":
         return (
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             {question.options.map((opt: any) => (
               <label key={opt.value} className="flex items-center gap-2">
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={value?.includes(opt.value)}
-                  onChange={(e) => {
-                    const newArr = e.target.checked
+                  onCheckedChange={(e) => {
+                    console.log(e);
+                    const newArr = e
                       ? [...(value || []), opt.value]
                       : (value || []).filter((v) => v !== opt.value);
                     updateField(question.path, newArr);
@@ -263,18 +279,22 @@ export const renderUserForm = ({
 
       case "dropdown":
         return (
-          <select
+          <Select
             value={value || ""}
-            onChange={(e) => updateField(question.path, e.target.value)}
-            className="w-full border p-2 rounded-md"
+            onValueChange={(e) => updateField(question.path, e)}
+            required={question.required}
           >
-            <option value="">Select...</option>
-            {question.options.map((opt: any) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="w-full border p-2 rounded-md">
+              <SelectValue placeholder={question.placeholder || ""} />
+            </SelectTrigger>
+            <SelectContent>
+              {question.options.map((opt: { value: string; label: string }) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         );
 
       default:
@@ -283,13 +303,13 @@ export const renderUserForm = ({
   };
 
   // Helper to get subfield value
-  const getValueByPath = (obj: Record<string, unknown>, path: string) => {
-    return path.split(".").reduce((acc, key) => acc?.[key], obj);
-  };
 
   return (
     <div key={question.id} className="mb-6">
       <label className="block font-medium text-gray-800 mb-2">
+        {question.required && (
+          <span className="text-red-500 relative -top-1 right-1">*</span>
+        )}
         {question.label}
       </label>
 
@@ -300,22 +320,25 @@ export const renderUserForm = ({
         value === question.conditional.triggerValue &&
         question.conditional.fields.map((sub: any) => (
           <div key={sub.id} className="ml-4 mt-3">
+            {console.log("asdasdasdas", sub)}
             <label className="block text-sm text-gray-700 mb-1">
               {sub.label}
             </label>
             <input
               type="text"
-              value={getValueByPath(formState, sub.path || "") || ""}
+              value={getValueByPath(formState, sub.path || question.path) || ""}
               onChange={(e) =>
-                updateField(
-                  sub.path || `${question.path}.${sub.id}`,
-                  e.target.value
-                )
+                updateField(sub.path || question.path, e.target.value)
               }
               className="w-full border p-2 rounded-md"
             />
           </div>
         ))}
+
+      {/* Validation error */}
+      {errors[question.id] && (
+        <p className="text-red-500 text-sm mt-1">{errors[question.id]}</p>
+      )}
 
       {/* Helper Text */}
       {question.helperText && (
@@ -329,11 +352,6 @@ export const renderUserForm = ({
         <p className="text-xs italic text-gray-400 mt-1">
           Example: {question.example}
         </p>
-      )}
-
-      {/* Validation error */}
-      {errors[question.id] && (
-        <p className="text-red-500 text-sm mt-1">{errors[question.id]}</p>
       )}
     </div>
   );

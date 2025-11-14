@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 
-function getValueByPath(obj, path) {
+export function getValueByPath(obj, path) {
   return path.split(".").reduce((acc, key) => acc?.[key], obj);
 }
 
@@ -33,14 +33,7 @@ const Onboarding = () => {
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const {
-    handleInputChange,
-    removeCompetitors,
-    addCompetitors,
-    validate,
-    formData,
-    errors,
-  } = useUserProfile();
+  const { updateField, validateField, formData, errors } = useUserProfile();
 
   const navigate = useNavigate();
   const disptach = useAppDispatch();
@@ -75,7 +68,7 @@ const Onboarding = () => {
   };
 
   const handleNext = async () => {
-    // if (!validate(onboardingConfig[currentSection])) return;
+    if (!validateField(activeQuestion)) return;
     if (currentQuestionIndex === activeSection.questions.length - 1) {
       if (onboardingSteps.length > currentSectionIndex) {
         setCurrentQuestionIndex(0);
@@ -119,7 +112,6 @@ const Onboarding = () => {
   };
 
   // const extractYouTubeHandle;
-  const { formState, updateField, validateField } = {};
   return (
     <div className="flex min-h-screen bg-gray-50">
       <div className="hidden w-64 bg-black p-8 md:block">
@@ -192,9 +184,9 @@ export function DynamicForm({ config, formHook }) {
 
           {renderUserForm({
             question: activeQuestion,
-            value: getValueByPath(formState, activeQuestion.path),
+            value: getValueByPath(formData, activeQuestion.path),
             updateField,
-            formState,
+            formState: formData,
             errors,
           })}
           {/* <OnboardingForm
