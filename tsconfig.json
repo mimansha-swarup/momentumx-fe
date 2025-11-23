@@ -9,6 +9,7 @@
     "noUnusedParameters": false,
     "strict": false,
      "noImplicitAny": false,
+     "noEmitOnError": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
