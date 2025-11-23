@@ -8,7 +8,7 @@ import { Toaster } from "./components/ui/sonner";
 function App() {
   useAuthenticate();
   return (
-    <div className=" w-full bg-background text-foreground ">
+    <div className=" w-full bg-[#F2F4F6] text-foreground ">
       <Toaster />
       <RouterProvider router={localRouter} />
     </div>

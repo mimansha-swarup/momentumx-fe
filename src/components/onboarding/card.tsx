@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { FC } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { OnboardingCardProps } from "@/types/components/login";
 
 const OnboardingCard: FC<OnboardingCardProps> = ({
@@ -22,6 +22,14 @@ const OnboardingCard: FC<OnboardingCardProps> = ({
   isLoading,
   nextSectionCta = "Complete",
 }) => {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [contentHeight, setContentHeight] = useState("auto");
+
+  useEffect(() => {
+    if (!contentRef.current) return;
+    const newHeight = contentRef.current.scrollHeight + "px";
+    setContentHeight(newHeight);
+  }, [children, title, description]);
   return (
     <div className="flex flex-1 items-center justify-center p-6 transition-all ">
       <Card className="w-[34rem] gap-0">
@@ -29,7 +37,16 @@ const OnboardingCard: FC<OnboardingCardProps> = ({
           <CardTitle>{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
-        <CardContent>{children}</CardContent>
+        <div className="overflow-hidden mb-6">
+          <div
+            className="transition-[height] duration-500 ease-in-out"
+            style={{ height: contentHeight }}
+          >
+            <div ref={contentRef}>
+              <CardContent>{children}</CardContent>
+            </div>
+          </div>
+        </div>
         <CardFooter className="flex justify-between">
           <Button
             variant="outline"

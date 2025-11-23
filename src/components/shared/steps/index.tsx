@@ -33,7 +33,7 @@ const Stepper: FC<StepperProps> = ({
             )}
           >
             <div
-              className="flex items-center"
+              className="flex items-center cursor-pointer"
               onClick={() => handleStepperChange(stepIndex)}
             >
               <div
@@ -54,7 +54,7 @@ const Stepper: FC<StepperProps> = ({
               </div>
               <span
                 className={cn(
-                  "ml-3 text-sm font-medium",
+                  "ml-3 text-sm font-medium cursor-pointer ",
                   isStepCompleted ? "text-primary" : "text-white"
                 )}
               >
