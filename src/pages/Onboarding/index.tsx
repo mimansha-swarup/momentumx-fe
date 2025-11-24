@@ -126,7 +126,9 @@ const Onboarding = () => {
     setCurrentQuestionIndex(0);
   };
 
-  const showReviewScreen = true;
+  const showReviewScreen =
+    currentSectionIndex === onboardingConfig.sections.length - 1 &&
+    currentQuestionIndex === activeSection.questions.length - 1;
 
   return (
     <div className="flex min-h-screen bg-gray-50">
