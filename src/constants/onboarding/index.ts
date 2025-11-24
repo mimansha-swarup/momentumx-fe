@@ -1,3 +1,5 @@
+import { DeepNest } from "@/types/components/onboarding";
+
 export const INITIAL_ONBOARDING_STATE = {
   business: {
     type: "",
@@ -69,7 +71,7 @@ export const INITIAL_ONBOARDING_STATE = {
     first_video_scripted: false,
     first_video_published: false,
   },
-};
+} satisfies DeepNest;
 
 export const ONBOARDING_FORM = "ONBOARDING_FORM";
 export const CURRENT_SECTION = "CURRENT_SECTION";
