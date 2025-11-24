@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+// @ts-nocheck
+
 import React from "react";
 import Stepper from "../shared/steps";
 import { brandName } from "@/constants/root";

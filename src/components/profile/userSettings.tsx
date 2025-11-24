@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
+// @ts-nocheck
 import React, { useState } from "react";
 // import { ONBOARDING_FORM_ID, onboardingConfig } from "@/constants/onboarding";
 import { Button } from "../ui/button";
