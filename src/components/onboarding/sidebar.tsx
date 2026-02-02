@@ -1,13 +1,15 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-// @ts-nocheck
-
-import React from "react";
+import { FC } from "react";
 import Stepper from "../shared/steps";
 import { brandName } from "@/constants/root";
+import { Steps } from "@/types/components/shared";
 
-const Sidebar = ({ steps, activeStep, onStepperChange }) => {
+interface SidebarProps {
+  steps: Steps[];
+  activeStep: number;
+  onStepperChange: (index: number) => void;
+}
+
+const Sidebar: FC<SidebarProps> = ({ steps, activeStep, onStepperChange }) => {
   return (
     <div className="hidden fixed top-0 left-0 w-64 bottom-0 bg-black p-8 md:block">
       <div className="flex items-center text-lg font-medium text-white mb-12">

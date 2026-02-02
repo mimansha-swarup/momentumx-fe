@@ -14,8 +14,8 @@ export const persistLogin = async () => {
     .then(() => {
       googleLogin();
     })
-    .catch((error) => {
-      console.error("Error setting persistence: ", error);
+    .catch(() => {
+      // Persistence error - will fallback to session storage
     });
 };
 export const googleLogin = async () => {
@@ -28,7 +28,6 @@ export const googleLogin = async () => {
     }
     return user;
   } catch (error) {
-    console.error("Error logging in with Google: ", error);
     throw error;
   }
 };

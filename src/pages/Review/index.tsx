@@ -1,8 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-// @ts-nocheck
-
 import {
   AccordionContent,
   AccordionItem,
@@ -12,6 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import onboardingConfig from "@/constants/onboarding/config.json";
 import { IS_NEW_USER } from "@/constants/root";
+import { SUBMIT_SUCCESS_DELAY_MS } from "@/constants/app";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { onboardingService } from "@/service/onboarding";
 import { getUser } from "@/utils/feature/user/user.thunk";
@@ -19,10 +15,17 @@ import { getValueByPath, renderUserForm } from "@/utils/onboarding";
 import { Loader } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { IOnboardingPayload, QuestionBase } from "@/types/components/onboarding";
+
+interface ReviewProps {
+  formState: IOnboardingPayload;
+  updateField: (path: string, value: unknown) => void;
+  errors: Record<string, string>;
+}
 
 const onboardingServiceInstance = new onboardingService();
 
-const Review = ({ formState, updateField, errors }) => {
+const Review = ({ formState, updateField, errors }: ReviewProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const disptach = useAppDispatch();
@@ -41,7 +44,7 @@ const Review = ({ formState, updateField, errors }) => {
         await disptach(getUser());
         navigate("/app/dashboard");
         setIsLoading(false);
-      }, 2000);
+      }, SUBMIT_SUCCESS_DELAY_MS);
     }
   };
   return (
@@ -54,7 +57,7 @@ const Review = ({ formState, updateField, errors }) => {
         defaultValue="item-1"
       >
         {onboardingConfig.sections?.map((section) => (
-          <AccordionItem id={section.id} value={section.id}>
+          <AccordionItem key={section.id} id={section.id} value={section.id}>
             <AccordionTrigger className=" text-lg font-semibold text-gray-800">
               {section.title}
             </AccordionTrigger>
@@ -62,7 +65,7 @@ const Review = ({ formState, updateField, errors }) => {
               {section?.questions?.map((q) => {
                 const { helperText: _helperText, ...restQus } = q;
                 return renderUserForm({
-                  question: restQus,
+                  question: restQus as QuestionBase,
                   value: getValueByPath(formState, q.path),
                   formState,
                   updateField,

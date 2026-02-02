@@ -11,6 +11,7 @@ import { retrieveTitles } from "@/utils/feature/titles/titles.thunk";
 import { retrieveScripts } from "@/utils/feature/scripts/script.thunk";
 import { getApiDomain } from "@/utils/network";
 import RootLayout from "../rootLayout";
+import { HEALTH_CHECK_INTERVAL_MS } from "@/constants/app";
 
 const ProtectedLayout = () => {
   const { user, loading } = useAuthCredential();
@@ -36,30 +37,29 @@ const ProtectedLayout = () => {
 
   useEffect(() => {
     const executeFn = () => {
-      console.log("Executed");
-      fetch(getApiDomain(true) + "/v1/health")
-        .then(() => console.log("Ping sent to keep server awake"))
-        .catch(console.error);
+      fetch(getApiDomain(true) + "/v1/health").catch(() => {
+        // Health check failed silently
+      });
     };
     executeFn();
-    intervalRef.current = setInterval(executeFn, 13 * 60 * 1000); // every 13 minutes
+    intervalRef.current = setInterval(executeFn, HEALTH_CHECK_INTERVAL_MS);
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, []);
 
-  if (loading) {
-    return <RootLoader />;
-  } else if (user && !user?.niche && location.pathname !== "/app/onboarding") {
-    return <Navigate to={`/app/onboarding`} />;
-  } else if (!isLoggedIn) {
-    return <Navigate to={`/login`} replace state={{ from: location }} />;
-  }
+  // if (loading) {
+  //   return <RootLoader />;
+  // } else if (user && !user?.niche && location.pathname !== "/app/onboarding") {
+  //   return <Navigate to={`/app/onboarding`} />;
+  // } else if (!isLoggedIn) {
+  //   return <Navigate to={`/login`} replace state={{ from: location }} />;
+  // }
 
-  if (location.pathname === "/app/onboarding") {
-    return <Outlet />;
-  }
+  // if (location.pathname === "/app/onboarding") {
+  //   return <Outlet />;
+  // }
   return (
     <RootLayout>
       <Outlet />

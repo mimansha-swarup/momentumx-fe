@@ -6,8 +6,9 @@ export const getApiDomain = (isLongResponse = false) => {
   switch (env) {
     case "dev":
       return "https://momentumx-be.vercel.app";
-    case "local":
-    default: // in future add prod in default
+      case "local":
+        default: // in future add prod in default
+        return "https://momentumx-be.vercel.app";
       return "http://localhost:3000";
   }
 };

@@ -1,7 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 
-import { useMemo, useRef, useState } from "react";
+
+import { KeyboardEvent, useMemo, useRef, useState } from "react";
 import OnboardingCard from "@/components/onboarding/card";
 
 import { useAuthCredential } from "@/hooks/useAuth";
@@ -11,11 +10,12 @@ import useUserProfile from "@/hooks/useUserProfile";
 import onboardingConfig from "@/constants/onboarding/config.json";
 import { getValueByPath, renderUserForm } from "@/utils/onboarding";
 import { getLocalStorageData, setLocalStorageData } from "@/utils/storage";
-import { CURRENT_SECTION } from "@/constants/onboarding";
-import { CURRENT_QUESTION } from "@/constants/onboarding";
+import { CURRENT_SECTION, CURRENT_QUESTION } from "@/constants/onboarding";
+import { PROGRESS_GRADIENT } from "@/constants/app";
 import Review from "../Review";
 import Progress from "@/components/onboarding/progress";
 import Sidebar from "@/components/onboarding/sidebar";
+import { QuestionBase, QuestionType } from "@/types/components/onboarding";
 
 const onboardingSteps = onboardingConfig.sections.map((step) => ({
   key: step.id,
@@ -26,27 +26,16 @@ onboardingSteps.push({
   key: "review",
   label: "Review",
 });
-const PROGRESS_GRADIENT = {
-  0: "bg-gradient-to-br from-indigo-600 to-violet-600",
-
-  1: "bg-gradient-to-br from-blue-600 to-cyan-500",
-
-  2: "bg-gradient-to-br from-teal-500 to-emerald-400",
-
-  3: "bg-gradient-to-br from-amber-500 to-orange-500",
-
-  4: "bg-gradient-to-br from-purple-500 to-pink-500",
-};
 
 const Onboarding = () => {
   const { user } = useAuthCredential();
-  const [currentSectionIndex, setCurrentSectionIndex] = useState(
+  const [currentSectionIndex, setCurrentSectionIndex] = useState<number>(
     getLocalStorageData(CURRENT_SECTION, 0)
   );
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(
     getLocalStorageData(CURRENT_QUESTION, 0)
   );
-  const maxSectionIndex = useRef(0);
+  const maxSectionIndex = useRef<number>(0);
 
   const { updateField, validateField, formData, errors } = useUserProfile(true);
 
@@ -70,26 +59,25 @@ const Onboarding = () => {
 
   const percentCompleted = useMemo(
     () =>
-      (
-        ((currentQuestionIndex + 1) / activeSection.questions.length) *
-        100
-      ).toFixed(),
+      Math.round(
+        ((currentQuestionIndex + 1) / activeSection.questions.length) * 100
+      ),
     [activeSection.questions.length, currentQuestionIndex]
   );
 
   if (user?.niche) {
-    <Navigate to="/app/dashboard" replace />;
+   return <Navigate to="/app/dashboard" replace />;
   }
 
-  // const handleKeypress = (e: KeyboardEvent<HTMLInputElement>) => {
-  //   //it triggers by pressing the enter key
-  //   if (e.key === "Enter") {
-  //     handleNext();
-  //   }
-  // };
+  const handleKeypress = (e: KeyboardEvent<HTMLInputElement>) => {
+    // Trigger next only when pressing Ctrl + Enter
+    if (e.key === "Enter" && e.ctrlKey) {
+      handleNext();
+    }
+  };
 
   const handleNext = async () => {
-    if (!validateField(activeQuestion)) return;
+    if (!validateField(activeQuestion as QuestionType)) return;
     if (currentQuestionIndex === activeSection.questions.length - 1) {
       if (onboardingSteps.length > currentSectionIndex) {
         setCurrentQuestionIndex(0);
@@ -106,7 +94,6 @@ const Onboarding = () => {
       setLocalStorageData(CURRENT_QUESTION, currentQuestionIndex + 1);
     }
   };
-  console.log(activeQuestion, currentQuestionIndex, currentSectionIndex);
 
   const handlePrevious = () => {
     if (currentSectionIndex > 0 && currentQuestionIndex === 0) {
@@ -175,11 +162,12 @@ const Onboarding = () => {
                 nextSectionCta={activeSection.ctaButton}
               >
                 {renderUserForm({
-                  question: activeQuestion,
+                  question: activeQuestion as QuestionBase,
                   value: getValueByPath(formData, activeQuestion.path),
                   updateField,
                   formState: formData,
                   errors,
+                  onEnter: handleKeypress
                 })}
               </OnboardingCard>
             </div>

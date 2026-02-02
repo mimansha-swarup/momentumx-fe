@@ -10,7 +10,7 @@ export const getLocalStorageData = <T>(key: string, state: T) => {
 export const setLocalStorageData = <T>(key: string, state: T) => {
   try {
     localStorage.setItem(key, JSON.stringify(state));
-  } catch (err) {
-    console.error("Failed to store data in localStorage:", err);
+  } catch {
+    // Storage quota exceeded or unavailable
   }
 };

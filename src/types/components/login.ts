@@ -1,9 +1,9 @@
 import React from "react";
 
 export interface OnboardingCardProps {
-  title: string;
+  title?: string;
   nextSectionCta: string;
-  description: string;
+  description?: string;
   onNext: () => void;
   onPrevious: () => void;
   children: React.ReactNode;

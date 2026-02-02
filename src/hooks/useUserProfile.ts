@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-// @ts-nocheck
+
 
 import {
   INITIAL_ONBOARDING_STATE,
@@ -23,9 +20,7 @@ export const useUserProfile = (
   saveFormData = false,
   preFilledState?: IUserProfile | null
 ) => {
-  const [errors, setErrors] = useState<IOnboardingPayload>(
-    INITIAL_ONBOARDING_STATE
-  );
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState<IOnboardingPayload>(() => {
     if (!saveFormData) return preFilledState || INITIAL_ONBOARDING_STATE;
     try {
@@ -109,7 +104,7 @@ export const useUserProfile = (
 
     const validateGroup = (q: GroupQuestion): boolean => {
       let ok = true;
-      const rows = getValueByPath(formData, q.path) || [];
+      const rows= getValueByPath(formData, `${q.path}`) as [] || [];
 
       rows.forEach((_: unknown, idx: number) => {
         q.groupFields.forEach((field) => {
@@ -134,7 +129,7 @@ export const useUserProfile = (
       }
 
       let ok = true;
-      const fieldValue = getValueByPath(formData, q.path) as string;
+      const fieldValue = getValueByPath(formData, `${q.path}`) as string;
 
       conds.forEach((cond: ConditionalRule | StandardConditional) => {
         const triggers = Array.isArray(cond.triggerValue)
@@ -150,8 +145,8 @@ export const useUserProfile = (
 
         if (show) {
           cond.fields.forEach((cf) => {
-            const path = cf.path;
-            const fieldOk = validateSimpleField(cf, path);
+            const path = cf.path ?? "";
+            const fieldOk = validateSimpleField(cf as QuestionType, path);
             if (!fieldOk) ok = false;
           });
         }

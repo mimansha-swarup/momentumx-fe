@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-
-// @ts-nocheck
 export interface Option {
   value: string;
   label: string;
@@ -48,6 +45,17 @@ export type QuestionTypes =
   | "dropdown"
   | "group";
 
+// Group field (defined early for QuestionBase reference)
+export interface GroupField {
+  id: string;
+  label: string;
+  type: "text";
+  placeholder?: string;
+  maxLength?: number;
+  required?: boolean;
+  path: string;
+}
+
 // Base question shared by all
 export interface QuestionBase {
   id: string;
@@ -63,6 +71,9 @@ export interface QuestionBase {
   validation?: ValidationRules;
   example?: string;
   conditional?: ConditionalRule | ConditionalRule[];
+  options?: Option[];
+  rows?: number;
+  groupFields?: GroupField[];
 }
 
 // ----------- Individual Question Types ----------
@@ -76,32 +87,18 @@ export interface TextQuestion extends QuestionBase {
 export interface RadioQuestion extends QuestionBase {
   type: "radio";
   options: Option[];
-  conditional?: StandardConditional;
 }
 
 // Checkbox
 export interface CheckboxQuestion extends QuestionBase {
   type: "checkbox";
   options: Option[];
-  conditional?: StandardConditional;
 }
 
 // Dropdown
 export interface DropdownQuestion extends QuestionBase {
   type: "dropdown";
   options: Option[];
-  conditional?: StandardConditional;
-}
-
-// Group type (contains sub-fields)
-export interface GroupField {
-  id: string;
-  label: string;
-  type: "text";
-  placeholder?: string;
-  maxLength?: number;
-  required?: boolean;
-  path: string;
 }
 
 export interface GroupQuestion extends QuestionBase {
@@ -150,12 +147,7 @@ export type BaseQuestion = {
 
 export type ConditionalRule = {
   triggerValue: string | string[];
-  fields: (
-    | TextQuestion
-    | DropdownQuestion
-    | RadioQuestion
-    | CheckboxQuestion
-  )[];
+  fields: ConditionalFieldBase[];
 };
 
 export type QuestionType =

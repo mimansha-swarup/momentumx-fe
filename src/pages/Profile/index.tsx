@@ -1,5 +1,4 @@
 import UserDetails from "@/components/profile/userDetails";
-import UserSettings from "@/components/profile/userSettings";
 import GlassCard from "@/components/shared/glassCard";
 import Header from "@/components/shared/header";
 import { useAuthCredential } from "@/hooks/useAuth";
@@ -11,7 +10,7 @@ const Profile = () => {
       <Header title="Profile" />
       <GlassCard className=" flex flex-col gap-6 md:gap-7 mx-auto  md:p-10 !shadow-none bg-sidebar  ">
         <UserDetails user={user} />
-        <UserSettings user={user} />
+        {/* <UserSettings user={user} /> */}
       </GlassCard>
     </div>
   );

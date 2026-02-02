@@ -10,7 +10,6 @@ export const retrieveTitles = createAsyncThunk(
       const response = await titleService.getGeneratedData(resetFilter);
       return { data: response.data, isFresh };
     } catch (error) {
-      console.log("error: ", error);
       return thunkAPI.rejectWithValue(error);
     }
   }
@@ -22,7 +21,6 @@ export const generateTitles = createAsyncThunk(
       const response = await titleService.generateTitles();
       return { data: response.data };
     } catch (error) {
-      console.log("error: ", error);
       return thunkAPI.rejectWithValue(error);
     }
   }
@@ -34,7 +32,6 @@ export const editTitles = createAsyncThunk(
       const response = await titleService.editTitle(titleId as string, record);
       return response.data;
     } catch (error) {
-      console.log("error: ", error);
       return thunkAPI.rejectWithValue(error);
     }
   }

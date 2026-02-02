@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-// @ts-nocheck
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,9 +14,13 @@ import {
   IOnboardingPayload,
   DeepNest,
   QuestionBase,
+  Option,
+  GroupField,
+  ConditionalRule,
 } from "@/types/components/onboarding";
+import { KeyboardEvent } from "react";
 
-export const getValueByPath = (obj: DeepNest, path: string): unknown => {
+export const getValueByPath = (obj: DeepNest | IOnboardingPayload, path: string): unknown => {
   if (!obj || !path) return undefined;
 
   // Convert "a.b[0].c" → ["a", "b", 0, "c"]
@@ -29,9 +29,9 @@ export const getValueByPath = (obj: DeepNest, path: string): unknown => {
     .split(".")
     .map((part) => (isNaN(Number(part)) ? part : Number(part)));
 
-  return parts.reduce((acc, key: string | number) => {
+  return parts.reduce<unknown>((acc, key: string | number) => {
     if (acc == null) return undefined;
-    return acc[key];
+    return (acc as Record<string | number, unknown>)[key];
   }, obj);
 };
 
@@ -41,12 +41,14 @@ export const renderUserForm = ({
   updateField,
   formState,
   errors,
+  onEnter
 }: {
   question: QuestionBase;
   value: unknown;
-  updateField: (path?: string, value: unknown) => void;
+  updateField: (path: string, value: unknown) => void;
   formState: IOnboardingPayload;
   errors: Record<string, string>;
+  onEnter: (e: KeyboardEvent<HTMLInputElement>) => void
 }) => {
   /* -------------------------------------------------------------------------- */
   /*                               RENDER INPUT                                 */
@@ -58,10 +60,11 @@ export const renderUserForm = ({
         return (
           <Input
             type="text"
-            value={value || ""}
-            onChange={(e) => updateField(question.path, e.target.value)}
+            value={(value as string) || ""}
+            onChange={(e) => updateField(question.path || "", e.target.value)}
             placeholder={question.placeholder || ""}
             required={question.required}
+            onKeyDown={onEnter}
           />
         );
 
@@ -69,10 +72,11 @@ export const renderUserForm = ({
         return (
           <Textarea
             value={(value as string) || ""}
-            onChange={(e) => updateField(question.path, e.target.value)}
+            onChange={(e) => updateField(question.path || "", e.target.value)}
             placeholder={question.placeholder || ""}
             rows={question.rows || 4}
             required={question.required}
+            onKeyDown={onEnter}
           />
         );
 
@@ -80,9 +84,9 @@ export const renderUserForm = ({
         return (
           <RadioGroup
             value={value as string}
-            onValueChange={(val) => updateField(question?.path, val)}
+            onValueChange={(val) => updateField(question.path || "", val)}
           >
-            {question?.options?.map((opt: any) => (
+            {question?.options?.map((opt: Option) => (
               <label key={opt.value} className="flex items-center gap-2">
                 <RadioGroupItem value={opt.value} />
                 <span>{opt.label}</span>
@@ -94,7 +98,7 @@ export const renderUserForm = ({
       case "checkbox":
         return (
           <div className="space-y-2">
-            {question.options.map((opt: any) => {
+            {question.options?.map((opt: Option) => {
               const checked = Array.isArray(value)
                 ? value.includes(opt.value)
                 : false;
@@ -104,11 +108,11 @@ export const renderUserForm = ({
                   <Checkbox
                     checked={checked}
                     onCheckedChange={(state) => {
-                      let updated = Array.isArray(value) ? [...value] : [];
+                      let updated = Array.isArray(value) ? [...(value as string[])] : [];
                       if (state) updated.push(opt.value);
                       else updated = updated.filter((v) => v !== opt.value);
 
-                      updateField(question.path, updated);
+                      updateField(question.path || "", updated);
                     }}
                   />
                   <span>{opt.label}</span>
@@ -121,15 +125,15 @@ export const renderUserForm = ({
       case "dropdown":
         return (
           <Select
-            value={value || ""}
-            onValueChange={(val) => updateField(question.path, val)}
+            value={(value as string) || ""}
+            onValueChange={(val) => updateField(question.path || "", val)}
           >
             <SelectTrigger className="min-w-[200px] transition-all duration-200">
               <SelectValue placeholder={question.placeholder || ""} />
             </SelectTrigger>
 
             <SelectContent>
-              {question.options.map((opt: any) => (
+              {question.options?.map((opt: Option) => (
                 <SelectItem key={opt.value} value={opt.value}>
                   {opt.label}
                 </SelectItem>
@@ -143,15 +147,15 @@ export const renderUserForm = ({
       /* -------------------------------------------------------------------------- */
 
       case "group": {
-        const rows = Array.isArray(value) ? value : [{}];
+        const rows = Array.isArray(value) ? (value as Record<string, unknown>[]) : [{}];
 
         const addRow = () => {
-          updateField(question.path, [...rows, {}]);
+          updateField(question.path || "", [...rows, {}]);
         };
 
         const removeRow = (index: number) => {
           const filtered = rows.filter((_, i) => i !== index);
-          updateField(question.path, filtered);
+          updateField(question.path || "", filtered);
         };
 
         return (
@@ -161,17 +165,18 @@ export const renderUserForm = ({
                 key={index}
                 className="border rounded-lg p-4 py-2 bg-muted/20"
               >
-                {question.groupFields.map((f: any) => {
+                {question.groupFields?.map((f: GroupField) => {
                   const fullPath = `${question.path}[${index}].${f.path}`;
 
                   return (
                     <div key={fullPath}>
                       {renderUserForm({
-                        question: { ...f, path: fullPath, id: fullPath },
+                        question: { ...f, path: fullPath, id: fullPath } as QuestionBase,
                         value: getValueByPath(formState, fullPath),
                         updateField,
                         formState,
                         errors,
+                        onEnter
                       })}
                     </div>
                   );
@@ -211,33 +216,38 @@ export const renderUserForm = ({
       ? question.conditional
       : [question.conditional];
 
-    return conditionList.map((condition: any) => {
+    return conditionList.map((condition: ConditionalRule, condIndex: number) => {
       const triggers = Array.isArray(condition.triggerValue)
         ? condition.triggerValue
         : [condition.triggerValue];
 
       const shouldShow =
         question.type === "checkbox"
-          ? triggers.some((t) => value?.includes(t))
-          : triggers.includes(value);
+          ? triggers.some((t) => (value as string[])?.includes(t))
+          : triggers.includes(value as string);
 
       if (!shouldShow) return null;
 
-      return condition.fields.map((sub: any) => {
-        const subPath = sub.path || question.path;
+      return (
+        <div key={condIndex}>
+          {condition.fields.map((sub) => {
+            const subPath = sub.path || question.path || "";
 
-        return (
-          <div key={sub.id} className="border-l pl-4 mt-4 space-y-1">
-            {renderUserForm({
-              question: { ...sub, id: sub.id, path: subPath },
-              value: getValueByPath(formState, subPath),
-              updateField,
-              formState,
-              errors,
-            })}
-          </div>
-        );
-      });
+            return (
+              <div key={sub.id} className="border-l pl-4 mt-4 space-y-1">
+                {renderUserForm({
+                  question: { ...sub, id: sub.id, path: subPath } as QuestionBase,
+                  value: getValueByPath(formState, subPath),
+                  updateField,
+                  formState,
+                  errors,
+                  onEnter
+                })}
+              </div>
+            );
+          })}
+        </div>
+      );
     });
   };
 
@@ -256,7 +266,7 @@ export const renderUserForm = ({
 
       {renderConditionalFields()}
 
-      {errors?.[question.path] && (
+      {question.path && errors?.[question.path] && (
         <p className="text-red-500 text-sm mt-1">{errors[question.path]}</p>
       )}
 

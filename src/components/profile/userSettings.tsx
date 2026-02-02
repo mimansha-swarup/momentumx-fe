@@ -1,96 +1,28 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-
-// @ts-nocheck
 import React, { useState } from "react";
-// import { ONBOARDING_FORM_ID, onboardingConfig } from "@/constants/onboarding";
 import { Button } from "../ui/button";
 import { IUserDetailsProps } from "@/types/components/profile";
-import { renderUserForm } from "@/utils/onboarding";
-import useUserProfile from "@/hooks/useUserProfile";
-import { LoaderCircle, PlusCircle } from "lucide-react";
-import { onboardingService } from "@/service/onboarding";
+import { LoaderCircle } from "lucide-react";
 
-const onboardingConfig = [{}];
-const inputList = [
-  ...onboardingConfig.filter((el) => el.id !== "CHANNEL_PURPOSE"),
-];
-const purposeObj = onboardingConfig.filter(
-  (el) => el.id === "CHANNEL_PURPOSE"
-)[0];
+const UserSettings: React.FC<IUserDetailsProps> = () => {
+  const [isLoading] = useState(false);
 
-const multipleTextInput = inputList.pop();
-
-const onboardingServiceInstance = new onboardingService();
-
-const UserSettings: React.FC<IUserDetailsProps> = ({ user }) => {
-  const {
-    handleInputChange,
-    removeCompetitors,
-    addCompetitors,
-    validate,
-    formData: userSettings,
-    errors: error,
-  } = useUserProfile(user);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = async () => {
-    const isValid = validate(onboardingConfig);
-    if (!isValid) {
-      return;
-    }
-    setIsLoading(true);
-    await onboardingServiceInstance.updateProfile(userSettings);
-    setIsLoading(false);
-  };
+  // const handleSubmit = async () => {
+  //   const isValid = validate(onboardingConfig);
+  //   if (!isValid) {
+  //     return;
+  //   }
+  //   setIsLoading(true);
+  //   await onboardingServiceInstance.updateProfile(userSettings);
+  //   setIsLoading(false);
+  // };
 
   return (
     <div>
-      {/* <div className="text-base text-[12px] mb-10  font-medium">
-        {renderUserForm({
-          ...purposeObj,
-          onChange: handleInputChange(purposeObj.id),
-          removeMultiValue: removeCompetitors,
-          value: userSettings[purposeObj.id],
-          error: error[purposeObj.id],
-        })}
-      </div>
-      <div className="grid gap-6  md:grid-cols-2 items-start">
-        {inputList?.map((record) =>
-          renderUserForm({
-            ...record,
-            onChange: handleInputChange(record.id),
-            removeMultiValue: removeCompetitors,
-            value: userSettings[record.id],
-            error: error[record.id],
-          })
-        )}
-        <div className="col-span-2 width-1/2">
-          {multipleTextInput?.inputType === "multi-text" &&
-            renderUserForm({
-              ...multipleTextInput,
-              onChange: handleInputChange(multipleTextInput.id),
-              removeMultiValue: removeCompetitors,
-              value: userSettings[multipleTextInput.id],
-              error: error[multipleTextInput.id],
-              valueFormatter: (value) =>
-                typeof value === "string"
-                  ? value
-                  : (value as { url: string }).url,
-            })}
-          <Button
-            variant="outline"
-            className="w-1/2 min-w-fit"
-            onClick={addCompetitors}
-          >
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Add Another Competitor
-          </Button>
-        </div>
-      </div> */}
+     {/* TODO:  Reimplement this part */}
       <Button
         className="w-full mt-8"
         disabled={isLoading}
-        onClick={handleSubmit}
+        // onClick={handleSubmit}
       >
         {isLoading && <LoaderCircle className="animate-spin" />}
         Update Profile

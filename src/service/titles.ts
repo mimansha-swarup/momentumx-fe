@@ -15,8 +15,8 @@ class TitleService {
     try {
       const response = await baseFetch.get(this.urls.streamTitles);
       return response.data;
-    } catch (error) {
-      console.error("Error while fetching saved titles", error);
+    } catch {
+      // Error handled by caller
     }
   };
 
@@ -27,7 +27,7 @@ class TitleService {
       });
       return response.data;
     } catch {
-      console.error("Error while fetching saved titles");
+      // Error handled by caller
     }
   }
 
@@ -38,8 +38,8 @@ class TitleService {
         body
       );
       return response.data;
-    } catch (error) {
-      console.error("Error while fetching saved titles", error);
+    } catch {
+      // Error handled by caller
     }
   }
 }

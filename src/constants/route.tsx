@@ -8,6 +8,7 @@ import ScriptDetails from "@/pages/ScriptDetails";
 import ScriptPage from "@/pages/Scripts";
 import TitlePage from "@/pages/Titles";
 import { createBrowserRouter } from "react-router-dom";
+import RootLoader from "@/components/shared/Loader";
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
 
 export const localRouter = createBrowserRouter([
@@ -20,7 +21,7 @@ export const localRouter = createBrowserRouter([
       {
         path: "onboarding",
         element: (
-          <Suspense fallback={<div>dsfsdfsd</div>}>
+          <Suspense fallback={<RootLoader />}>
             <Onboarding />
           </Suspense>
         ),
