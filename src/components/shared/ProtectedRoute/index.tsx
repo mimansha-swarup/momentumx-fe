@@ -49,17 +49,17 @@ const ProtectedLayout = () => {
     };
   }, []);
 
-  // if (loading) {
-  //   return <RootLoader />;
-  // } else if (user && !user?.niche && location.pathname !== "/app/onboarding") {
-  //   return <Navigate to={`/app/onboarding`} />;
-  // } else if (!isLoggedIn) {
-  //   return <Navigate to={`/login`} replace state={{ from: location }} />;
-  // }
+  if (loading) {
+    return <RootLoader />;
+  } else if (user && !user?.niche && location.pathname !== "/app/onboarding") {
+    return <Navigate to={`/app/onboarding`} />;
+  } else if (!isLoggedIn) {
+    return <Navigate to={`/login`} replace state={{ from: location }} />;
+  }
 
-  // if (location.pathname === "/app/onboarding") {
-  //   return <Outlet />;
-  // }
+  if (location.pathname === "/app/onboarding") {
+    return <Outlet />;
+  }
   return (
     <RootLayout>
       <Outlet />
