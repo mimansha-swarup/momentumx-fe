@@ -16,7 +16,6 @@ import { toast } from "sonner";
 import GradientSkeleton from "./GradientSkeleton";
 import {
   IShortsScript,
-  ITimestampedSegment,
   MAX_SHORTS_SCRIPTS,
 } from "@/types/feature/packaging";
 

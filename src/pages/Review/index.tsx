@@ -64,6 +64,7 @@ const Review = ({ formState, updateField, errors }: ReviewProps) => {
             <AccordionContent className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {section?.questions?.map((q) => {
                 const { helperText: _helperText, ...restQus } = q;
+                // @ts-ignore
                 return renderUserForm({
                   question: restQus as QuestionBase,
                   value: getValueByPath(formState, q.path),

@@ -1,7 +1,6 @@
 import { packagingService } from "@/service/packaging";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "@/utils/store";
-import { ITimestampedSegment } from "@/types/feature/packaging";
 
 export const generateTitle = createAsyncThunk(
   "packaging/generateTitle",
@@ -10,7 +9,7 @@ export const generateTitle = createAsyncThunk(
       const state = thunkAPI.getState() as RootState;
       const { script } = state.packaging;
       const response = await packagingService.generateTitle(script);
-      return response;
+      return response.data;
     } catch (error) {
       console.error("Error generating title:", error);
       return thunkAPI.rejectWithValue("Failed to generate title");
@@ -28,7 +27,7 @@ export const generateDescription = createAsyncThunk(
         script,
         title.content || undefined,
       );
-      return response;
+      return response.data;
     } catch (error) {
       console.error("Error generating description:", error);
       return thunkAPI.rejectWithValue("Failed to generate description");
@@ -46,7 +45,7 @@ export const generateThumbnail = createAsyncThunk(
         script,
         title.content || undefined,
       );
-      return response;
+      return response.data;
     } catch (error) {
       console.error("Error generating thumbnail:", error);
       return thunkAPI.rejectWithValue(
@@ -63,7 +62,7 @@ export const generateHooks = createAsyncThunk(
       const state = thunkAPI.getState() as RootState;
       const { script } = state.packaging;
       const response = await packagingService.generateHooks(script);
-      return response;
+      return response.data;
     } catch (error) {
       console.error("Error generating hooks:", error);
       return thunkAPI.rejectWithValue("Failed to generate hooks");
@@ -83,7 +82,7 @@ export const generateShorts = createAsyncThunk(
         title.content || undefined,
         0,
       );
-      return response;
+      return response.data;
     } catch (error) {
       console.error("Error generating shorts script:", error);
       return thunkAPI.rejectWithValue("Failed to generate shorts script");
@@ -131,7 +130,7 @@ export const regenerateShortsScript = createAsyncThunk(
       );
       return {
         id: scriptId,
-        segments: response.segments,
+        segments: response.data?.segments,
       };
     } catch (error) {
       console.error("Error regenerating shorts script:", error);

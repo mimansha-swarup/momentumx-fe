@@ -1,4 +1,4 @@
-import { baseFetch } from "@/utils/network";
+import { baseFetch, IBaseFetchResponse } from "@/utils/network";
 import {
   GenerateTitleResponse,
   GenerateDescriptionResponse,
@@ -28,7 +28,7 @@ class PackagingService {
     this.urls = URLS;
   }
 
-  async generateTitle(script: string): Promise<GenerateTitleResponse> {
+  async generateTitle(script: string): Promise<IBaseFetchResponse<GenerateTitleResponse>> {
     const response = await baseFetch.post(this.urls.generateTitle, { script });
     return response.data;
   }
@@ -36,7 +36,7 @@ class PackagingService {
   async generateDescription(
     script: string,
     title?: string
-  ): Promise<GenerateDescriptionResponse> {
+  ): Promise<IBaseFetchResponse<GenerateDescriptionResponse>> {
     const response = await baseFetch.post(this.urls.generateDescription, {
       script,
       title,
@@ -47,7 +47,7 @@ class PackagingService {
   async generateThumbnail(
     script: string,
     title?: string
-  ): Promise<GenerateThumbnailResponse> {
+  ): Promise<IBaseFetchResponse<GenerateThumbnailResponse>> {
     const response = await baseFetch.post(this.urls.generateThumbnail, {
       script,
       title,
@@ -55,7 +55,7 @@ class PackagingService {
     return response.data;
   }
 
-  async generateHooks(script: string): Promise<GenerateHooksResponse> {
+  async generateHooks(script: string): Promise<IBaseFetchResponse<GenerateHooksResponse>> {
     const response = await baseFetch.post(this.urls.generateHooks, { script });
     return response.data;
   }
@@ -65,7 +65,7 @@ class PackagingService {
     title?: string,
     variant: number = 0,
     maxDuration: number = 60
-  ): Promise<GenerateShortsResponse> {
+  ): Promise<IBaseFetchResponse<GenerateShortsResponse>> {
     const response = await baseFetch.post(this.urls.generateShorts, {
       script,
       title,
@@ -97,10 +97,10 @@ class PackagingService {
     ]);
 
     return {
-      title: titleResponse.data,
-      description: description.data,
-      thumbnail: thumbnail.data,
-      shorts: shorts.data,
+      title: (titleResponse.data || {}) as GenerateTitleResponse,
+      description: (description.data || {}) as GenerateDescriptionResponse,
+      thumbnail: (thumbnail.data || {}) as GenerateThumbnailResponse,
+      shorts: (shorts.data || {}) as GenerateShortsResponse,
     };
   }
 

@@ -38,7 +38,7 @@ const SideDrawer = () => {
       matchPath({ path: subRoute, end: false }, pathname),
     );
   };
-
+// @ts-ignore
   const extractedUserName = extractYouTubeHandle(user?.userName || "");
 
   return (

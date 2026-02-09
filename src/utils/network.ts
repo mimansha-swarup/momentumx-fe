@@ -13,6 +13,15 @@ export const getApiDomain = (isLongResponse = false) => {
   }
 };
 
+export interface IBaseFetchResponse<T> {
+
+  message?: string;
+  warning?: string;
+  statusCode?: number;
+  meta?: Record<string, unknown>;
+  data?: T;
+}
+
 // const user = auth.currentUser;
 const apiDomain = getApiDomain();
 

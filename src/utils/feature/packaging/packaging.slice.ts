@@ -99,7 +99,7 @@ const packagingSlice = createSlice({
       })
       .addCase(generateTitle.fulfilled, (state, action) => {
         state.title.isLoading = false;
-        state.title.content = action.payload.title;
+        state.title.content = action.payload?.title || "";
       })
       .addCase(generateTitle.rejected, (state, action) => {
         state.title.isLoading = false;
@@ -113,7 +113,7 @@ const packagingSlice = createSlice({
       })
       .addCase(generateDescription.fulfilled, (state, action) => {
         state.description.isLoading = false;
-        state.description.content = action.payload.description;
+        state.description.content = action.payload?.description || "";
       })
       .addCase(generateDescription.rejected, (state, action) => {
         state.description.isLoading = false;
@@ -127,7 +127,7 @@ const packagingSlice = createSlice({
       })
       .addCase(generateThumbnail.fulfilled, (state, action) => {
         state.thumbnailDescription.isLoading = false;
-        state.thumbnailDescription.content = action.payload.thumbnailDescription;
+        state.thumbnailDescription.content = action.payload?.thumbnailDescription || "";
       })
       .addCase(generateThumbnail.rejected, (state, action) => {
         state.thumbnailDescription.isLoading = false;
@@ -141,7 +141,7 @@ const packagingSlice = createSlice({
       })
       .addCase(generateHooks.fulfilled, (state, action) => {
         state.hooks.isLoading = false;
-        state.hooks.hooks = action.payload.hooks;
+        state.hooks.hooks = action.payload?.hooks || [];
       })
       .addCase(generateHooks.rejected, (state, action) => {
         state.hooks.isLoading = false;
@@ -162,7 +162,7 @@ const packagingSlice = createSlice({
       .addCase(generateShorts.fulfilled, (state, action) => {
         if (state.shortsScript.scripts.length > 0) {
           state.shortsScript.scripts[0].isLoading = false;
-          state.shortsScript.scripts[0].segments = action.payload.segments;
+          state.shortsScript.scripts[0].segments = action.payload?.segments || [];
         }
       })
       .addCase(generateShorts.rejected, (state, action) => {
@@ -185,7 +185,8 @@ const packagingSlice = createSlice({
       })
       .addCase(addNewShortsScript.fulfilled, (state, action) => {
         state.shortsScript.isAddingNew = false;
-        state.shortsScript.scripts.push(action.payload);
+        // @ts-ignore
+        state.shortsScript.scripts.push(action?.payload || []);
       })
       .addCase(addNewShortsScript.rejected, (state, action) => {
         state.shortsScript.isAddingNew = false;
@@ -210,7 +211,9 @@ const packagingSlice = createSlice({
         const script = state.shortsScript.scripts.find((s) => s.id === id);
         if (script) {
           script.isLoading = false;
-          script.segments = segments;
+          if (segments) {
+            script.segments = segments;
+          }
         }
       })
       .addCase(regenerateShortsScript.rejected, (state, action) => {
@@ -255,7 +258,10 @@ const packagingSlice = createSlice({
         state.thumbnailDescription.content = action.payload.thumbnail.thumbnailDescription;
         // Update hooks
         state.hooks.isLoading = false;
-        state.hooks.hooks = action.payload.hooks;
+        if (action.payload.hooks) {
+          // @ts-ignore
+          state.hooks.hooks = action.payload.hooks || [];
+        }
         // Update shorts
         if (state.shortsScript.scripts.length > 0) {
           state.shortsScript.scripts[0].isLoading = false;

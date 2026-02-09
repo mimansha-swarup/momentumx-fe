@@ -34,11 +34,11 @@ const GeneratedContent: FC<IGeneratedContentProps> = ({
       ) : (
         <div className="flex flex-col gap-4 mt-4" ref={listRef}>
           {contentLoading && <ListShimmer count={1} />}
-          {list?.map((item, index) => (
+          {list?.map((item) => (
             <GlassCard
               key={item.id}
               className="flex-between flex-wrap gap-4 card-accent-left"
-              style={{ animationDelay: `${index * 50}ms` }}
+              // style={{ animationDelay: `${index * 50}ms` }}
             >
               <div>
                 <h3 className="text-title text-base">{item.title}</h3>
