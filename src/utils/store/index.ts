@@ -3,6 +3,7 @@ import { logger } from "redux-logger";
 import userReducer from "../feature/user/user.slice";
 import titlesReducer from "../feature/titles/titles.slice";
 import scriptsReducer from "../feature/scripts/script.slice";
+import packagingReducer from "../feature/packaging/packaging.slice";
 
 const middlewares: Middleware[] = [];
 
@@ -15,6 +16,7 @@ export const store = configureStore({
     user: userReducer,
     titles: titlesReducer,
     scripts: scriptsReducer,
+    packaging: packagingReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(middlewares),

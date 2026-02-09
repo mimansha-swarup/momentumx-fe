@@ -28,6 +28,7 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom";
+import { SCRIPT_GENERATION_DELAY_MS } from "@/constants/app";
 
 const ScriptDetails = () => {
   const { scriptId = "" } = useParams();
@@ -89,7 +90,7 @@ const ScriptDetails = () => {
         setTimeout(() => {
           navigate(`/app/script/${scriptId}`);
           dispatch(retrieveScripts());
-        }, 3000);
+        }, SCRIPT_GENERATION_DELAY_MS);
       };
       scriptService.startStreamingScripts(scriptId, updateScript, onDone);
     }
@@ -116,8 +117,8 @@ const ScriptDetails = () => {
           updatedAt: Date.now(),
         })
       );
-    } catch (error) {
-      console.log("Error :", error);
+    } catch {
+      // Error handled silently
     } finally {
       toggleUpdatingMode();
       toggleEditMode();

@@ -1,127 +1,178 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
-import { KeyboardEvent, useState } from "react";
-import Stepper from "@/components/shared/steps";
-import OnboardingCard from "@/components/onboarding/card";
-import { ONBOARDING_FORM_ID, onboardingConfig } from "@/constants/onboarding";
-import { brandName, IS_NEW_USER } from "@/constants/root";
-import OnboardingForm from "@/components/onboarding/form";
-import { onboardingService } from "../../service/onboarding";
-import { useAuthCredential } from "@/hooks/useAuth";
-import { Navigate, useNavigate } from "react-router-dom";
-import useUserProfile from "@/hooks/useUserProfile";
-import { useAppDispatch } from "@/hooks/useRedux";
-import { getUser } from "@/utils/feature/user/user.thunk";
 
-const onboardingSteps = onboardingConfig.map((step) => ({
+
+import { KeyboardEvent, useMemo, useRef, useState } from "react";
+import OnboardingCard from "@/components/onboarding/card";
+
+import { useAuthCredential } from "@/hooks/useAuth";
+import { Navigate } from "react-router-dom";
+import useUserProfile from "@/hooks/useUserProfile";
+
+import onboardingConfig from "@/constants/onboarding/config.json";
+import { getValueByPath, renderUserForm } from "@/utils/onboarding";
+import { getLocalStorageData, setLocalStorageData } from "@/utils/storage";
+import { CURRENT_SECTION, CURRENT_QUESTION } from "@/constants/onboarding";
+import { PROGRESS_GRADIENT } from "@/constants/app";
+import Review from "../Review";
+import Progress from "@/components/onboarding/progress";
+import Sidebar from "@/components/onboarding/sidebar";
+import { QuestionBase, QuestionType } from "@/types/components/onboarding";
+
+const onboardingSteps = onboardingConfig.sections.map((step) => ({
   key: step.id,
-  label: step.stepLabel,
+  label: step.title,
 }));
 
-const onboardingServiceInstance = new onboardingService();
+onboardingSteps.push({
+  key: "review",
+  label: "Review",
+});
+
 const Onboarding = () => {
   const { user } = useAuthCredential();
-  const [currentStep, setCurrentStep] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const {
-    handleInputChange,
-    removeCompetitors,
-    addCompetitors,
-    validate,
-    formData,
-    errors,
-  } = useUserProfile();
+  const [currentSectionIndex, setCurrentSectionIndex] = useState<number>(
+    getLocalStorageData(CURRENT_SECTION, 0)
+  );
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(
+    getLocalStorageData(CURRENT_QUESTION, 0)
+  );
+  const maxSectionIndex = useRef<number>(0);
 
-  const navigate = useNavigate();
-  const disptach = useAppDispatch();
+  const { updateField, validateField, formData, errors } = useUserProfile(true);
 
-  const isPrevDisabled = currentStep === 0;
-  const isNext = currentStep !== onboardingSteps.length - 1;
-  const activeStep = (onboardingSteps[currentStep] || {})
-    .key as `${ONBOARDING_FORM_ID}`;
+  const activeSection = useMemo(
+    () => onboardingConfig.sections[currentSectionIndex],
+    [currentSectionIndex]
+  );
+  const activeQuestion = useMemo(
+    () => activeSection.questions[currentQuestionIndex],
+    [activeSection, currentQuestionIndex]
+  );
 
-  if (user?.niche) {
-    <Navigate to="/app/dashboard" replace />;
+  const isPrevDisabled = useMemo(
+    () => currentQuestionIndex === 0 && currentSectionIndex === 0,
+    [currentQuestionIndex, currentSectionIndex]
+  );
+  const isNext = useMemo(
+    () => currentQuestionIndex !== activeSection.questions.length - 1,
+    [activeSection.questions.length, currentQuestionIndex]
+  );
+
+  const percentCompleted = useMemo(
+    () =>
+      Math.round(
+        ((currentQuestionIndex + 1) / activeSection.questions.length) * 100
+      ),
+    [activeSection.questions.length, currentQuestionIndex]
+  );
+
+  if (user?.business) {
+    return <Navigate to="/app/dashboard" replace />;
   }
 
   const handleKeypress = (e: KeyboardEvent<HTMLInputElement>) => {
-    //it triggers by pressing the enter key
-    if (e.key === "Enter") {
+    // Trigger next only when pressing Ctrl + Enter
+    if (e.key === "Enter" && e.ctrlKey) {
       handleNext();
     }
   };
 
   const handleNext = async () => {
-    if (!validate(onboardingConfig[currentStep])) return;
-    if (currentStep === onboardingSteps.length - 1) {
-      setIsLoading(true);
-      const { purpose, ...payload } = formData;
-      payload.targetAudience = purpose[0];
-      payload.purpose = purpose[1];
+    if (!validateField(activeQuestion as QuestionType)) return;
+    if (currentQuestionIndex === activeSection.questions.length - 1) {
+      if (onboardingSteps.length > currentSectionIndex) {
+        setCurrentQuestionIndex(0);
+        setCurrentSectionIndex((prev) => prev + 1);
+        setLocalStorageData(CURRENT_QUESTION, 0);
+        setLocalStorageData(CURRENT_SECTION, currentSectionIndex + 0);
 
-      const res = await onboardingServiceInstance.saveOnboardingData(payload);
-      if (res.success) {
-        setTimeout(async () => {
-          localStorage.removeItem(IS_NEW_USER);
-          await disptach(getUser());
-          navigate("/app/dashboard");
-          setIsLoading(false);
-        }, 2000);
+        if (maxSectionIndex.current < currentSectionIndex + 1) {
+          maxSectionIndex.current = currentSectionIndex + 1;
+        }
       }
     } else {
-      setCurrentStep((prev) => prev + 1);
+      setCurrentQuestionIndex((prev) => prev + 1);
+      setLocalStorageData(CURRENT_QUESTION, currentQuestionIndex + 1);
     }
   };
 
   const handlePrevious = () => {
-    setCurrentStep((prev) => prev - 1);
+    if (currentSectionIndex > 0 && currentQuestionIndex === 0) {
+      setCurrentSectionIndex((prev) => prev - 1);
+      setCurrentQuestionIndex(
+        onboardingConfig.sections[currentSectionIndex - 1].questions.length - 1
+      );
+      return;
+    }
+    setCurrentQuestionIndex((prev) => prev - 1);
   };
+
+  const onStepperChange = (stepperIndex: number) => {
+    // Add validation
+    if (stepperIndex > maxSectionIndex.current) return;
+    setCurrentSectionIndex(stepperIndex);
+    setCurrentQuestionIndex(0);
+  };
+
+  const showReviewScreen =
+    currentSectionIndex === onboardingConfig.sections.length - 1 &&
+    currentQuestionIndex === activeSection.questions.length - 1;
+
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <div className="hidden w-64 bg-black p-8 md:block">
-        <div className="flex items-center text-lg font-medium text-white mb-12">
-          <div className="mr-2 rounded bg-white p-1">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-5 w-5 text-black"
-            >
-              <path d="M3 3h18v18H3z" />
-            </svg>
-          </div>
-          {brandName}
-        </div>
+      <Sidebar
+        steps={onboardingSteps}
+        activeStep={maxSectionIndex.current}
+        onStepperChange={onStepperChange}
+      />
 
-        <div className="space-y-6">
-          <Stepper steps={onboardingSteps} activeStep={currentStep} />
-        </div>
-      </div>
-
-      <div className="flex flex-1 items-center justify-center p-6">
-        <OnboardingCard
-          onNext={handleNext}
-          onPrevious={handlePrevious}
-          disablePrevious={isPrevDisabled}
-          showNext={isNext}
-          title={onboardingConfig[currentStep].title}
-          description={onboardingConfig[currentStep].description}
-          isLoading={isLoading}
-        >
-          <OnboardingForm
-            onChange={handleInputChange(activeStep)}
-            value={formData[activeStep]}
-            error={errors[activeStep]}
-            addMultiValue={!isNext ? addCompetitors : undefined}
-            removeMultiValue={removeCompetitors}
-            {...onboardingConfig[currentStep]}
-            onKeyPress={handleKeypress}
+      <div className="flex flex-col  flex-1">
+        {!showReviewScreen && (
+          <Progress
+            percent={percentCompleted}
+            bgColor={PROGRESS_GRADIENT[currentSectionIndex]}
           />
-        </OnboardingCard>
+        )}
+        <div className="ml-64">
+          {showReviewScreen ? (
+            <div className="flex flex-col flex-1 items-center justify-center p-6 pt-0">
+              <Review
+                formState={formData}
+                errors={errors}
+                updateField={updateField}
+              />
+            </div>
+          ) : (
+            <div className="flex flex-col flex-1 items-center justify-center p-6 pt-0">
+              <div className="w-full mb-4 ">
+                <h1 className="text-2xl font-bold ">
+                  {activeSection.title} - {currentQuestionIndex + 1} of{" "}
+                  {activeSection.questions.length} questions ({percentCompleted}
+                  % complete)
+                </h1>
+                <p className="text-lg text-gray-500">
+                  {activeSection.subtitle}
+                </p>
+              </div>
+              <OnboardingCard
+                onNext={handleNext}
+                onPrevious={handlePrevious}
+                disablePrevious={isPrevDisabled}
+                showNext={isNext}
+                title={activeQuestion.title}
+                nextSectionCta={activeSection.ctaButton}
+              >
+                {renderUserForm({
+                  question: activeQuestion as QuestionBase,
+                  value: getValueByPath(formData, activeQuestion.path),
+                  updateField,
+                  formState: formData,
+                  // @ts-ignore
+                  onEnter: handleKeypress
+                })}
+              </OnboardingCard>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

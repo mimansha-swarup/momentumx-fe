@@ -23,7 +23,7 @@ const GeneratedContent: FC<IGeneratedContentProps> = ({
   };
   return (
     <div>
-      <h2 className={cn("text-2xl font-semibold", headingClassName)}>
+      <h2 className={cn("text-heading-lg", headingClassName)}>
         {heading}
       </h2>
       {list?.length === 0 ? (
@@ -32,17 +32,17 @@ const GeneratedContent: FC<IGeneratedContentProps> = ({
           className="mt-4"
         />
       ) : (
-        // <p className="text-gray-500 text-sm">No generated content available</p>
         <div className="flex flex-col gap-4 mt-4" ref={listRef}>
           {contentLoading && <ListShimmer count={1} />}
           {list?.map((item) => (
             <GlassCard
               key={item.id}
-              className=" flex justify-between flex-wrap gap-4 items-center border-l- border-l--primary"
+              className="flex-between flex-wrap gap-4 card-accent-left"
+              // style={{ animationDelay: `${index * 50}ms` }}
             >
               <div>
-                <h3 className="font-semibold text-base">{item.title}</h3>
-                <p className="text-gray-600 text-xs">
+                <h3 className="text-title text-base">{item.title}</h3>
+                <p className="text-caption">
                   created on: {formatToSimpleDate(item.createdAt)}
                 </p>
               </div>
@@ -51,18 +51,18 @@ const GeneratedContent: FC<IGeneratedContentProps> = ({
                   <Button
                     size={"sm"}
                     variant={"outline"}
-                    className="hover:scale-110 "
+                    className="btn-outline-hover"
                     onClick={() => navigate(`/app/script/${item.id}`)}
                   >
-                    <FileText /> Show Script
+                    <FileText className="size-4" /> Show Script
                   </Button>
                 ) : (
                   <Button
                     size={"sm"}
-                    className="hover:scale-110"
+                    className="hover-scale bg-primary hover:bg-primary/90"
                     onClick={() => handleScriptGeneration(item.id, item.title)}
                   >
-                    <Sparkles />
+                    <Sparkles className="size-4" />
                     Generate
                   </Button>
                 )}

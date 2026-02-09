@@ -1,96 +1,174 @@
-import { ONBOARDING_FORM_ID } from "@/constants/onboarding";
-import { OnboardingConfigType } from "@/types/components/onboarding";
+
+
+import {
+  INITIAL_ONBOARDING_STATE,
+  ONBOARDING_FORM,
+} from "@/constants/onboarding";
+import {
+  IOnboardingPayload,
+  GroupQuestion,
+  ConditionalRule,
+  DeepNest,
+  StandardConditional,
+  QuestionType,
+} from "@/types/components/onboarding";
 import { IUserProfile } from "@/types/feature/user";
-import { validateStep } from "@/utils/onboarding";
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { getValueByPath } from "@/utils/onboarding";
+import { useEffect, useState } from "react";
 
-const INITIAL_STATE = {
-  website: "",
-  niche: "",
-  competitors: [""],
-  // targetAudience: "",
-  userName: "",
-  purpose: ["", ""],
-};
-
-const getInitialState = (user: IUserProfile | null) => ({
-  website: user?.website || "",
-  niche: user?.niche || "",
-  competitors: user?.competitors?.map((url) => url.url) || [""],
-  // targetAudience: user?.targetAudience || "",
-  userName: user?.userName || "",
-  purpose: user?.userName ? [user?.purpose, user?.targetAudience] : ["", ""],
-});
-
-export type errorStateType = ReturnType<typeof getInitialState>;
-export const useUserProfile = (preFilledState?: IUserProfile | null) => {
-  const [formData, setFormData] = useState({ ...INITIAL_STATE });
-  const [errors, setErrors] = useState({ ...INITIAL_STATE });
+export const useUserProfile = (
+  saveFormData = false,
+  preFilledState?: IUserProfile | null
+) => {
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [formData, setFormData] = useState<IOnboardingPayload>(() => {
+    if (!saveFormData) return preFilledState || INITIAL_ONBOARDING_STATE;
+    try {
+      const saved = localStorage.getItem(ONBOARDING_FORM);
+      return saved
+        ? (JSON.parse(saved) satisfies DeepNest)
+        : INITIAL_ONBOARDING_STATE;
+    } catch {
+      return INITIAL_ONBOARDING_STATE;
+    }
+  });
 
   useEffect(() => {
-    if (preFilledState) setFormData(getInitialState(preFilledState));
-  }, [preFilledState]);
+    if (saveFormData) {
+      localStorage.setItem(ONBOARDING_FORM, JSON.stringify(formData));
+    }
+  }, [formData]);
 
-  const handleInputChange =
-    (fieldName: string) =>
-    (e: ChangeEvent<HTMLInputElement>, index?: number) => {
-      setFormData((prev) => {
-        if (
-          fieldName === ONBOARDING_FORM_ID.COMPETITORS &&
-          Number.isInteger(index) &&
-          index !== undefined
-        ) {
-          const newCompetitors = [...prev.competitors];
-          newCompetitors[index] = e.target.value;
-          return { ...prev, competitors: newCompetitors };
-        }
+  // ===========================
+  //   UPDATE FIELD SAFE TYPING
+  // ===========================
+  const updateField = (path: string, value: unknown) => {
+    setFormData((prev) => {
+      const newState = structuredClone(prev);
 
-        if (
-          fieldName === ONBOARDING_FORM_ID.CHANNEL_PURPOSE &&
-          Number.isInteger(index) &&
-          index !== undefined
-        ) {
-          const purposeArr = [...prev.purpose];
-          purposeArr[index] = e.target.value;
-          return { ...prev, purpose: purposeArr };
+      const parts = path
+        .replace(/\[(\d+)\]/g, ".$1")
+        .split(".")
+        .map((part) => (isNaN(Number(part)) ? part : Number(part)));
+
+      let current: any = newState;
+
+      for (let i = 0; i < parts.length - 1; i++) {
+        const key = parts[i];
+        const nextKey = parts[i + 1];
+
+        if (current[key] == null) {
+          current[key] = typeof nextKey === "number" ? [] : {};
         }
-        return { ...prev, [fieldName]: e.target.value };
-      });
+        current = current[key];
+      }
+
+      current[parts[parts.length - 1]] = value;
+      return newState;
+    });
+  };
+
+  // ===========================
+  //      VALIDATION LOGIC
+  // ===========================
+  const validateQuestion = (question: QuestionType): boolean => {
+    let valid = true;
+
+    const validateSimpleField = (
+      q: QuestionType,
+      overridePath?: string
+    ): boolean => {
+      const path: string = overridePath || q.path || "";
+      const value = getValueByPath(
+        formData as unknown as DeepNest,
+        path
+      ) as string;
+      let error = "";
+
+      if (q.required && (!value || value.length === 0)) {
+        error = "This field is required.";
+      } else if (q.minLength && value?.length < q.minLength) {
+        error = `Minimum ${q.minLength} characters required.`;
+      } else if (q.maxLength && value?.length > q.maxLength) {
+        error = `Maximum ${q.maxLength} characters allowed.`;
+      } else if (q.validation?.pattern) {
+        const regex = new RegExp(q.validation.pattern);
+        if (!regex.test(value)) {
+          error = "Invalid format.";
+        }
+      }
+
+      setErrors((prev) => ({ ...prev, [path]: error }));
+      return !error;
     };
 
-  const addCompetitors = () => {
-    setFormData((prev) => {
-      return { ...prev, competitors: [...prev.competitors, ""] };
-    });
-    setErrors((prev) => {
-      return { ...prev, competitors: [...prev.competitors, ""] };
-    });
-  };
+    const validateGroup = (q: GroupQuestion): boolean => {
+      let ok = true;
+      const rows= getValueByPath(formData, `${q.path}`) as [] || [];
 
-  const removeCompetitors = (index: number) => () => {
-    setFormData((prev) => {
-      const newCompetitors = [...prev.competitors];
-      newCompetitors.splice(index, 1);
-      return { ...prev, competitors: newCompetitors };
-    });
-    setErrors((prev) => {
-      const newErrors = [...prev.competitors];
-      newErrors.splice(index, 1);
-      return { ...prev, competitors: newErrors };
-    });
-  };
+      rows.forEach((_: unknown, idx: number) => {
+        q.groupFields.forEach((field) => {
+          const fullPath = `${q.path}[${idx}].${field.path}`;
+          const fieldValid = validateSimpleField(field as any, fullPath);
+          if (!fieldValid) ok = false;
+        });
+      });
 
-  const validate = useCallback(
-    (userData: OnboardingConfigType | OnboardingConfigType[]) =>
-      validateStep(userData, formData, errors, setErrors),
-    [formData, errors]
-  );
+      return ok;
+    };
+
+    const validateConditional = (q: QuestionType): boolean => {
+      let conds: (ConditionalRule | StandardConditional)[] = [];
+
+      if (q.conditional) {
+        conds = q.conditional
+          ? Array.isArray(q.conditional)
+            ? q.conditional
+            : [q.conditional]
+          : [];
+      }
+
+      let ok = true;
+      const fieldValue = getValueByPath(formData, `${q.path}`) as string;
+
+      conds.forEach((cond: ConditionalRule | StandardConditional) => {
+        const triggers = Array.isArray(cond.triggerValue)
+          ? cond.triggerValue
+          : [cond.triggerValue];
+
+        const show =
+          q.type === "checkbox"
+            ? (fieldValue as unknown as string[])?.some((v: string) =>
+                triggers.includes(v)
+              )
+            : triggers.includes(fieldValue);
+
+        if (show) {
+          cond.fields.forEach((cf) => {
+            const path = cf.path ?? "";
+            const fieldOk = validateSimpleField(cf as QuestionType, path);
+            if (!fieldOk) ok = false;
+          });
+        }
+      });
+
+      return ok;
+    };
+
+    if (question.type === "group") {
+      if (!validateGroup(question)) valid = false;
+    } else {
+      if (!validateSimpleField(question)) valid = false;
+    }
+
+    if (!validateConditional(question)) valid = false;
+
+    return valid;
+  };
 
   return {
-    handleInputChange,
-    removeCompetitors,
-    addCompetitors,
-    validate,
+    updateField,
+    validateField: validateQuestion,
     formData,
     errors,
   };

@@ -1,0 +1,2 @@
+# Ignore Tailwind CSS file - Prettier strips @layer blocks
+src/index.css

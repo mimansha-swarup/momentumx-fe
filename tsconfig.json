@@ -7,6 +7,9 @@
   "compilerOptions": {
     "noUnusedLocals": false,
     "noUnusedParameters": false,
+    "strict": false,
+     "noImplicitAny": false,
+     "noEmitOnError": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

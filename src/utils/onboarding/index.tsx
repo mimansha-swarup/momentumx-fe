@@ -1,185 +1,285 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ONBOARDING_FORM_ID } from "@/constants/onboarding";
-import { IOnboardingFormProps, OnboardingForm } from "@/types/components/login";
-import { OnboardingConfigType } from "@/types/components/onboarding";
-import { Label } from "@/components/ui/label";
-import { Trash2 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { errorStateType } from "@/hooks/useUserProfile";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  IOnboardingPayload,
+  DeepNest,
+  QuestionBase,
+  Option,
+  GroupField,
+  ConditionalRule,
+} from "@/types/components/onboarding";
+import { KeyboardEventHandler } from "react";
 
-export const validateStep = (
-  currentStep: OnboardingConfigType | OnboardingConfigType[],
-  formData: OnboardingForm,
-  errors: errorStateType,
-  setErrors: (errors: errorStateType) => void
-) => {
-  const steps = Array.isArray(currentStep) ? currentStep : [currentStep];
-  const newErrors = { ...errors };
-  let isValid = true;
+export const getValueByPath = (obj: DeepNest | IOnboardingPayload, path: string): unknown => {
+  if (!obj || !path) return undefined;
 
-  const urlRegex =
-    /^(https?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/\S*)?$/;
-  const youtubeRegex = /^https:\/\/www\.youtube\.com\/@[a-zA-Z0-9_-]+$/;
+  // Convert "a.b[0].c" → ["a", "b", 0, "c"]
+  const parts = path
+    .replace(/\[(\d+)\]/g, ".$1") // [0] → .0
+    .split(".")
+    .map((part) => (isNaN(Number(part)) ? part : Number(part)));
 
-  steps.forEach((step) => {
-    const { isMandatory, id } = step;
-    if (!isMandatory && !formData[id]) return;
-
-    switch (id) {
-      case ONBOARDING_FORM_ID.USER_NAME:
-        newErrors.userName = !formData.userName
-          ? "Channel url is required"
-          : !youtubeRegex.test(formData.userName)
-            ? "Please enter a valid YouTube Channel"
-            : "";
-
-        if (newErrors.userName) isValid = false;
-        break;
-
-      case ONBOARDING_FORM_ID.CHANNEL_PURPOSE:
-        newErrors.purpose = formData.purpose?.map((blanks, idx) => {
-          return !blanks ? `Please fill the blank  ${idx + 1}` : "";
-        });
-
-        if (newErrors.purpose?.some((val) => !!val)) isValid = false;
-        break;
-
-      case ONBOARDING_FORM_ID.WEBSITE:
-        newErrors.website = !formData.website
-          ? "Website URL is required"
-          : !urlRegex.test(formData.website)
-            ? "Please enter a valid website URL"
-            : "";
-        if (newErrors.website) isValid = false;
-        break;
-
-      case ONBOARDING_FORM_ID.NICHE:
-        newErrors.niche = !formData.niche ? "Please select a niche" : "";
-        if (newErrors.niche) isValid = false;
-        break;
-
-      case ONBOARDING_FORM_ID.COMPETITORS:
-        newErrors.competitors = formData.competitors.map((competitor) => {
-          const url =
-            typeof competitor === "string" ? competitor : competitor.url;
-          return !url
-            ? ((isValid = false), "Competitor URL is required")
-            : !youtubeRegex.test(url)
-              ? ((isValid = false), "Please enter a valid YouTube URL")
-              : "";
-        });
-        break;
-
-      default:
-        break;
-    }
-  });
-
-  console.log("newErrors: ", newErrors);
-  setErrors(newErrors);
-  return isValid;
+  return parts.reduce<unknown>((acc, key: string | number) => {
+    if (acc == null) return undefined;
+    return (acc as Record<string | number, unknown>)[key];
+  }, obj);
 };
 
 export const renderUserForm = ({
-  inputType,
-  placeholder,
-  label,
-  id,
+  question,
   value,
-  error,
-  onChange,
-  removeMultiValue,
-  onKeyPress = () => null,
-  valueFormatter,
-  className = "",
-}: IOnboardingFormProps) => {
-  const placeholderStr = typeof placeholder === "string" ? placeholder : "";
-  switch (inputType) {
-    case "multi-text":
-      if (!Array.isArray(value)) {
-        return <></>;
-      }
-      return value?.map((multiValue, index) => {
+  updateField,
+  formState,
+  errors,
+  onEnter
+}: {
+  question: QuestionBase;
+  value: unknown;
+  updateField: (path: string, value: unknown) => void;
+  formState: IOnboardingPayload;
+  errors: Record<string, string>;
+  // @ts-ignore
+  onEnter: (e: KeyboardEventHandler<HTMLInputElement>) => void
+}) => {
+  /* -------------------------------------------------------------------------- */
+  /*                               RENDER INPUT                                 */
+  /* -------------------------------------------------------------------------- */
+
+  const renderInput = () => {
+    switch (question.type) {
+      case "text":
         return (
-          <div key={index} className="flex items-start space-x-2">
-            <div className="flex-1 space-y-2 mb-4">
-              <div className="flex items-center justify-between">
-                <Label htmlFor={`competitor-${index}`}>
-                  {index === 0
-                    ? "YouTube Competitor"
-                    : `YouTube Competitor ${index + 1}`}
-                </Label>
-                {value.length > 1 && (
+          <Input
+            type="text"
+            value={(value as string) || ""}
+            onChange={(e) => updateField(question.path || "", e.target.value)}
+            placeholder={question.placeholder || ""}
+            required={question.required}
+            // @ts-ignore
+            onKeyDown={onEnter}
+          />
+        );
+
+      case "textarea":
+        return (
+          <Textarea
+            value={(value as string) || ""}
+            onChange={(e) => updateField(question.path || "", e.target.value)}
+            placeholder={question.placeholder || ""}
+            rows={question.rows || 4}
+            required={question.required}
+            // @ts-ignore
+            onKeyDown={onEnter}
+          />
+        );
+
+      case "radio":
+        return (
+          <RadioGroup
+            value={value as string}
+            onValueChange={(val) => updateField(question.path || "", val)}
+          >
+            {question?.options?.map((opt: Option) => (
+              <label key={opt.value} className="flex items-center gap-2">
+                <RadioGroupItem value={opt.value} />
+                <span>{opt.label}</span>
+              </label>
+            ))}
+          </RadioGroup>
+        );
+
+      case "checkbox":
+        return (
+          <div className="space-y-2">
+            {question.options?.map((opt: Option) => {
+              const checked = Array.isArray(value)
+                ? value.includes(opt.value)
+                : false;
+
+              return (
+                <label key={opt.value} className="flex items-center gap-2">
+                  <Checkbox
+                    checked={checked}
+                    onCheckedChange={(state) => {
+                      let updated = Array.isArray(value) ? [...(value as string[])] : [];
+                      if (state) updated.push(opt.value);
+                      else updated = updated.filter((v) => v !== opt.value);
+
+                      updateField(question.path || "", updated);
+                    }}
+                  />
+                  <span>{opt.label}</span>
+                </label>
+              );
+            })}
+          </div>
+        );
+
+      case "dropdown":
+        return (
+          <Select
+            value={(value as string) || ""}
+            onValueChange={(val) => updateField(question.path || "", val)}
+          >
+            <SelectTrigger className="min-w-[200px] transition-all duration-200">
+              <SelectValue placeholder={question.placeholder || ""} />
+            </SelectTrigger>
+
+            <SelectContent>
+              {question.options?.map((opt: Option) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        );
+
+      /* -------------------------------------------------------------------------- */
+      /*                                  GROUP                                     */
+      /* -------------------------------------------------------------------------- */
+
+      case "group": {
+        const rows = Array.isArray(value) ? (value as Record<string, unknown>[]) : [{}];
+
+        const addRow = () => {
+          updateField(question.path || "", [...rows, {}]);
+        };
+
+        const removeRow = (index: number) => {
+          const filtered = rows.filter((_, i) => i !== index);
+          updateField(question.path || "", filtered);
+        };
+
+        return (
+          <div className="max-h-[300px] overflow-x-auto">
+            {rows.map((_row, index: number) => (
+              <div
+                key={index}
+                className="border rounded-lg p-4 py-2 bg-muted/20"
+              >
+                {question.groupFields?.map((f: GroupField) => {
+                  const fullPath = `${question.path}[${index}].${f.path}`;
+
+                  return (
+                    <div key={fullPath}>
+                      {renderUserForm({
+                        question: { ...f, path: fullPath, id: fullPath } as QuestionBase,
+                        value: getValueByPath(formState, fullPath),
+                        updateField,
+                        formState,
+                        errors,
+                        onEnter
+                      })}
+                    </div>
+                  );
+                })}
+
+                {rows.length > 1 && (
                   <Button
-                    variant="ghost"
-                    size="icon"
-                    className=""
-                    onClick={removeMultiValue?.(index)}
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => removeRow(index)}
                   >
-                    <Trash2 className="h-5 w-5" />
+                    Remove
                   </Button>
                 )}
               </div>
-              <Input
-                id={`competitor-${index}`}
-                placeholder={placeholderStr}
-                value={valueFormatter ? valueFormatter(multiValue) : multiValue}
-                onChange={(e) => onChange(e, index)}
-                className="mt-4"
-              />
-              {error[index] && (
-                <p className="text-sm text-red-500">{error[index]}</p>
-              )}
-            </div>
+            ))}
+            <Button size="sm" onClick={addRow}>
+              + Add Another
+            </Button>
           </div>
         );
-      });
+      }
 
-    case "fib": {
-      const mappedText = label.split("{blank}");
-      return (
-        <>
-          <div className="flex gap-1.5 flex-wrap items-end text-base ">
-            {mappedText?.map((text, idx) => (
-              <>
-                <p className="inline-block">{text}</p>
-                {mappedText.length - 1 !== idx && (
-                  <Input
-                    value={value[idx]}
-                    className=" inline-block w-[7.5rem] h-6 p-1.5"
-                    onChange={(e) => onChange(e, idx)}
-                    placeholder={placeholder[idx]}
-                  />
-                )}
-              </>
-            ))}
-          </div>
-          {Array.isArray(error) &&
-            error?.map((err) => (
-              <p className="my-0 text-sm text-[12px] text-red-500">{err}</p>
-            ))}
-        </>
-      );
+      default:
+        return null;
     }
-    case "text":
-    default:
+  };
+
+  /* -------------------------------------------------------------------------- */
+  /*                         CONDITIONAL FIELD HANDLING                          */
+  /* -------------------------------------------------------------------------- */
+
+  const renderConditionalFields = () => {
+    if (!question.conditional) return null;
+
+    const conditionList = Array.isArray(question.conditional)
+      ? question.conditional
+      : [question.conditional];
+
+    return conditionList.map((condition: ConditionalRule, condIndex: number) => {
+      const triggers = Array.isArray(condition.triggerValue)
+        ? condition.triggerValue
+        : [condition.triggerValue];
+
+      const shouldShow =
+        question.type === "checkbox"
+          ? triggers.some((t) => (value as string[])?.includes(t))
+          : triggers.includes(value as string);
+
+      if (!shouldShow) return null;
+
       return (
-        <div className={cn("space-y-2", className)}>
-          <Label htmlFor={id}>{label}</Label>
-          <Input
-            className="mt-4"
-            id={id}
-            name={id}
-            placeholder={placeholderStr}
-            value={valueFormatter ? valueFormatter(value) : value}
-            onChange={onChange}
-            onKeyDown={onKeyPress}
-          />
-          {error && <p className="text-sm text-red-500">{error}</p>}
+        <div key={condIndex}>
+          {condition.fields.map((sub) => {
+            const subPath = sub.path || question.path || "";
+
+            return (
+              <div key={sub.id} className="border-l pl-4 mt-4 space-y-1">
+                {renderUserForm({
+                  question: { ...sub, id: sub.id, path: subPath } as QuestionBase,
+                  value: getValueByPath(formState, subPath),
+                  updateField,
+                  formState,
+                  errors,
+                  onEnter
+                })}
+              </div>
+            );
+          })}
         </div>
       );
-  }
+    });
+  };
+
+  /* -------------------------------------------------------------------------- */
+  /*                                  RENDER                                    */
+  /* -------------------------------------------------------------------------- */
+
+  return (
+    <div key={question.id} className="mb-2">
+      <label className="block font-medium mb-2">
+        {question.label}
+        {question.required && <span className="text-red-500 ml-1">*</span>}
+      </label>
+
+      {renderInput()}
+
+      {renderConditionalFields()}
+
+      {question.path && errors?.[question.path] && (
+        <p className="text-red-500 text-sm mt-1">{errors[question.path]}</p>
+      )}
+
+      {question.helperText && (
+        <p className="text-xs text-gray-500 mt-2 whitespace-pre-line">
+          {question.helperText}
+        </p>
+      )}
+    </div>
+  );
 };
 
 export function extractYouTubeHandle(url: string) {

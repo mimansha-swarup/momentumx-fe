@@ -6,9 +6,13 @@ const GlassCard: FC<IGlassCardProps> = ({ children, className = "" }) => {
   return (
     <div
       className={cn(
-        ` border-[1px] border-accent shadow-sm dark:shadow-white/8   p-4 rounded-xl`,
-        // ` border-[1px] border-accent bg-sidebar dark:shadow-white/8   p-4 rounded-xl`,
-        className
+        "group relative overflow-hidden rounded-2xl p-4",
+        "bg-gradient-to-br from-slate-900/90 to-slate-950/90",
+        "border border-slate-700/50",
+        "backdrop-blur-xl",
+        "transition-all duration-300",
+        "hover:border-slate-600/50 hover:shadow-xl hover:shadow-slate-900/50",
+        className,
       )}
     >
       {children}

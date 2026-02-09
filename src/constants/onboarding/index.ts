@@ -1,75 +1,78 @@
-export const enum ONBOARDING_FORM_ID {
-  USER_NAME = "userName",
-  // TARGET_AUDIENCE = "targetAudience",
-  WEBSITE = "website",
-  NICHE = "niche",
-  COMPETITORS = "competitors",
-  CHANNEL_PURPOSE = "purpose",
-}
+import { DeepNest } from "@/types/components/onboarding";
 
-export const onboardingConfig = [
-  {
-    stepLabel: "Channel",
-    title: "What's your Channel url?",
-    description: "Tell us about your channel url",
-    id: ONBOARDING_FORM_ID.USER_NAME,
-    label: "Channel",
-    placeholder: "https://www.youtube.com/@userhandle",
-    inputType: "text",
-    isMandatory: true,
-  },
-  {
-    stepLabel: "Niche",
-    title: "What's your niche?",
-    description: "Select the category that best describes your content",
-    id: ONBOARDING_FORM_ID.NICHE,
-    label: "Your Niche",
-    placeholder: "Enter a niche",
-    inputType: "text",
-    isMandatory: true,
-  },
-  {
-    stepLabel: "Purpose",
-    title: "What’s your channel’s purpose?",
-    description:
-      "Share your channel's purpose — e.g., 'I help new developers land their first tech job.'",
-    id: ONBOARDING_FORM_ID.CHANNEL_PURPOSE,
-    placeholder: ["audience", "purpose"],
-    inputType: "fib",
-    isMandatory: true,
-    label: "I help {blank} to achieve {blank} from my experience.",
+export const INITIAL_ONBOARDING_STATE = {
+  business: {
+    type: "",
+    type_other: "",
+    offering: "",
+    price_point: "",
+    recurring_value: "",
+    monthly_revenue: "",
+    primary_goal: "",
+    current_channels: [],
   },
 
-  {
-    stepLabel: "Website",
-    title: "What's your website?",
-    description: "Enter your website URL to get started",
-    id: ONBOARDING_FORM_ID.WEBSITE,
-    label: "Website URL",
-    placeholder: "https://example.com",
-    inputType: "text",
-    isMandatory: false,
+  avatar: {
+    definition: "",
+    pain_point: "",
+    aspiration: "",
+    failed_attempts: [],
+    false_belief: "",
+    online_presence: [],
+    burning_questions: [],
   },
-  // {
-  //   stepLabel: "Audience",
-  //   title: "What's your Target Audience?",
-  //   description: "Tell us about your audience",
-  //   id: ONBOARDING_FORM_ID.TARGET_AUDIENCE,
-  //   label: "Target Audience",
-  //   placeholder: "Developers, Kids, etc",
-  //   inputType: "text",
-  //   isMandatory: true,
-  //   className: "col-span-2",
-  // },
 
-  {
-    stepLabel: "Competitors",
-    title: "Who are your YouTube competitors?",
-    description: "Add links to YouTube channels similar to yours",
-    id: ONBOARDING_FORM_ID.COMPETITORS,
-    label: "YouTube Competitor",
-    placeholder: "https://youtube.com/channel/...",
-    inputType: "multi-text",
-    isMandatory: true,
+  positioning: {
+    unique_method: "",
+    enemy: "",
+    credibility: "",
+    one_liner: "",
+    competitors: [{ channel: "", doWell: "", missing: "" }],
+    winning_content: "",
   },
-];
+
+  production: {
+    time_commitment: "",
+    experience_level: "",
+    preferred_formats: [],
+    tone: "",
+    team_size: "",
+    team_details: "",
+    target_cadence: "",
+    preferred_days: [],
+    preferred_time: "",
+    timezone: "",
+  },
+
+  assets: {
+    existing: [],
+    youtube_status: "",
+    youtube_url: "",
+    email_subscribers: "",
+    brand_status: "",
+    brand_files: "",
+  },
+
+  cta: {
+    primary_type: "",
+    primary_url: "",
+    primary_description: "",
+    copy: "",
+  },
+
+  integrations: {
+    requested: [],
+  },
+
+  meta: {
+    onboarding_completed: false,
+    strategy_generated: false,
+    first_ideas_generated: false,
+    first_video_scripted: false,
+    first_video_published: false,
+  },
+} satisfies DeepNest;
+
+export const ONBOARDING_FORM = "ONBOARDING_FORM";
+export const CURRENT_SECTION = "CURRENT_SECTION";
+export const CURRENT_QUESTION = "CURRENT_QUESTION";

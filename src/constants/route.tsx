@@ -1,13 +1,17 @@
+import { lazy, Suspense } from "react";
 import ProtectedLayout from "@/components/shared/ProtectedRoute";
 import Dashboard from "@/pages/Dashboard";
 import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
-import Onboarding from "@/pages/Onboarding";
 import Profile from "@/pages/Profile";
 import ScriptDetails from "@/pages/ScriptDetails";
 import ScriptPage from "@/pages/Scripts";
 import TitlePage from "@/pages/Titles";
+import PackagingPage from "@/pages/Packaging";
 import { createBrowserRouter } from "react-router-dom";
+import { HIDE_OLD_FLOW } from "./root";
+import RootLoader from "@/components/shared/Loader";
+const Onboarding = lazy(() => import("@/pages/Onboarding"));
 
 export const localRouter = createBrowserRouter([
   { path: "/login", element: <Login /> },
@@ -15,28 +19,50 @@ export const localRouter = createBrowserRouter([
   {
     path: "/app",
     element: <ProtectedLayout />,
-    children: [
-      { path: "onboarding", element: <Onboarding /> },
-      {
-        path: "dashboard",
-        element: <Dashboard />,
-      },
-      {
-        path: "profile",
-        element: <Profile />,
-      },
-      {
-        path: "title",
-        element: <TitlePage />,
-      },
-      {
-        path: "scripts",
-        element: <ScriptPage />,
-      },
-      {
-        path: "script/:scriptId",
-        element: <ScriptDetails />,
-      },
-    ],
+    children: HIDE_OLD_FLOW
+      ? [
+          {
+            path: "dashboard",
+            element: <Dashboard />,
+          },
+          {
+            path: "packaging",
+            element: <PackagingPage />,
+          },
+        ]
+      : [
+          {
+            path: "onboarding",
+            element: (
+              <Suspense fallback={<RootLoader />}>
+                <Onboarding />
+              </Suspense>
+            ),
+          },
+          {
+            path: "dashboard",
+            element: <Dashboard />,
+          },
+          {
+            path: "profile",
+            element: <Profile />,
+          },
+          {
+            path: "title",
+            element: <TitlePage />,
+          },
+          {
+            path: "scripts",
+            element: <ScriptPage />,
+          },
+          {
+            path: "script/:scriptId",
+            element: <ScriptDetails />,
+          },
+          {
+            path: "packaging",
+            element: <PackagingPage />,
+          },
+        ],
   },
 ]);

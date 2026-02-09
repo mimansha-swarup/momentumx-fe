@@ -18,13 +18,21 @@ const EmptyState: FC<EmptyStateProps> = ({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center text-center px-4 py-12 bg-muted/20 rounded-xl",
-        className
+        "group relative overflow-hidden",
+        "bg-gradient-to-br from-slate-900/90 to-slate-950/90",
+        "border border-slate-700/50",
+        "backdrop-blur-xl",
+        "transition-all duration-300",
+        "hover:border-slate-600/50 hover:shadow-xl hover:shadow-slate-900/50",
+        "flex flex-col flex-center text-center px-4 py-12 rounded-xl",
+        className,
       )}
     >
-      <FilePlus className="w-10 h-10 text-muted-foreground mb-4" />
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <p className="text-sm text-muted-foreground mt-1 mb-4">{description}</p>
+      <div className="icon-container size-14 mb-4">
+        <FilePlus className="w-7 h-7" />
+      </div>
+      <h3 className="text-title text-lg">{title}</h3>
+      <p className="text-label mt-1 mb-4">{description}</p>
       {action}
     </div>
   );

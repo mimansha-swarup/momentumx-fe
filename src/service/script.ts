@@ -36,9 +36,8 @@ class ScriptService {
       evtSource.close();
     });
 
-    evtSource.onerror = (e) => {
-      console.log("SSE Error:", e);
-      evtSource.close(); // close on error (or add retry)
+    evtSource.onerror = () => {
+      evtSource.close();
     };
 
     return evtSource; // optionally return for later closing
@@ -49,7 +48,7 @@ class ScriptService {
       const response = await baseFetch.get(this.urls.scripts);
       return response.data;
     } catch {
-      console.error("Error while fetching saved titles");
+      // Error handled by caller
     }
   }
 
@@ -60,7 +59,7 @@ class ScriptService {
       );
       return response.data;
     } catch {
-      console.error("Error while fetching saved titles");
+      // Error handled by caller
     }
   }
   async editScript(id: string, data: Record<string, string | number>) {
@@ -71,7 +70,7 @@ class ScriptService {
       );
       return response.data;
     } catch {
-      console.error("Error while fetching saved titles");
+      // Error handled by caller
     }
   }
 }

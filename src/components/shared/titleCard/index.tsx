@@ -51,8 +51,8 @@ const TitleCard: FC<IGeneratedTopic> = ({
           updatedAt: Date.now(),
         })
       );
-    } catch (error) {
-      console.log("error", error);
+    } catch {
+      // Error handled silently
     } finally {
       toggleLoading();
       toggleEditing();

@@ -1,0 +1,735 @@
+{
+  "sections": [
+    {
+      "id": "business",
+      "title": "Business Foundation",
+      "subtitle": "Help us understand what you do",
+      "progressOrder": 1,
+      "ctaButton": "Next: Tell us about your audience",
+      "questions": [
+        {
+          "id": "business_type",
+          "title": "Business Type",
+          "label": "What best describes your business?",
+          "type": "radio",
+          "required": true,
+          "options": [
+            { "value": "service_business", "label": "Service Business" },
+            { "value": "saas", "label": "SaaS / Software Product" },
+            { "value": "info_product", "label": "Info Products" },
+            { "value": "agency", "label": "Agency" },
+            { "value": "ecommerce", "label": "E-commerce / Physical Products" },
+            { "value": "hybrid", "label": "Hybrid" },
+            { "value": "other", "label": "Other" }
+          ],
+          "conditional": {
+            "triggerValue": "other",
+            "fields": [
+              {
+                "id": "business_type_other",
+                "type": "text",
+                "label": "Tell us more about your business (one sentence)",
+                "minLength": 10,
+                "maxLength": 150,
+                "required": true
+              }
+            ]
+          },
+          "helperText": "Different business models need different content strategies.",
+          "example": "Coaching, consulting, done-for-you services",
+          "path": "business.type",
+          "validation": { "required": true }
+        },
+        {
+          "id": "business_offering",
+          "title":"What You Sell",
+          "label": "In one sentence, what do you sell?",
+          "type": "text",
+          "placeholder": "e.g., LinkedIn ghostwriting for B2B founders",
+          "minLength": 10,
+          "maxLength": 150,
+          "required": true,
+          "helperText": "Be specific! Instead of 'marketing services,' say 'Google Ads management for e-commerce brands making $50K-$500K/month'.",
+          "path": "business.offering",
+          "validation": { "required": true, "minLength": 10, "maxLength": 150 }
+        },
+        {
+          "id": "business_price_point",
+          "title":"Price Point",
+          "label": "What's your typical customer/client value?",
+          "type": "radio",
+          "required": true,
+          "options": [
+            { "value": "under_500", "label": "Under $500" },
+            { "value": "500_to_3k", "label": "$500 - $3,000" },
+            { "value": "3k_to_10k", "label": "$3,000 - $10,000" },
+            { "value": "10k_plus", "label": "$10,000+" },
+            { "value": "recurring", "label": "Recurring/Retainer" },
+            { "value": "freemium", "label": "Freemium / Free + Upsell" }
+          ],
+          "conditional": {
+            "triggerValue": "recurring",
+            "fields": [
+              {
+                "id": "recurring_value",
+                "type": "dropdown",
+                "label": "What's the average monthly value?",
+                "options": [
+                  { "value": "50_to_200", "label": "$50 - $200" },
+                  { "value": "200_to_1k", "label": "$200 - $1K" },
+                  { "value": "1k_to_5k", "label": "$1K - $5K" },
+                  { "value": "5k_plus", "label": "$5K+" }
+                ],
+                "required": true
+              }
+            ]
+          },
+          "path": "business.price_point"
+        },
+        {
+          "id": "business_monthly_revenue",
+          "title":"Current Revenue",
+          "label": "What's your current monthly revenue?",
+          "type": "dropdown",
+          "options": [
+            { "value": "pre_revenue", "label": "Pre-revenue" },
+            { "value": "under_5k", "label": "Under $5,000/month" },
+            { "value": "5k_to_10k", "label": "$5,000 - $10,000/month" },
+            { "value": "10k_to_30k", "label": "$10,000 - $30,000/month" },
+            { "value": "30k_to_100k", "label": "$30,000 - $100,000/month" },
+            { "value": "100k_plus", "label": "$100,000+/month" },
+            { "value": "prefer_not", "label": "Prefer not to say" }
+          ],
+          "helperText": "This helps us calibrate expectations and suggest realistic timelines.",
+          "path": "business.monthly_revenue"
+        },
+        {
+          "title":"Primary Goal",
+          "id": "business_primary_goal",
+          "label": "What's your #1 goal for YouTube?",
+          "type": "radio",
+          "required": true,
+          "options": [
+            { "value": "leads", "label": "Get leads/sales calls" },
+            { "value": "direct_sales", "label": "Direct sales" },
+            { "value": "authority", "label": "Build authority/brand" },
+            { "value": "awareness", "label": "Audience growth" },
+            { "value": "retention", "label": "Customer retention/education" }
+          ],
+          "path": "business.primary_goal"
+        },
+        {
+          "title":"Current Marketing",
+          "id": "business_current_channels",
+          "label": "What marketing channels currently work for you?",
+          "type": "checkbox",
+          "options": [
+            { "value": "none", "label": "Nothing is working yet" },
+            { "value": "email", "label": "Email marketing" },
+            { "value": "linkedin", "label": "LinkedIn (organic)" },
+            { "value": "twitter", "label": "Twitter/X" },
+            { "value": "paid_ads", "label": "Paid ads (Google, Facebook, etc.)" },
+            { "value": "referrals", "label": "Referrals / Word of mouth" },
+            { "value": "partnerships", "label": "Partnerships / Affiliates" },
+            { "value": "seo", "label": "SEO / Google search" },
+            { "value": "cold_outreach", "label": "Cold outreach" },
+            { "value": "other", "label": "Other" }
+          ],
+          "conditional": {
+            "triggerValue": "other",
+            "fields": [
+              {
+                "id": "current_channel_other",
+                "type": "text",
+                "label": "Specify other marketing channel",
+                "required": true
+              }
+            ]
+          },
+          "path": "business.current_channels"
+        }
+      ]
+    },
+
+    {
+      "id": "avatar",
+      "title": "Audience Avatar",
+      "subtitle": "Let’s learn about who you serve",
+      "progressOrder": 2,
+      "ctaButton": "Next: Your positioning",
+      "questions": [
+        {
+          "title": "Who You Help",
+          "id": "avatar_definition",
+          "label": "Who is your ideal client/customer? (Be specific!)",
+          "type": "textarea",
+          "placeholder": "e.g., Freelance designers earning $3-10K/month who want to scale to $30K/month without hiring a team",
+          "helperText": "❌ Too vague:\n● \"Business owners\"\n● \"Entrepreneurs\"\n● \"Anyone who wants to grow\"\n✅ Specific (what we want):\n● \"SaaS founders at $20-100K MRR struggling with churn\"\n● \"Real estate agents who get leads but can't close them\"\n● \"Coaches making $5-15K/month stuck in 1:1 delivery\"",
+          "minLength": 10,
+          "maxLength": 200,
+          "required": true,
+          "path": "avatar.definition"
+        },
+        {
+          "title":  "Their Biggest Pain",
+          "id": "avatar_pain_point",
+          "label": " What keeps your ideal client up at 2am? What's their biggest frustration?",
+          "type": "textarea",
+          "placeholder": "e.g., They land a few great clients, then have dry spells with no income. The inconsistency is terrifying and they can't plan anything.",
+          "required": true,
+          "minLength": 20,
+          "maxLength": 300,
+          "path": "avatar.pain_point",
+          "helperText": "This is the problem that makes them urgently search for solutions. Not a mild annoyance - a real pain."
+
+        },
+        {
+          "title": "Their Dream Outcome",
+          "id": "avatar_aspiration",
+          "label": "What's their dream outcome? Where do they want to be?",
+          "type": "textarea",
+          "maxLength": 300,
+          "minLength": 20,
+          "placeholder": "e.g., Predictable $30K months, working 25 hours/week, with a simple system that doesn't require a big team",
+          "required": true,
+          "path": "avatar.aspiration",
+          "helperText": "Paint the picture of their 'after' state. Be specific about numbers, time, feelings.\nExamples:\n● \"Closing 5 new clients per month at $5K each without cold outreach\"\n● \"Having 1,000 email subscribers who actually buy when they launch\"\n● \"10X'ing their revenue without 10X'ing their stress\""
+        },
+        {
+          "title": "What They've Tried",
+          "id": "avatar_failed_attempts",
+          "label": "What have they already tried that didn't work?",
+          "type": "textarea",
+          "minLength": 15,
+          "maxLength": 400,
+          "required": true,
+          "helperText": "List 2-5 things. These are the objections you'll need to handle in your content.\"\nExamples:\n● \"They tried posting on LinkedIn but got zero engagement\"\n● \"They bought courses but couldn't implement them\"\n● \"They hired a VA but it just created more work",
+          "path": "avatar.failed_attempts"
+
+        },
+        {
+          "title":"Their False Belief",
+          "id": "avatar_false_belief",
+          "label": "What common misconception do they have?",
+          "type": "textarea",
+          "placeholder":  "e.g., They think they need to 'scale' by hiring a big team, but really they need better systems and leverage",
+          "maxLength": 300,
+          "helperText":"This is the myth you'll bust in your content. The limiting belief they need to let go of.\nExamples:\n● \"They think they need 10,000 followers before anyone will hire them\"\n● \"They believe they have to be the cheapest option to compete\"\n● \"They think more hours = more money\"",
+          "path": "avatar.false_belief"
+        },
+        {
+          "title": "Where They Hang Out",
+          "id": "avatar_online_presence",
+          "path": "avatar.online_presence",
+          "label":"Where does your ideal client spend time online?",
+          "required": true,
+          "type":"checkbox",
+          "options": [
+            { "value": "linkedin", "label": "LinkedIn" },
+            { "value": "twitter", "label": "Twitter/X" },
+            { "value": "youtube", "label": "YouTube" },
+            { "value": "instagram", "label": "Instagram" },
+            { "value": "tiktok", "label": "TikTok" },
+            { "value": "facebook", "label": "Facebook Groups" },
+            { "value": "reddit", "label": "Reddit" },
+            { "value": "slack", "label": "Slack communities" },
+            { "value": "discord", "label": "Discord servers" },
+            { "value": "newsletters", "label": "Email newsletters" },
+            { "value": "podcasts", "label": "Podcasts" },
+            { "value": "other", "label": "Other (specify)" }
+          ],
+          "conditional": {
+            "triggerValue": "other",
+            "fields": [
+              {
+                "id": "avatar_online_presence_other",
+                "type": "text",
+                "label": "Specify other community or platform",
+                "required": true
+              }
+            ]
+          }
+        },
+        {
+          "title": "Their Burning Questions",
+          "id": "avatar_burning_questions",
+          "path": "avatar.burning_questions",
+          "label": "What questions do they ask repeatedly? What are they Googling?",
+          "required": true,
+          "type": "textarea",
+          "placeholder": "List 3-5 questions they ask. Example:\n● How do I find clients without cold outreach?\n● Should I niche down or stay broad?\n● How much should I charge for [service]?\n● How do I fire a nightmare client?",
+          "helperText": "Think about your DMs, sales calls, comments. What do they ask over and over? Each question = a potential video.",
+          "minLength": 30,
+          "maxLength": 500
+        }
+      ]
+    },
+
+    {
+      "id": "positioning",
+      "title": "Positioning & Differentiation",
+      "subtitle": "What makes you different?",
+      "progressOrder": 3,
+      "ctaButton": "Next: Production details",
+      "questions": [
+        {
+          "title":"Your Unique Approach",
+          "id": "positioning_unique_method",
+          "label": "What makes your approach/method different from others?",
+          "type": "textarea",
+          "placeholder": "e.g., I help people build $30K/month businesses as solopreneurs, not agencies. I teach systematization without the scaling trap that leads to burnout.",
+          "required": true,
+          "path": "positioning.unique_method",
+          "minLength": 20,
+          "maxLength": 300,
+          "helperText": "What's your philosophy? Your method? The thing that makes people go 'oh, that's different'?"
+        },
+        {
+          "title":"Your Enemy",
+          "id": "positioning_enemy",
+          "label": "What’s the outdated approach you disagree with?",
+          "type": "textarea",
+          "placeholder": "e.g., I'm against hustle culture that glorifies 80-hour weeks and burnout. Against the myth that you need a huge team and funding to succeed.",
+          "path": "positioning.enemy",
+          "maxLength": 300,
+          "helperText": "Having an enemy is powerful. It rallies people who feel the same way."
+        },
+        {
+          "title": "Your Unfair Advantage",
+          "id": "positioning_credibility",
+          "label": " Why should someone trust YOU specifically? What's your backstory or proof?",
+          "type": "textarea",
+          "required": true,
+          "minLength": 30,
+          "maxLength": 400,
+          "placeholder":  "e.g., I built and sold a 7-figure agency, hated my life. Rebuilt as a solopreneur and now make $40K/month working 20 hours/week. Been there, figured it out, teaching it.",
+          "helperText": "This is your credibility. Results you've gotten, years of experience, unique background, lessons from failure.",
+          "path": "positioning.credibility"
+        },
+        {
+          "title":"One-Sentence Positioning",
+          "id": "positioning_one_liner",
+          "label": "If you had to explain your entire business in ONE sentence, what would it be?",
+          "type": "text",
+          "required": true,
+          "minLength": 20,
+          "maxLength": 150,
+          "helperText": "This is your 'North Star.' Use this template: I help [WHO] achieve [RESULT] using [METHOD].",
+          "path": "positioning.one_liner"
+        },
+        {
+          "title": " Competitors to Study",
+          "id": "positioning_competitors",
+          "label": "Who are 3-5 competitors or YouTube channels in your space?",
+          "type": "group",
+          "groupFields": [
+            { "id": "channel", "path":"channel", "required":true, "label": "Channel Name or URL", "type": "text", "placeholder": "Alex Hormozi" },
+            { "id": "do_well", "path":"doWell", "maxLength": 100, "label": "What do they do well?", "type": "text", "placeholder": "Makes complex business concepts simple" },
+            { "id": "missing", "path":"missing", "maxLength": 100, "label": "What are they missing?", "type": "text", "placeholder":  "No focus on solopreneurs, everything is scale-focused" }
+          ],
+          "helperText": "These don't have to be direct competitors. Just people targeting a similar audience or covering similar topics.",
+          "path": "positioning.competitors"
+        },
+        {
+          "title":"Content That's Worked",
+          "id": "positioning_winning_content",
+          "label": " Share 3-5 pieces of content that performed well for you",
+          "type": "textarea",
+          "placeholder": "Paste links, titles, or describe \n\n LinkedIn post about [topic] - 50K views, 12 DMs \n YouTube video: [title] - 5K views, 3 client calls \n Email subject line: [subject] - 55% open rate, 8% clicks",
+          "path": "positioning.winning_content",
+          "helperText": "Could be social posts, emails, videos, tweets - anything that got unusual engagement or results. Helps us understand your voice and what resonates.",
+          "maxLength": 800
+
+        }
+      ]
+    },
+
+    {
+      "id": "production",
+      "title": " Production Reality Check",
+      "subtitle": "Let's be realistic about time and resources",
+      "progressOrder": 4,
+      "ctaButton": "Final step: Integration",
+      "questions": [
+        {
+          "title": " Time Available",
+          "id": "production_time_commitment",
+          "label": "How many hours per week can you dedicate to YouTube?",
+          "type": "radio",
+          "required": true,
+          "helperText": "Be honest! It's better to under-promise and over-deliver. 2-4 hours is enough if you're strategic.",
+          "options": [
+            { "value": "2_to_4_hours", "label": "2-4 hours/week (Minimum viable)" },
+            { "value": "4_to_8_hours", "label": "4-8 hours/week (Comfortable pace)" },
+            { "value": "8_to_12_hours", "label": "8-12 hours/week (Aggressive growth)" },
+            { "value": "12_plus_hours", "label": "12+ hours/week (Full-time focus)" }
+          ],
+          "path": "production.time_commitment"
+        },
+        {
+          "title":"Experience Level",
+          "id": "production_experience_level",
+          "label": "How much content have you created before?",
+          "type": "radio",
+          "required": true,
+          "options": [
+            { "value": "complete_beginner", "label": "Never made a video (We'll hold your hand)" },
+            { "value": "some_experience", "label": "Made a few videos (5-20 videos total)" },
+            { "value": "regular_creator", "label": "Post regularly (50+ videos or consistent schedule)" },
+            { "value": "experienced", "label": "Very experienced (100+ videos, understand the game)" }
+          ],
+          "path": "production.experience_level"
+        },
+        {
+          "title": "Preferred Format",
+          "id": "production_preferred_formats",
+          "label": "What video style feels most natural to you? (Select all that apply)",
+          "required": true,
+          "type": "checkbox",
+          "options": [
+            { "value": "talking_head", "label": "Talking head (You on camera, direct to viewer)" },
+            { "value": "screen_share", "label": "Screen share / Tutorial (Showing software, process)" },
+            { "value": "whiteboard", "label": "Whiteboard / Explainer (Drawing, teaching concepts)" },
+            { "value": "case_study", "label": "Case study / Results breakdown (Walking through specific examples)" },
+            { "value": "interview", "label": "Interview / Conversation (You + guest or client)" },
+            { "value": "vlog", "label": "Vlog / Behind-the-scenes (Day-in-life, casual)" },
+            { "value": "short_tutorial", "label": "Quick tutorials (5 min or less, focused)" }
+          ],
+          "path": "production.preferred_formats"
+        },
+        {
+          "title": "Tone Preference",
+          "id": "production_tone",
+          "label": "What tone/vibe do you want for your content?",
+          "type": "radio",
+          "required": true,
+          "helperText": "There's no wrong answer. Pick what feels authentic to you.",
+          "options": [
+            { "value": "educational_polished", "label": "Educational & polished (Think Ali Abdaal, professional)" },
+            { "value": "conversational_casual", "label": "Conversational & casual (Like chatting with a friend)" },
+            { "value": "raw_unfiltered", "label": "Raw & unfiltered (No editing, authentic, rough edges)" },
+            { "value": "story_driven", "label": "Story-driven (Narrative, cinematic, emotional)" }
+          ],
+          "path": "production.tone"
+        },
+        {
+          "title":  "Current Team",
+          "id": "production_team_size",
+          "path": "production.team_size",
+          "label": "Do you have help with content creation?",
+          "required": true,
+          "type": "radio",
+          "options": [
+            { "value": "solo", "label": "Just me (Solo operation)" },
+            { "value": "have_editor", "label": "I have an editor" },
+            { "value": "have_team", "label": "I have a small team (2-4 people)" },
+            { "value": "full_team", "label": "I have a full team (5+ people)" }
+          ],
+          "conditional": [
+            {
+              "triggerValue": "have_editor",
+              "fields": [
+                {
+                  "id": "production_team_details",
+                  "path": "production.team_details",
+                  "type": "checkbox",
+                  "label": "What does your editor handle?",
+                  "options": [
+                    { "value": "basic_cuts", "label": "Basic cuts" },
+                    { "value": "b_roll_graphics", "label": "B-roll & graphics" },
+                    { "value": "thumbnails", "label": "Thumbnails" },
+                    { "value": "uploading", "label": "Uploading" },
+                    { "value": "sound_design", "label": "Sound design" }
+                  ]
+                }
+              ]
+            },
+            {
+              "triggerValue": ["have_team","full_team"],
+              "fields": [
+                {
+                  "id": "production_team_details",
+                  "path": "production.team_details",
+                  "type": "textarea",
+                  "maxLength": 200,
+                  "label": "What roles do you have?"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title":"Publishing Cadence Goal",
+          "id": "production_target_cadence",
+          "path": "production.target_cadence",
+          "label": "How often do you want to publish? (Be realistic!)",
+          "required": true,
+          "type": "radio",
+          "options": [
+            { "value": "1_per_week", "label": "1 video per week (Recommended)" },
+            { "value": "2_per_month", "label": "2 videos per month (Minimum viable)" },
+            { "value": "1_per_month", "label": "1 video per month (Very slow growth)" },
+            { "value": "2_per_week", "label": "2 videos per week (Aggressive - need team)" },
+            { "value": "figure_out", "label": "Not sure yet - help me figure it out" }
+          ]
+        },
+        {
+          "title":  "Best Days to Publish",
+          "id": "production_preferred_days",
+          "path": "production.preferred_days",
+          "label": "Do you have preferred days/times to publish?",
+          "type": "checkbox",
+          "options": [
+            { "value": "monday", "label": "Monday" },
+            { "value": "tuesday", "label": "Tuesday" },
+            { "value": "wednesday", "label": "Wednesday" },
+            { "value": "thursday", "label": "Thursday" },
+            { "value": "friday", "label": "Friday" },
+            { "value": "saturday", "label": "Saturday" },
+            { "value": "sunday", "label": "Sunday" },
+            { "value": "no_preference", "label": "No preference - optimize for me" }
+          ],
+          "conditional":{
+            "triggerValue":["monday", "tuesday","wednesday", "thursday","friday", "saturday", "sunday" ],
+            "fields":[
+              {
+                "id": "production_preferred_time",
+                "path": "production.preferred_time",
+                "label":  "Preferred publish time?",
+                "type": "dropdown",
+                "options": [
+                  { "value": "6am", "label": "6am" },
+                  { "value": "9am", "label": "9am" },
+                  { "value": "12pm", "label": "12pm" },
+                  { "value": "3pm", "label": "3pm" },
+                  { "value": "6pm", "label": "6pm" },
+                  { "value": "9pm", "label": "9pm" },
+                  { "value": "no_preference", "label": "No preference" }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "title": "Timezone",
+          "id": "production_timezone",
+          "path": "production.timezone",
+          "label": "What timezone are you in?",
+          "type": "dropdown",
+          "options": [
+            { "value": "Pacific/Honolulu", "label": "Hawaii (UTC-10:00)" },
+            { "value": "America/Anchorage", "label": "Alaska (UTC-09:00)" },
+            { "value": "America/Los_Angeles", "label": "Pacific Time — Los Angeles (UTC-08:00)" },
+            { "value": "America/Denver", "label": "Mountain Time — Denver (UTC-07:00)" },
+            { "value": "America/Chicago", "label": "Central Time — Chicago (UTC-06:00)" },
+            { "value": "America/New_York", "label": "Eastern Time — New York (UTC-05:00)" },
+            { "value": "America/Toronto", "label": "Toronto (UTC-05:00)" },
+            { "value": "America/Mexico_City", "label": "Mexico City (UTC-06:00)" },
+            { "value": "America/Bogota", "label": "Bogotá (UTC-05:00)" },
+            { "value": "America/Sao_Paulo", "label": "São Paulo (UTC-03:00)" },
+            { "value": "Atlantic/Azores", "label": "Azores (UTC-01:00)" },
+            { "value": "Europe/London", "label": "London (UTC+00:00)" },
+            { "value": "Europe/Paris", "label": "Paris (UTC+01:00)" },
+            { "value": "Europe/Berlin", "label": "Berlin (UTC+01:00)" },
+            { "value": "Europe/Istanbul", "label": "Istanbul (UTC+03:00)" },
+            { "value": "Africa/Johannesburg", "label": "Johannesburg (UTC+02:00)" },
+            { "value": "Asia/Dubai", "label": "Dubai (UTC+04:00)" },
+            { "value": "Asia/Karachi", "label": "Karachi (UTC+05:00)" },
+            { "value": "Asia/Kolkata", "label": "India Standard Time — Kolkata (UTC+05:30)" },
+            { "value": "Asia/Bangkok", "label": "Bangkok (UTC+07:00)" },
+            { "value": "Asia/Hong_Kong", "label": "Hong Kong (UTC+08:00)" },
+            { "value": "Asia/Singapore", "label": "Singapore (UTC+08:00)" },
+            { "value": "Asia/Tokyo", "label": "Tokyo (UTC+09:00)" },
+            { "value": "Australia/Sydney", "label": "Sydney (UTC+10:00)" },
+            { "value": "Pacific/Auckland", "label": "Auckland (UTC+12:00)" }
+          ]
+
+
+
+        }
+      ]
+    },
+
+    {
+      "id": "assets",
+      "title": "Existing Assets",
+      "subtitle": "Let’s see what we can build upon",
+      "progressOrder": 5,
+      "ctaButton": "Review",
+      "questions": [
+        {
+          "title": "Existing Assets",
+          "id": "assets_existing",
+          "label": "What do you already have set up? (Select all that apply)",
+          "type": "checkbox",
+          "required": true,
+          "options": [
+          { "value": "none_yet", "label": "None yet - starting from scratch" },
+          { "value": "email_list", "label": "Email list (ESP like ConvertKit, Mailchimp)" },
+          { "value": "website", "label": "Website / Landing pages" },
+          { "value": "crm", "label": "CRM (HubSpot, Pipedrive, Notion, etc.)" },
+          { "value": "calendar", "label": "Calendar booking tool (Calendly, Cal.com)" },
+          { "value": "lead_magnets", "label": "Lead magnets / Free resources" },
+          { "value": "paid_product", "label": "Paid product / Course already built" },
+          { "value": "youtube_channel", "label": "YouTube channel (even if empty)" }
+        ],
+          "path": "assets.existing"
+        },
+        {
+          "title": "YouTube Channel Status",
+          "id": "assets_youtube_status",
+          "label": "Do you already have a YouTube channel?",
+          "type": "radio",
+          "options": [
+            { "value": "yes_active", "label": "Yes, and I post regularly" },
+            { "value": "yes_inactive", "label": "Yes, but I haven't posted in a while" },
+            { "value": "yes_empty", "label": "Yes, but it's empty/never posted" },
+            { "value": "no_create", "label": "No, I need to create one" }
+          ],
+          "conditional": {
+            "triggerValue": ["yes_active","yes_inactive"],
+            "fields": [
+              {
+                "id": "assets_youtube_url",
+                "path": "assets.youtube_url",
+                "type": "text",
+                "label": "What's your channel URL or handle?",
+                "validation": {
+                  "pattern": "^(https?://)?(www\\.)?(youtube\\.com|youtu\\.be)/.+$"
+                }
+              }
+            ]
+          },
+          "path": "assets.youtube_status"
+        },
+        {
+          "title": "Email List Size",
+          "id": "assets_email_subscribers",
+          "path": "assets.email_subscribers",
+          "label": "If you have an email list, how many subscribers?",
+          "type":"dropdown",
+          "options": [
+          { "value": "no_list", "label": "I don't have a list" },
+          { "value": "under_100", "label": "Under 100" },
+          { "value": "100_to_500", "label": "100-500" },
+          { "value": "500_to_1k", "label": "500-1,000" },
+          { "value": "1k_to_5k", "label": "1,000-5,000" },
+          { "value": "5k_to_10k", "label": "5,000-10,000" },
+          { "value": "10k_plus", "label": "10,000+" }
+        ]
+        },
+        {
+          "title":  "Brand Assets",
+          "id": "assets_brand_status",
+          "label": "Do you have a defined brand voice or messaging guide?",
+          "type": "radio",
+          "options": [
+            { "value": "yes", "label": "Yes" },
+            { "value": "no", "label": "No" }
+          ],
+          "path": "assets.brand_status"
+        },
+        {
+          "title": "Primary CTA",
+          "id": "cta_primary_type",
+          "path": "cta.primary_type",
+          "label": " What's the main action you want viewers to take?",
+          "required": true,
+          "type": "dropdown",
+          "options": [
+            { "value": "book_call", "label": "Book a sales call / consultation" },
+            { "value": "download_lead_magnet", "label": "Download a free resource" },
+            { "value": "join_email", "label": "Join my email list" },
+            { "value": "watch_training", "label": "Watch a free training / webinar" },
+            { "value": "buy_product", "label": "Buy my product / course" },
+            { "value": "follow_social", "label": "Follow me on [platform]" },
+            { "value": "other", "label": "Other (specify)" }
+          ],
+          "conditional":[
+            {
+              "triggerValue": "other",
+              "fields": [
+                {
+                  "id": "primary_cta_other",
+                  "path": "cta.primary_description",
+                  "type": "text",
+                  "label": "Specify other call-to-action",
+                  "required": true
+                }
+              ]
+            },
+            {
+              "triggerValue": "book_call",
+              "fields": [
+                {
+                  "id": "primary_cta_url",
+                  "path": "cta.primary_url",
+                  "type": "text",
+                  "label": "What's your booking link? (e.g., Calendly URL)",
+                  "required": true
+                }
+              ]
+            },
+            {
+              "triggerValue": "download_lead_magnet",
+              "fields": [
+                {
+                  "id": "cta_primary_description",
+                  "path": "cta.primary_description",
+                  "type": "text",
+                  "label": "What's your lead magnet?",
+                  "maxLength": 100,
+                  "required": true
+                },
+                {
+                  "id": "cta_primary_url",
+                  "path": "cta.primary_url",
+                  "type": "text",
+                  "label": "Opt-in page URL?",
+                  "required": true
+                }
+              ]
+            },
+            {
+              "triggerValue": "buy_product",
+              "fields": [
+                {
+                  "id": "primary_cta_url",
+                  "path": "cta.primary_url",
+                  "type": "text",
+                  "label": "Product name and sales page URL?",
+                  "required": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "CTA Copy",
+          "id": "cta_copy",
+          "label": "How do you want to phrase your call-to-action?",
+          "type": "text",
+          "maxLength": 200,
+          "placeholder": "e.g., 'Grab my free LinkedIn cheat sheet - link in description' OR 'Book a free strategy call to see if we're a fit'",
+          "helperText": "Leave blank and we'll write it for you. Or give us your preferred language.",
+          "path": "cta.copy"
+        },
+        {
+          "title": "Integrations",
+          "id":"integrations_requested",
+          "path":"integrations.requested",
+          "label": "Want to connect any tools? (Optional but recommended)",
+          "type": "checkbox",
+          "options": [
+            { "value": "google_calendar", "label": "Google Calendar (for scheduling)" },
+            { "value": "notion", "label": "Notion (for project management)" },
+            { "value": "youtube_api", "label": "YouTube Analytics (for performance data)" },
+            { "value": "google_analytics", "label": "Google Analytics (for traffic tracking)" },
+            { "value": "email_esp", "label": "Email platform (ConvertKit, Mailchimp, etc.)" },
+            { "value": "none", "label": "None for now" }
+          ]
+        }
+      ]
+    }
+  ]
+}

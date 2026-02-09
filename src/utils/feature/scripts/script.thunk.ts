@@ -8,7 +8,6 @@ export const retrieveScripts = createAsyncThunk(
       const response = await scriptService.getGeneratedScript();
       return response.data;
     } catch (error) {
-      console.log("error: ", error);
       return thunkAPI.rejectWithValue(error);
     }
   }
@@ -27,7 +26,6 @@ export const editScript = createAsyncThunk(
       );
       return response.data;
     } catch (error) {
-      console.log("error: ", error);
       return thunkAPI.rejectWithValue(error);
     }
   }

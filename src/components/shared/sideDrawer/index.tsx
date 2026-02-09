@@ -35,16 +35,16 @@ const SideDrawer = () => {
 
     // Then check if any subRoutes match, including dynamic patterns
     return (routeObj?.subRoutes as string[])?.some((subRoute) =>
-      matchPath({ path: subRoute, end: false }, pathname)
+      matchPath({ path: subRoute, end: false }, pathname),
     );
   };
-
+// @ts-ignore
   const extractedUserName = extractYouTubeHandle(user?.userName || "");
 
   return (
-    <Sidebar>
-      <SidebarHeader className="text-2xl font-semibold p-4 pt-8 text-center border-b  mx-4">
-        {brandName}
+    <Sidebar className="border-r border-sidebar-border bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      <SidebarHeader className="text-heading-lg p-4 pt-8 text-center border-b border-sidebar-border mx-4">
+        <span className="gradient-text">{brandName}</span>
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu className="p-3 mt-10">
@@ -55,11 +55,11 @@ const SideDrawer = () => {
             >
               <span
                 className={cn(
-                  "flex font-semibold text-md cursor-pointer hover:bg-gray-100 !p-3 gap-2 items-center rounded-xl transition-all duration-200 ease-in-out",
-                  isActive(urlObj) && "bg-primary/10 text-primary"
+                  "nav-item",
+                  isActive(urlObj) && "nav-item-active",
+                 
                 )}
               >
-                {" "}
                 <urlObj.icon className="size-5" /> {urlObj.label}
               </span>
             </SidebarMenuItem>
@@ -68,24 +68,22 @@ const SideDrawer = () => {
         <SidebarGroup></SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="flex flex-row items-center gap-4 py-4  px-0 border-t mx-4">
-        <Avatar>
+      <SidebarFooter className="flex-row py-4 px-0 border-t border-sidebar-border mx-4">
+        <Avatar className="avatar-ring">
           <AvatarImage src={user?.photoURL} alt="@shadcn" />
-          <AvatarFallback>
+          <AvatarFallback className="avatar-fallback-styled">
             {user?.name?.[0] || extractedUserName?.[0]}
           </AvatarFallback>
         </Avatar>
         {loading ? (
           <div>
-            <Skeleton className="h-2 w-28 bg-accent-foreground/25" />
-            <Skeleton className="h-2 w-20 bg-accent-foreground/25 mt-1" />
+            <Skeleton className="h-2 w-28 bg-sidebar-accent" />
+            <Skeleton className="h-2 w-20 bg-sidebar-accent mt-1" />
           </div>
         ) : (
           <div>
-            <p className="font-semibold text-md">{user?.name}</p>
-            <p className="text-accent-foreground text-xs">
-              @{extractedUserName}
-            </p>
+            <p className="text-title text-base">{user?.name}</p>
+            <p className="text-caption">@{extractedUserName}</p>
           </div>
         )}
         <DrawerMenu />

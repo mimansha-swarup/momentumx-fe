@@ -18,20 +18,17 @@ export class onboardingService {
 
       return response?.data;
     } catch (error) {
-      console.error("Error fetching onboarding data:", error);
       throw error;
     }
   }
   async saveOnboardingData(payload: IOnboardingPayload) {
     try {
-      console.log("payloaad", payload);
       const response = await baseFetch.patch(this.urls.SAVE_FORM, payload);
 
       handleToast(response.data);
 
       return response.data;
     } catch (error) {
-      console.error("Error fetching onboarding data:", error);
       throw error;
     }
   }
@@ -43,7 +40,6 @@ export class onboardingService {
 
       return response.data;
     } catch (error) {
-      console.error("Error fetching onboarding data:", error);
       throw error;
     }
   }

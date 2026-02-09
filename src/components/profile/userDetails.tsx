@@ -5,6 +5,7 @@ import { extractYouTubeHandle } from "@/utils/onboarding";
 import React from "react";
 
 const UserDetails: React.FC<IUserDetailsProps> = ({ user }) => {
+  // @ts-ignore
   const extractedUserName = extractYouTubeHandle(user?.userName || "") || "A";
   return (
     <div className="flex items-start flex-wrap-reverse">

@@ -7,10 +7,20 @@ export const getApiDomain = (isLongResponse = false) => {
     case "dev":
       return "https://momentumx-be.vercel.app";
     case "local":
-    default: // in future add prod in default
       return "http://localhost:3000";
+    default: // in future add prod in default
+      return "https://momentumx-be.vercel.app";
   }
 };
+
+export interface IBaseFetchResponse<T> {
+
+  message?: string;
+  warning?: string;
+  statusCode?: number;
+  meta?: Record<string, unknown>;
+  data?: T;
+}
 
 // const user = auth.currentUser;
 const apiDomain = getApiDomain();

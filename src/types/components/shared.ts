@@ -4,6 +4,7 @@ export interface StepperProps {
   orientation?: string;
   steps: Steps[];
   activeStep: number;
+  handleStepperChange: (index: number) => void;
 }
 
 export interface Steps {

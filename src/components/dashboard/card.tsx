@@ -4,14 +4,12 @@ import { IDashboardCard } from "@/types/components/dashboard";
 
 const DashboardCard: FC<IDashboardCard> = ({ label, value, icon }) => {
   return (
-    <GlassCard>
-      <div className="flex gap-4 items-center">
-        <div className="size-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center text-foreground">
-          {icon}
-        </div>
+    <GlassCard className="group hover-scale-sm">
+      <div className="flex-row-gap">
+        <div className="icon-container">{icon}</div>
         <div>
-          <p className=" text-gray-600 text-sm">{label}</p>
-          <h2 className="text-2xl font-semibold">{value}</h2>
+          <p className="text-label">{label}</p>
+          <h2 className="text-heading-lg">{value}</h2>
         </div>
       </div>
     </GlassCard>
