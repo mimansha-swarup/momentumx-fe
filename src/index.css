@@ -275,7 +275,7 @@
   }
 
   .nav-item-active {
-    @apply bg-primary/15 text-primary border-l-2 border-primary rounded-l-none;
+    @apply  text-primary border-l-2 border-primary rounded-l-none bg-gradient-to-r from-violet-600/20 to-blue-600/20 text-white shadow-lg shadow-violet-500/10;
   }
 
   .avatar-ring {

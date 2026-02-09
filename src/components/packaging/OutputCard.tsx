@@ -71,7 +71,7 @@ const OutputCard = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const accent = accentStyles[accentColor];
-  const charCount = content.length;
+  const charCount = content?.length;
   const isOverLimit = characterLimit ? charCount > characterLimit : false;
   const isNearLimit = characterLimit ? charCount > characterLimit * 0.9 : false;
 

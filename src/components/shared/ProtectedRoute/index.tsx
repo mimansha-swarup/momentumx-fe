@@ -51,8 +51,8 @@ const ProtectedLayout = () => {
 
   if (loading) {
     return <RootLoader />;
-  } else if (user && !user?.business && location.pathname !== "/app/onboarding") {
-    return <Navigate to={`/app/onboarding`} />;
+  // } else if (user && !user?.business && location.pathname !== "/app/onboarding") {
+  //   return <Navigate to={`/app/onboarding`} />;
   } else if (!isLoggedIn) {
     return <Navigate to={`/login`} replace state={{ from: location }} />;
   }

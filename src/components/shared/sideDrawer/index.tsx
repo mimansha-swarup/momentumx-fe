@@ -57,6 +57,7 @@ const SideDrawer = () => {
                 className={cn(
                   "nav-item",
                   isActive(urlObj) && "nav-item-active",
+                 
                 )}
               >
                 <urlObj.icon className="size-5" /> {urlObj.label}

@@ -20,9 +20,7 @@ export interface IPackagingOutput {
 }
 
 export interface IHooksOutput {
-  openingLine: string;
-  patternInterrupt: string;
-  ctaHook: string;
+  hooks: IHooks[];
   isLoading: boolean;
   error: string | null;
 }
@@ -98,9 +96,7 @@ export interface GenerateHooksRequest {
 }
 
 export interface GenerateHooksResponse {
-  openingLine: string;
-  patternInterrupt: string;
-  ctaHook: string;
+  hooks: IHooks[];
 }
 
 export interface GenerateShortsRequest {
@@ -121,7 +117,7 @@ export interface SavePackagingRequest {
   title: string;
   description: string;
   thumbnailDescription: string;
-  hooks: IHooks;
+  hooks: IHooks[];
   shortsScripts: Array<{ id: string; segments: ITimestampedSegment[] }>;
 }
 
@@ -136,7 +132,7 @@ export interface GetPackagingResponse {
   title: string;
   description: string;
   thumbnailDescription: string;
-  hooks: IHooks;
+  hooks: IHooks[];
   shortsScripts: Array<{ id: string; segments: ITimestampedSegment[] }>;
   createdAt: string;
   updatedAt: string;

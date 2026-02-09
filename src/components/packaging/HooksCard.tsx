@@ -13,18 +13,14 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import GradientSkeleton from "./GradientSkeleton";
-import { PACKAGING_LIMITS } from "@/types/feature/packaging";
+import { PACKAGING_LIMITS, IHooks } from "@/types/feature/packaging";
 
 interface HooksCardProps {
-  openingLine: string;
-  patternInterrupt: string;
-  ctaHook: string;
+  hooks: IHooks[];
   isLoading: boolean;
   error?: string | null;
   onRegenerateAll: () => void;
-  onEditOpeningLine?: (value: string) => void;
-  onEditPatternInterrupt?: (value: string) => void;
-  onEditCtaHook?: (value: string) => void;
+  onEditHook?: (index: number, field: keyof IHooks, value: string) => void;
 }
 
 interface HookItemProps {
@@ -52,7 +48,7 @@ const HookItem = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(content);
 
-  const charCount = content.length;
+  const charCount = content?.length || 0;
   const isOverLimit = charCount > limit;
   const isNearLimit = charCount > limit * 0.9;
 
@@ -195,16 +191,73 @@ const HookItem = ({
   );
 };
 
+interface SingleHookSetProps {
+  hook: IHooks;
+  index: number;
+  isLoading: boolean;
+  onEditHook?: (index: number, field: keyof IHooks, value: string) => void;
+}
+
+const SingleHookSet = ({
+  hook,
+  index,
+  isLoading,
+  onEditHook,
+}: SingleHookSetProps) => {
+  return (
+    <div className="grid gap-4 md:grid-cols-3">
+      <HookItem
+        label="Opening Line"
+        icon={<MessageCircle className="h-4 w-4" />}
+        content={hook.openingLine}
+        isLoading={isLoading}
+        accentColor="text-emerald-400"
+        borderColor="border-emerald-500/20 hover:border-emerald-500/40"
+        limit={PACKAGING_LIMITS.openingHook}
+        onEdit={
+          onEditHook
+            ? (value) => onEditHook(index, "openingLine", value)
+            : undefined
+        }
+      />
+      <HookItem
+        label="Pattern Interrupt"
+        icon={<Zap className="h-4 w-4" />}
+        content={hook.patternInterrupt}
+        isLoading={isLoading}
+        accentColor="text-amber-400"
+        borderColor="border-amber-500/20 hover:border-amber-500/40"
+        limit={PACKAGING_LIMITS.patternInterrupt}
+        onEdit={
+          onEditHook
+            ? (value) => onEditHook(index, "patternInterrupt", value)
+            : undefined
+        }
+      />
+      <HookItem
+        label="CTA Hook"
+        icon={<Megaphone className="h-4 w-4" />}
+        content={hook.ctaHook}
+        isLoading={isLoading}
+        accentColor="text-rose-400"
+        borderColor="border-rose-500/20 hover:border-rose-500/40"
+        limit={PACKAGING_LIMITS.ctaHook}
+        onEdit={
+          onEditHook
+            ? (value) => onEditHook(index, "ctaHook", value)
+            : undefined
+        }
+      />
+    </div>
+  );
+};
+
 const HooksCard = ({
-  openingLine,
-  patternInterrupt,
-  ctaHook,
+  hooks,
   isLoading,
   error,
   onRegenerateAll,
-  onEditOpeningLine,
-  onEditPatternInterrupt,
-  onEditCtaHook,
+  onEditHook,
 }: HooksCardProps) => {
   return (
     <div
@@ -254,38 +307,36 @@ const HooksCard = ({
           </div>
         )}
 
-        {/* Hooks Grid */}
-        <div className="grid gap-4 md:grid-cols-3">
-          <HookItem
-            label="Opening Line"
-            icon={<MessageCircle className="h-4 w-4" />}
-            content={openingLine}
-            isLoading={isLoading}
-            accentColor="text-emerald-400"
-            borderColor="border-emerald-500/20 hover:border-emerald-500/40"
-            limit={PACKAGING_LIMITS.openingHook}
-            onEdit={onEditOpeningLine}
-          />
-          <HookItem
-            label="Pattern Interrupt"
-            icon={<Zap className="h-4 w-4" />}
-            content={patternInterrupt}
-            isLoading={isLoading}
-            accentColor="text-amber-400"
-            borderColor="border-amber-500/20 hover:border-amber-500/40"
-            limit={PACKAGING_LIMITS.patternInterrupt}
-            onEdit={onEditPatternInterrupt}
-          />
-          <HookItem
-            label="CTA Hook"
-            icon={<Megaphone className="h-4 w-4" />}
-            content={ctaHook}
-            isLoading={isLoading}
-            accentColor="text-rose-400"
-            borderColor="border-rose-500/20 hover:border-rose-500/40"
-            limit={PACKAGING_LIMITS.ctaHook}
-            onEdit={onEditCtaHook}
-          />
+        {/* Hooks Sets */}
+        <div className="space-y-6">
+          {isLoading && hooks.length === 0 ? (
+            <SingleHookSet
+              hook={{ openingLine: "", patternInterrupt: "", ctaHook: "" }}
+              index={0}
+              isLoading={true}
+              onEditHook={onEditHook}
+            />
+          ) : hooks?.length > 0 ? (
+            hooks?.map((hook, index) => (
+              <div key={index}>
+                {hooks?.length > 1 && (
+                  <div className="mb-3 text-xs font-medium text-slate-500">
+                    Hook Set {index + 1}
+                  </div>
+                )}
+                <SingleHookSet
+                  hook={hook}
+                  index={index}
+                  isLoading={isLoading}
+                  onEditHook={onEditHook}
+                />
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-8 text-slate-500">
+              <p className="text-sm">No hooks generated yet</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

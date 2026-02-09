@@ -77,8 +77,12 @@ export const generateShorts = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const state = thunkAPI.getState() as RootState;
-      const { script } = state.packaging;
-      const response = await packagingService.generateShorts(script, 0);
+      const { script, title } = state.packaging;
+      const response = await packagingService.generateShorts(
+        script,
+        title.content || undefined,
+        0,
+      );
       return response;
     } catch (error) {
       console.error("Error generating shorts script:", error);
@@ -93,10 +97,14 @@ export const addNewShortsScript = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const state = thunkAPI.getState() as RootState;
-      const { script, shortsScript } = state.packaging;
+      const { script, title, shortsScript } = state.packaging;
       const variant = shortsScript.scripts.length; // Use current count as variant
-      const response = await packagingService.generateShorts(script, variant);
-      return response;
+      const response = await packagingService.generateShorts(
+        script,
+        title.content || undefined,
+        variant,
+      );
+      return response.data;
     } catch (error) {
       console.error("Error generating new shorts script:", error);
       return thunkAPI.rejectWithValue("Failed to generate shorts script");
@@ -110,13 +118,17 @@ export const regenerateShortsScript = createAsyncThunk(
   async (scriptId: string, thunkAPI) => {
     try {
       const state = thunkAPI.getState() as RootState;
-      const { script, shortsScript } = state.packaging;
+      const { script, title, shortsScript } = state.packaging;
       const scriptIndex = shortsScript.scripts.findIndex(
         (s) => s.id === scriptId,
       );
       // Use a different variant for regeneration
       const variant = (scriptIndex + Math.floor(Math.random() * 4) + 1) % 5;
-      const response = await packagingService.generateShorts(script, variant);
+      const response = await packagingService.generateShorts(
+        script,
+        title.content || undefined,
+        variant,
+      );
       return {
         id: scriptId,
         segments: response.segments,
@@ -132,15 +144,25 @@ export const generateAllPackaging = createAsyncThunk(
   "packaging/generateAll",
   async (_, thunkAPI) => {
     try {
-      // Dispatch all generation thunks in parallel
-      await Promise.all([
-        thunkAPI.dispatch(generateTitle()),
-        thunkAPI.dispatch(generateDescription()),
-        thunkAPI.dispatch(generateThumbnail()),
-        thunkAPI.dispatch(generateHooks()),
-        thunkAPI.dispatch(generateShorts()),
+      const state = thunkAPI.getState() as RootState;
+      const { script } = state.packaging;
+
+      // Call generateTitleDependentContent (title first, then description, thumbnail, shorts in parallel)
+      // and generateHooks in parallel
+      const [titleDependentContent, hooksResponse] = await Promise.all([
+        packagingService.generateTitleDependentContent(script),
+        packagingService.generateHooks(script),
       ]);
-      return true;
+
+      console.log("hooksResponse", hooksResponse);
+   
+      return {
+        title: titleDependentContent.title,
+        description: titleDependentContent.description,
+        thumbnail: titleDependentContent.thumbnail,
+        shorts: titleDependentContent.shorts,
+        hooks: hooksResponse.data,
+      };
     } catch (error) {
       console.error("Error generating all packaging:", error);
       return thunkAPI.rejectWithValue("Failed to generate packaging");
@@ -167,11 +189,7 @@ export const savePackaging = createAsyncThunk(
         title: title.content,
         description: description.content,
         thumbnailDescription: thumbnailDescription.content,
-        hooks: {
-          openingLine: hooks.openingLine,
-          patternInterrupt: hooks.patternInterrupt,
-          ctaHook: hooks.ctaHook,
-        },
+        hooks: hooks.hooks,
         shortsScripts: shortsScript.scripts.map((s) => ({
           id: s.id,
           segments: s.segments,

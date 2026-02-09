@@ -1,16 +1,16 @@
 import axios from "axios";
 import { getAuth } from "firebase/auth";
 export const getApiDomain = (isLongResponse = false) => {
+  return "http://localhost:3000";
   const env = import.meta.env.VITE_ENV || "production";
   if (isLongResponse) return "https://momentumx-be.onrender.com";
-  switch (env) {
-    case "dev":
-      return "https://momentumx-be.vercel.app";
-      case "local":
-        default: // in future add prod in default
-        return "https://momentumx-be.vercel.app";
-      return "http://localhost:3000";
-  }
+  // switch (env) {
+  //   case "dev":
+  //     return "https://momentumx-be.vercel.app";
+  //     case "local":
+  //       default: // in future add prod in default
+  //       return "https://momentumx-be.vercel.app";
+  // }
 };
 
 // const user = auth.currentUser;

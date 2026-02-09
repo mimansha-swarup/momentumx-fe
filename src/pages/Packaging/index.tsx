@@ -14,12 +14,11 @@ import {
   updateTitle,
   updateDescription,
   updateThumbnailDescription,
-  updateOpeningHook,
-  updatePatternInterrupt,
-  updateCtaHook,
+  updateHook,
   deleteShortsScript,
   resetPackaging,
 } from "@/utils/feature/packaging/packaging.slice";
+import { IHooks } from "@/types/feature/packaging";
 import {
   generateTitle,
   generateDescription,
@@ -61,11 +60,24 @@ const PackagingPage = () => {
   } = useAppSelector(selectPackaging);
   const canAddMoreShorts = useAppSelector(selectCanAddMoreShorts);
 
+
+  console.log("script", {
+    script,
+    title,
+    description,
+    thumbnailDescription,
+    hooks,
+    shortsScript,
+    isSaving,
+    isGeneratingAll,
+    savedAt,
+  })
+
   const hasContent =
     title.content ||
     description.content ||
     thumbnailDescription.content ||
-    hooks.openingLine ||
+    hooks.hooks.length > 0 ||
     shortsScript.scripts.length > 0;
 
   const isAnyShortsLoading = shortsScript.scripts.some((s) => s.isLoading);
@@ -271,17 +283,13 @@ const PackagingPage = () => {
 
           {/* Hooks */}
           <HooksCard
-            openingLine={hooks.openingLine}
-            patternInterrupt={hooks.patternInterrupt}
-            ctaHook={hooks.ctaHook}
+            hooks={hooks.hooks}
             isLoading={hooks.isLoading}
             error={hooks.error}
             onRegenerateAll={() => dispatch(generateHooks())}
-            onEditOpeningLine={(value) => dispatch(updateOpeningHook(value))}
-            onEditPatternInterrupt={(value) =>
-              dispatch(updatePatternInterrupt(value))
+            onEditHook={(index: number, field: keyof IHooks, value: string) =>
+              dispatch(updateHook({ index, field, value }))
             }
-            onEditCtaHook={(value) => dispatch(updateCtaHook(value))}
           />
 
           {/* Shorts Scripts - Multiple variations */}

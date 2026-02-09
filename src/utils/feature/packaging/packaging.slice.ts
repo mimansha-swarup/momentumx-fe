@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/utils/store";
-import { IPackagingState, IShortsScript, MAX_SHORTS_SCRIPTS } from "@/types/feature/packaging";
+import { IPackagingState, IShortsScript, IHooks, MAX_SHORTS_SCRIPTS } from "@/types/feature/packaging";
 import {
   generateTitle,
   generateDescription,
@@ -31,9 +31,7 @@ const initialState: IPackagingState = {
     error: null,
   },
   hooks: {
-    openingLine: "",
-    patternInterrupt: "",
-    ctaHook: "",
+    hooks: [],
     isLoading: false,
     error: null,
   },
@@ -63,14 +61,18 @@ const packagingSlice = createSlice({
     updateThumbnailDescription: (state, action: PayloadAction<string>) => {
       state.thumbnailDescription.content = action.payload;
     },
-    updateOpeningHook: (state, action: PayloadAction<string>) => {
-      state.hooks.openingLine = action.payload;
-    },
-    updatePatternInterrupt: (state, action: PayloadAction<string>) => {
-      state.hooks.patternInterrupt = action.payload;
-    },
-    updateCtaHook: (state, action: PayloadAction<string>) => {
-      state.hooks.ctaHook = action.payload;
+    updateHook: (
+      state,
+      action: PayloadAction<{
+        index: number;
+        field: keyof IHooks;
+        value: string;
+      }>
+    ) => {
+      const { index, field, value } = action.payload;
+      if (state.hooks.hooks[index]) {
+        state.hooks.hooks[index][field] = value;
+      }
     },
     deleteShortsScript: (state, action: PayloadAction<string>) => {
       state.shortsScript.scripts = state.shortsScript.scripts.filter(
@@ -139,9 +141,7 @@ const packagingSlice = createSlice({
       })
       .addCase(generateHooks.fulfilled, (state, action) => {
         state.hooks.isLoading = false;
-        state.hooks.openingLine = action.payload.openingLine;
-        state.hooks.patternInterrupt = action.payload.patternInterrupt;
-        state.hooks.ctaHook = action.payload.ctaHook;
+        state.hooks.hooks = action.payload.hooks;
       })
       .addCase(generateHooks.rejected, (state, action) => {
         state.hooks.isLoading = false;
@@ -185,11 +185,7 @@ const packagingSlice = createSlice({
       })
       .addCase(addNewShortsScript.fulfilled, (state, action) => {
         state.shortsScript.isAddingNew = false;
-        const lastScript = state.shortsScript.scripts[state.shortsScript.scripts.length - 1];
-        if (lastScript) {
-          lastScript.isLoading = false;
-          lastScript.segments = action.payload.segments;
-        }
+        state.shortsScript.scripts.push(action.payload);
       })
       .addCase(addNewShortsScript.rejected, (state, action) => {
         state.shortsScript.isAddingNew = false;
@@ -229,12 +225,52 @@ const packagingSlice = createSlice({
       // Generate All
       .addCase(generateAllPackaging.pending, (state) => {
         state.isGeneratingAll = true;
+        state.title.isLoading = true;
+        state.title.error = null;
+        state.description.isLoading = true;
+        state.description.error = null;
+        state.thumbnailDescription.isLoading = true;
+        state.thumbnailDescription.error = null;
+        state.hooks.isLoading = true;
+        state.hooks.error = null;
+        // Initialize shorts script in loading state
+        const newScript: IShortsScript = {
+          id: `shorts_${Date.now()}`,
+          segments: [],
+          isLoading: true,
+          error: null,
+        };
+        state.shortsScript.scripts = [newScript];
       })
-      .addCase(generateAllPackaging.fulfilled, (state) => {
+      .addCase(generateAllPackaging.fulfilled, (state, action) => {
         state.isGeneratingAll = false;
+        // Update title
+        state.title.isLoading = false;
+        state.title.content = action.payload.title.title;
+        // Update description
+        state.description.isLoading = false;
+        state.description.content = action.payload.description.description;
+        // Update thumbnail
+        state.thumbnailDescription.isLoading = false;
+        state.thumbnailDescription.content = action.payload.thumbnail.thumbnailDescription;
+        // Update hooks
+        state.hooks.isLoading = false;
+        state.hooks.hooks = action.payload.hooks;
+        // Update shorts
+        if (state.shortsScript.scripts.length > 0) {
+          state.shortsScript.scripts[0].isLoading = false;
+          state.shortsScript.scripts[0].segments = action.payload.shorts.segments;
+        }
       })
       .addCase(generateAllPackaging.rejected, (state) => {
         state.isGeneratingAll = false;
+        state.title.isLoading = false;
+        state.description.isLoading = false;
+        state.thumbnailDescription.isLoading = false;
+        state.hooks.isLoading = false;
+        if (state.shortsScript.scripts.length > 0) {
+          state.shortsScript.scripts[0].isLoading = false;
+        }
       })
 
       // Save Packaging
@@ -257,9 +293,7 @@ export const {
   updateTitle,
   updateDescription,
   updateThumbnailDescription,
-  updateOpeningHook,
-  updatePatternInterrupt,
-  updateCtaHook,
+  updateHook,
   deleteShortsScript,
   resetPackaging,
   clearErrors,
@@ -283,7 +317,7 @@ export const selectHasContent = (state: RootState) =>
   state.packaging.title.content ||
   state.packaging.description.content ||
   state.packaging.thumbnailDescription.content ||
-  state.packaging.hooks.openingLine ||
+  state.packaging.hooks.hooks.length > 0 ||
   state.packaging.shortsScript.scripts.length > 0;
 
 export default packagingSlice.reducer;
