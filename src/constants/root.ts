@@ -1,8 +1,24 @@
+import { cn } from "@/lib/utils";
+
 export const brandName = "Ideofy";
 
 export const IS_NEW_USER = "isNewUser";
 
-export const LOGGED_IN = "loggedin"
+export const LOGGED_IN = "loggedin";
+
+export const HIDE_OLD_FLOW = true;
+
+export const GRADIENT_BUTTON_CSS = cn(
+  "relative overflow-hidden px-6 py-2.5",
+  "bg-gradient-to-r from-violet-600 to-blue-600",
+  "hover:from-violet-500 hover:to-blue-500",
+  "text-white font-medium",
+  "shadow-lg shadow-violet-500/25",
+  "transition-all duration-300",
+  "hover:shadow-xl hover:shadow-violet-500/30",
+  "hover:scale-[1.02]",
+  "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100",
+);
 
 export const problems = [
   {
@@ -47,8 +63,7 @@ export const faqs = [
   {
     id: "item-1",
     question: `Is ${brandName} suitable for all types of YouTube channels?`,
-    answer:
-      `Yes! ${brandName} works for all types of content, from vlogs and tutorials to gaming, cooking, tech reviews, and more. Our AI adapts to your specific niche and content style.`,
+    answer: `Yes! ${brandName} works for all types of content, from vlogs and tutorials to gaming, cooking, tech reviews, and more. Our AI adapts to your specific niche and content style.`,
   },
   // {
   //   id: "item-2",
@@ -65,8 +80,7 @@ export const faqs = [
   {
     id: "item-4",
     question: "Does it work for YouTube Shorts too?",
-    answer:
-      `Yes, ${brandName} has specific templates for short-form content like YouTube Shorts, optimized for maximum engagement in the vertical format.`,
+    answer: `Yes, ${brandName} has specific templates for short-form content like YouTube Shorts, optimized for maximum engagement in the vertical format.`,
   },
   {
     id: "item-5",

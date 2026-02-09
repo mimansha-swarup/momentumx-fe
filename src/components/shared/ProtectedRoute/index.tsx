@@ -25,7 +25,7 @@ const ProtectedLayout = () => {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    if (user && user?.niche) {
+    if (user && user?.business) {
       if (!titles) {
         dispatch(retrieveTitles({ isFresh: true }));
       }
@@ -51,7 +51,7 @@ const ProtectedLayout = () => {
 
   if (loading) {
     return <RootLoader />;
-  } else if (user && !user?.niche && location.pathname !== "/app/onboarding") {
+  } else if (user && !user?.business && location.pathname !== "/app/onboarding") {
     return <Navigate to={`/app/onboarding`} />;
   } else if (!isLoggedIn) {
     return <Navigate to={`/login`} replace state={{ from: location }} />;

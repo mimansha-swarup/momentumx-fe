@@ -1,0 +1,321 @@
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { Button } from "@/components/ui/button";
+import { useSidebar } from "@/components/ui/sidebar";
+import {
+  ScriptInput,
+  OutputCard,
+  HooksCard,
+  ShortsScriptCard,
+} from "@/components/packaging";
+import {
+  selectPackaging,
+  selectCanAddMoreShorts,
+  setScript,
+  updateTitle,
+  updateDescription,
+  updateThumbnailDescription,
+  updateOpeningHook,
+  updatePatternInterrupt,
+  updateCtaHook,
+  deleteShortsScript,
+  resetPackaging,
+} from "@/utils/feature/packaging/packaging.slice";
+import {
+  generateTitle,
+  generateDescription,
+  generateThumbnail,
+  generateHooks,
+  addNewShortsScript,
+  regenerateShortsScript,
+  generateAllPackaging,
+  savePackaging,
+} from "@/utils/feature/packaging/packaging.thunk";
+import { PACKAGING_LIMITS } from "@/types/feature/packaging";
+import {
+  Menu,
+  Package,
+  Type,
+  FileText,
+  Image,
+  Save,
+  Loader2,
+  RotateCcw,
+  Sparkles,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+
+const PackagingPage = () => {
+  const dispatch = useAppDispatch();
+  const { toggleSidebar } = useSidebar();
+  const {
+    script,
+    title,
+    description,
+    thumbnailDescription,
+    hooks,
+    shortsScript,
+    isSaving,
+    isGeneratingAll,
+    savedAt,
+  } = useAppSelector(selectPackaging);
+  const canAddMoreShorts = useAppSelector(selectCanAddMoreShorts);
+
+  const hasContent =
+    title.content ||
+    description.content ||
+    thumbnailDescription.content ||
+    hooks.openingLine ||
+    shortsScript.scripts.length > 0;
+
+  const isAnyShortsLoading = shortsScript.scripts.some((s) => s.isLoading);
+
+  const isAnyLoading =
+    title.isLoading ||
+    description.isLoading ||
+    thumbnailDescription.isLoading ||
+    hooks.isLoading ||
+    isAnyShortsLoading ||
+    shortsScript.isAddingNew;
+
+  const handleGenerateAll = () => {
+    if (!script.trim()) {
+      toast.error("Please enter a podcast script first");
+      return;
+    }
+    dispatch(generateAllPackaging());
+  };
+
+  const handleSave = async () => {
+    if (!hasContent) {
+      toast.error("Generate some content first");
+      return;
+    }
+    const result = await dispatch(savePackaging());
+    if (savePackaging.fulfilled.match(result)) {
+      toast.success("Packaging saved successfully!");
+    } else {
+      toast.error("Failed to save packaging");
+    }
+  };
+
+  const handleReset = () => {
+    dispatch(resetPackaging());
+    toast.info("All content has been cleared");
+  };
+
+  const handleAddNewShorts = () => {
+    if (!script.trim()) {
+      toast.error("Please enter a podcast script first");
+      return;
+    }
+    dispatch(addNewShortsScript());
+  };
+
+  const handleRegenerateShorts = (scriptId: string) => {
+    dispatch(regenerateShortsScript(scriptId));
+  };
+
+  const handleDeleteShorts = (scriptId: string) => {
+    dispatch(deleteShortsScript(scriptId));
+    toast.info("Script variation removed");
+  };
+
+  return (
+    <div className="min-h-screen ">
+      {/* Animated background patterns */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-violet-500/10 via-transparent to-transparent blur-3xl animate-pulse" />
+        <div
+          className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-blue-500/10 via-transparent to-transparent blur-3xl animate-pulse"
+          style={{ animationDelay: "1s" }}
+        />
+        {/* Grid pattern overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.02]"
+          style={{
+            backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+            backgroundSize: "50px 50px",
+          }}
+        />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-10">
+        {/* Header */}
+        <header className="mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              className="block md:hidden"
+              variant="ghost"
+              size="icon"
+              onClick={toggleSidebar}
+            >
+              <Menu className="h-5 w-5 text-slate-400" />
+            </Button>
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-blue-600 shadow-lg shadow-violet-500/25">
+                <Package className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight text-white md:text-3xl">
+                  Transform your script into marketing assets
+                </h1>
+                <p className="text-sm text-slate-400">Packaging</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex items-center gap-2">
+            {hasContent && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                onClick={handleReset}
+              >
+                <RotateCcw className="mr-1.5 h-4 w-4" />
+                <span className="hidden sm:inline">Reset</span>
+              </Button>
+            )}
+            <Button
+              onClick={handleSave}
+              disabled={!hasContent || isSaving || isAnyLoading}
+              className={cn(
+                "bg-gradient-to-r from-emerald-600 to-teal-600",
+                "hover:from-emerald-500 hover:to-teal-500",
+                "shadow-lg shadow-emerald-500/20",
+                "disabled:opacity-50",
+              )}
+            >
+              {isSaving ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="mr-2 h-4 w-4" />
+              )}
+              Save All
+            </Button>
+          </div>
+        </header>
+
+        {/* Saved indicator */}
+        {savedAt && (
+          <div className="mb-6 flex items-center gap-2 text-xs text-emerald-400">
+            <Sparkles className="h-3 w-3" />
+            <span>Last saved: {new Date(savedAt).toLocaleString()}</span>
+          </div>
+        )}
+
+        {/* Script Input Section */}
+        <section className="mb-8">
+          <ScriptInput
+            value={script}
+            onChange={(value) => dispatch(setScript(value))}
+            onGenerate={handleGenerateAll}
+            isGenerating={isGeneratingAll || isAnyLoading}
+          />
+        </section>
+
+        {/* Output Cards - Masonry Grid */}
+        <section className="space-y-6">
+          {/* Masonry layout for Title, Description, Thumbnail Brief */}
+          <div className="columns-1 md:columns-2 gap-6 [column-fill:_balance]">
+            {/* Title Card */}
+            <div className="mb-6 break-inside-avoid">
+              <OutputCard
+                title="Title"
+                icon={<Type className="h-4 w-4" />}
+                content={title.content}
+                isLoading={title.isLoading}
+                error={title.error}
+                characterLimit={PACKAGING_LIMITS.title}
+                onRegenerate={() => dispatch(generateTitle())}
+                onEdit={(value) => dispatch(updateTitle(value))}
+                accentColor="violet"
+                skeletonLines={2}
+              />
+            </div>
+
+            {/* Description Card */}
+            <div className="mb-6 break-inside-avoid">
+              <OutputCard
+                title="Description"
+                icon={<FileText className="h-4 w-4" />}
+                content={description.content}
+                isLoading={description.isLoading}
+                error={description.error}
+                characterLimit={PACKAGING_LIMITS.description}
+                onRegenerate={() => dispatch(generateDescription())}
+                onEdit={(value) => dispatch(updateDescription(value))}
+                accentColor="blue"
+                skeletonLines={8}
+              />
+            </div>
+
+            {/* Thumbnail Brief Card */}
+            <div className="mb-6 break-inside-avoid">
+              <OutputCard
+                title="Thumbnail Brief"
+                icon={<Image className="h-4 w-4" />}
+                content={thumbnailDescription.content}
+                isLoading={thumbnailDescription.isLoading}
+                error={thumbnailDescription.error}
+                characterLimit={PACKAGING_LIMITS.thumbnailDescription}
+                onRegenerate={() => dispatch(generateThumbnail())}
+                onEdit={(value) => dispatch(updateThumbnailDescription(value))}
+                accentColor="emerald"
+                skeletonLines={5}
+              />
+            </div>
+          </div>
+
+          {/* Hooks */}
+          <HooksCard
+            openingLine={hooks.openingLine}
+            patternInterrupt={hooks.patternInterrupt}
+            ctaHook={hooks.ctaHook}
+            isLoading={hooks.isLoading}
+            error={hooks.error}
+            onRegenerateAll={() => dispatch(generateHooks())}
+            onEditOpeningLine={(value) => dispatch(updateOpeningHook(value))}
+            onEditPatternInterrupt={(value) =>
+              dispatch(updatePatternInterrupt(value))
+            }
+            onEditCtaHook={(value) => dispatch(updateCtaHook(value))}
+          />
+
+          {/* Shorts Scripts - Multiple variations */}
+          <ShortsScriptCard
+            scripts={shortsScript.scripts}
+            isAddingNew={shortsScript.isAddingNew}
+            canAddMore={canAddMoreShorts}
+            onAddNew={handleAddNewShorts}
+            onRegenerate={handleRegenerateShorts}
+            onDelete={handleDeleteShorts}
+          />
+        </section>
+
+        {/* Footer */}
+        <footer className="mt-12 border-t border-slate-800/50 pt-6 text-center">
+          <p className="text-xs text-slate-500">
+            Generated content is AI-assisted. Review and edit before publishing.
+          </p>
+        </footer>
+      </div>
+
+      {/* Custom animations */}
+      <style>{`
+        @keyframes shimmer {
+          0% {
+            transform: translateX(-100%);
+          }
+          100% {
+            transform: translateX(100%);
+          }
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default PackagingPage;

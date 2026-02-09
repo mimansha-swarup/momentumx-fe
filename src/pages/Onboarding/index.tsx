@@ -65,8 +65,8 @@ const Onboarding = () => {
     [activeSection.questions.length, currentQuestionIndex]
   );
 
-  if (user?.niche) {
-   return <Navigate to="/app/dashboard" replace />;
+  if (user?.business) {
+    return <Navigate to="/app/dashboard" replace />;
   }
 
   const handleKeypress = (e: KeyboardEvent<HTMLInputElement>) => {
