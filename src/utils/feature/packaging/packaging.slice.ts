@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/utils/store";
-import { IPackagingState, IShortsScript, IHooks, MAX_SHORTS_SCRIPTS } from "@/types/feature/packaging";
+import { IPackagingState, IShortsScript, MAX_SHORTS_SCRIPTS } from "@/types/feature/packaging";
 import {
   generateTitle,
   generateDescription,
@@ -15,8 +15,9 @@ import {
 
 const initialState: IPackagingState = {
   script: "",
-  title: {
-    content: "",
+  titles: {
+    titles: [],
+    selectedIndex: 0,
     isLoading: false,
     error: null,
   },
@@ -25,8 +26,9 @@ const initialState: IPackagingState = {
     isLoading: false,
     error: null,
   },
-  thumbnailDescription: {
-    content: "",
+  thumbnails: {
+    descriptions: [],
+    selectedIndex: 0,
     isLoading: false,
     error: null,
   },
@@ -52,28 +54,43 @@ const packagingSlice = createSlice({
     setScript: (state, action: PayloadAction<string>) => {
       state.script = action.payload;
     },
-    updateTitle: (state, action: PayloadAction<string>) => {
-      state.title.content = action.payload;
+    // Title actions
+    updateTitleVariation: (
+      state,
+      action: PayloadAction<{ index: number; value: string }>
+    ) => {
+      const { index, value } = action.payload;
+      if (state.titles.titles[index] !== undefined) {
+        state.titles.titles[index].title = value;
+      }
     },
+    setSelectedTitle: (state, action: PayloadAction<number>) => {
+      state.titles.selectedIndex = action.payload;
+    },
+    // Description actions
     updateDescription: (state, action: PayloadAction<string>) => {
       state.description.content = action.payload;
     },
-    updateThumbnailDescription: (state, action: PayloadAction<string>) => {
-      state.thumbnailDescription.content = action.payload;
+    // Thumbnail actions (thumbnails are read-only, just selection)
+    setSelectedThumbnail: (state, action: PayloadAction<number>) => {
+      state.thumbnails.selectedIndex = action.payload;
     },
+    // Hook actions (hooks are simple strings)
     updateHook: (
       state,
-      action: PayloadAction<{
-        index: number;
-        field: keyof IHooks;
-        value: string;
-      }>
+      action: PayloadAction<{ index: number; value: string }>
     ) => {
-      const { index, field, value } = action.payload;
-      if (state.hooks.hooks[index]) {
-        state.hooks.hooks[index][field] = value;
+      const { index, value } = action.payload;
+      if (state.hooks.hooks[index] !== undefined) {
+        state.hooks.hooks[index] = value;
       }
     },
+    deleteHook: (state, action: PayloadAction<number>) => {
+      state.hooks.hooks = state.hooks.hooks.filter(
+        (_, index) => index !== action.payload
+      );
+    },
+    // Shorts actions
     deleteShortsScript: (state, action: PayloadAction<string>) => {
       state.shortsScript.scripts = state.shortsScript.scripts.filter(
         (s) => s.id !== action.payload
@@ -81,9 +98,9 @@ const packagingSlice = createSlice({
     },
     resetPackaging: () => initialState,
     clearErrors: (state) => {
-      state.title.error = null;
+      state.titles.error = null;
       state.description.error = null;
-      state.thumbnailDescription.error = null;
+      state.thumbnails.error = null;
       state.hooks.error = null;
       state.shortsScript.scripts.forEach((s) => {
         s.error = null;
@@ -92,18 +109,20 @@ const packagingSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Generate Title
+      // Generate Titles (3 variations)
       .addCase(generateTitle.pending, (state) => {
-        state.title.isLoading = true;
-        state.title.error = null;
+        state.titles.isLoading = true;
+        state.titles.error = null;
       })
       .addCase(generateTitle.fulfilled, (state, action) => {
-        state.title.isLoading = false;
-        state.title.content = action.payload?.title || "";
+        state.titles.isLoading = false;
+        console.log("action.payload", action.payload);
+        state.titles.titles = action.payload?.titles || [];
+        state.titles.selectedIndex = 0;
       })
       .addCase(generateTitle.rejected, (state, action) => {
-        state.title.isLoading = false;
-        state.title.error = action.payload as string;
+        state.titles.isLoading = false;
+        state.titles.error = action.payload as string;
       })
 
       // Generate Description
@@ -120,21 +139,22 @@ const packagingSlice = createSlice({
         state.description.error = action.payload as string;
       })
 
-      // Generate Thumbnail
+      // Generate Thumbnails (3 variations)
       .addCase(generateThumbnail.pending, (state) => {
-        state.thumbnailDescription.isLoading = true;
-        state.thumbnailDescription.error = null;
+        state.thumbnails.isLoading = true;
+        state.thumbnails.error = null;
       })
       .addCase(generateThumbnail.fulfilled, (state, action) => {
-        state.thumbnailDescription.isLoading = false;
-        state.thumbnailDescription.content = action.payload?.thumbnailDescription || "";
+        state.thumbnails.isLoading = false;
+        state.thumbnails.descriptions = action.payload?.descriptions || [];
+        state.thumbnails.selectedIndex = 0;
       })
       .addCase(generateThumbnail.rejected, (state, action) => {
-        state.thumbnailDescription.isLoading = false;
-        state.thumbnailDescription.error = action.payload as string;
+        state.thumbnails.isLoading = false;
+        state.thumbnails.error = action.payload as string;
       })
 
-      // Generate Hooks
+      // Generate Hooks (multiple paragraphs)
       .addCase(generateHooks.pending, (state) => {
         state.hooks.isLoading = true;
         state.hooks.error = null;
@@ -148,9 +168,8 @@ const packagingSlice = createSlice({
         state.hooks.error = action.payload as string;
       })
 
-      // Generate first Shorts (used in generateAll)
+      // Generate Shorts
       .addCase(generateShorts.pending, (state) => {
-        // Add a new script in loading state
         const newScript: IShortsScript = {
           id: `shorts_${Date.now()}`,
           segments: [],
@@ -228,15 +247,14 @@ const packagingSlice = createSlice({
       // Generate All
       .addCase(generateAllPackaging.pending, (state) => {
         state.isGeneratingAll = true;
-        state.title.isLoading = true;
-        state.title.error = null;
+        state.titles.isLoading = true;
+        state.titles.error = null;
         state.description.isLoading = true;
         state.description.error = null;
-        state.thumbnailDescription.isLoading = true;
-        state.thumbnailDescription.error = null;
+        state.thumbnails.isLoading = true;
+        state.thumbnails.error = null;
         state.hooks.isLoading = true;
         state.hooks.error = null;
-        // Initialize shorts script in loading state
         const newScript: IShortsScript = {
           id: `shorts_${Date.now()}`,
           segments: [],
@@ -247,21 +265,20 @@ const packagingSlice = createSlice({
       })
       .addCase(generateAllPackaging.fulfilled, (state, action) => {
         state.isGeneratingAll = false;
-        // Update title
-        state.title.isLoading = false;
-        state.title.content = action.payload.title.title;
+        // Update titles
+        state.titles.isLoading = false;
+        state.titles.titles = action.payload.title.titles || [];
+        state.titles.selectedIndex = 0;
         // Update description
         state.description.isLoading = false;
         state.description.content = action.payload.description.description;
-        // Update thumbnail
-        state.thumbnailDescription.isLoading = false;
-        state.thumbnailDescription.content = action.payload.thumbnail.thumbnailDescription;
+        // Update thumbnails
+        state.thumbnails.isLoading = false;
+        state.thumbnails.descriptions = action.payload.thumbnail.descriptions || [];
+        state.thumbnails.selectedIndex = 0;
         // Update hooks
         state.hooks.isLoading = false;
-        if (action.payload.hooks) {
-          // @ts-ignore
-          state.hooks.hooks = action.payload.hooks || [];
-        }
+        state.hooks.hooks = action.payload.hooks?.hooks || [];
         // Update shorts
         if (state.shortsScript.scripts.length > 0) {
           state.shortsScript.scripts[0].isLoading = false;
@@ -270,9 +287,9 @@ const packagingSlice = createSlice({
       })
       .addCase(generateAllPackaging.rejected, (state) => {
         state.isGeneratingAll = false;
-        state.title.isLoading = false;
+        state.titles.isLoading = false;
         state.description.isLoading = false;
-        state.thumbnailDescription.isLoading = false;
+        state.thumbnails.isLoading = false;
         state.hooks.isLoading = false;
         if (state.shortsScript.scripts.length > 0) {
           state.shortsScript.scripts[0].isLoading = false;
@@ -296,10 +313,12 @@ const packagingSlice = createSlice({
 
 export const {
   setScript,
-  updateTitle,
+  updateTitleVariation,
+  setSelectedTitle,
   updateDescription,
-  updateThumbnailDescription,
+  setSelectedThumbnail,
   updateHook,
+  deleteHook,
   deleteShortsScript,
   resetPackaging,
   clearErrors,
@@ -308,10 +327,9 @@ export const {
 // Selectors
 export const selectPackaging = (state: RootState) => state.packaging;
 export const selectScript = (state: RootState) => state.packaging.script;
-export const selectTitle = (state: RootState) => state.packaging.title;
+export const selectTitles = (state: RootState) => state.packaging.titles;
 export const selectDescription = (state: RootState) => state.packaging.description;
-export const selectThumbnailDescription = (state: RootState) =>
-  state.packaging.thumbnailDescription;
+export const selectThumbnails = (state: RootState) => state.packaging.thumbnails;
 export const selectHooks = (state: RootState) => state.packaging.hooks;
 export const selectShortsScripts = (state: RootState) => state.packaging.shortsScript;
 export const selectCanAddMoreShorts = (state: RootState) =>
@@ -320,9 +338,9 @@ export const selectIsSaving = (state: RootState) => state.packaging.isSaving;
 export const selectIsGeneratingAll = (state: RootState) =>
   state.packaging.isGeneratingAll;
 export const selectHasContent = (state: RootState) =>
-  state.packaging.title.content ||
+  state.packaging.titles.titles.length > 0 ||
   state.packaging.description.content ||
-  state.packaging.thumbnailDescription.content ||
+  state.packaging.thumbnails.descriptions.length > 0 ||
   state.packaging.hooks.hooks.length > 0 ||
   state.packaging.shortsScript.scripts.length > 0;
 

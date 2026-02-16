@@ -4,21 +4,24 @@ import { useSidebar } from "@/components/ui/sidebar";
 import {
   ScriptInput,
   OutputCard,
-  HooksCard,
+  TitlesCard,
+  ThumbnailsCard,
+  HooksParagraphCard,
   ShortsScriptCard,
 } from "@/components/packaging";
 import {
   selectPackaging,
   selectCanAddMoreShorts,
   setScript,
-  updateTitle,
+  updateTitleVariation,
+  setSelectedTitle,
   updateDescription,
-  updateThumbnailDescription,
+  setSelectedThumbnail,
   updateHook,
+  deleteHook,
   deleteShortsScript,
   resetPackaging,
 } from "@/utils/feature/packaging/packaging.slice";
-import { IHooks } from "@/types/feature/packaging";
 import {
   generateTitle,
   generateDescription,
@@ -33,9 +36,7 @@ import { PACKAGING_LIMITS } from "@/types/feature/packaging";
 import {
   Menu,
   Package,
-  Type,
   FileText,
-  Image,
   Save,
   Loader2,
   RotateCcw,
@@ -49,9 +50,9 @@ const PackagingPage = () => {
   const { toggleSidebar } = useSidebar();
   const {
     script,
-    title,
+    titles,
     description,
-    thumbnailDescription,
+    thumbnails,
     hooks,
     shortsScript,
     isSaving,
@@ -60,32 +61,19 @@ const PackagingPage = () => {
   } = useAppSelector(selectPackaging);
   const canAddMoreShorts = useAppSelector(selectCanAddMoreShorts);
 
-
-  console.log("script", {
-    script,
-    title,
-    description,
-    thumbnailDescription,
-    hooks,
-    shortsScript,
-    isSaving,
-    isGeneratingAll,
-    savedAt,
-  })
-
   const hasContent =
-    title.content ||
+    titles.titles.length > 0 ||
     description.content ||
-    thumbnailDescription.content ||
+    thumbnails.descriptions.length > 0 ||
     hooks.hooks.length > 0 ||
     shortsScript.scripts.length > 0;
 
   const isAnyShortsLoading = shortsScript.scripts.some((s) => s.isLoading);
 
   const isAnyLoading =
-    title.isLoading ||
+    titles.isLoading ||
     description.isLoading ||
-    thumbnailDescription.isLoading ||
+    thumbnails.isLoading ||
     hooks.isLoading ||
     isAnyShortsLoading ||
     shortsScript.isAddingNew;
@@ -197,7 +185,7 @@ const PackagingPage = () => {
                 "bg-gradient-to-r from-emerald-600 to-teal-600",
                 "hover:from-emerald-500 hover:to-teal-500",
                 "shadow-lg shadow-emerald-500/20",
-                "disabled:opacity-50",
+                "disabled:opacity-50"
               )}
             >
               {isSaving ? (
@@ -228,68 +216,54 @@ const PackagingPage = () => {
           />
         </section>
 
-        {/* Output Cards - Masonry Grid */}
+        {/* Output Cards */}
         <section className="space-y-6">
-          {/* Masonry layout for Title, Description, Thumbnail Brief */}
-          <div className="columns-1 md:columns-2 gap-6 [column-fill:_balance]">
-            {/* Title Card */}
-            <div className="mb-6 break-inside-avoid">
-              <OutputCard
-                title="Title"
-                icon={<Type className="h-4 w-4" />}
-                content={title.content}
-                isLoading={title.isLoading}
-                error={title.error}
-                characterLimit={PACKAGING_LIMITS.title}
-                onRegenerate={() => dispatch(generateTitle())}
-                onEdit={(value) => dispatch(updateTitle(value))}
-                accentColor="violet"
-                skeletonLines={2}
-              />
-            </div>
+          {/* Titles - 3 variations */}
+          <TitlesCard
+          // @ts-ignore
+            titles={titles.titles}
+            selectedIndex={titles.selectedIndex}
+            isLoading={titles.isLoading}
+            error={titles.error}
+            onRegenerate={() => dispatch(generateTitle())}
+            onSelectTitle={(index) => dispatch(setSelectedTitle(index))}
+            onEditTitle={(index, value) =>
+              dispatch(updateTitleVariation({ index, value }))
+            }
+          />
 
-            {/* Description Card */}
-            <div className="mb-6 break-inside-avoid">
-              <OutputCard
-                title="Description"
-                icon={<FileText className="h-4 w-4" />}
-                content={description.content}
-                isLoading={description.isLoading}
-                error={description.error}
-                characterLimit={PACKAGING_LIMITS.description}
-                onRegenerate={() => dispatch(generateDescription())}
-                onEdit={(value) => dispatch(updateDescription(value))}
-                accentColor="blue"
-                skeletonLines={8}
-              />
-            </div>
+          {/* Description Card */}
+          <OutputCard
+            title="Description"
+            icon={<FileText className="h-4 w-4" />}
+            content={description.content}
+            isLoading={description.isLoading}
+            error={description.error}
+            characterLimit={PACKAGING_LIMITS.description}
+            onRegenerate={() => dispatch(generateDescription())}
+            onEdit={(value) => dispatch(updateDescription(value))}
+            accentColor="blue"
+            skeletonLines={8}
+          />
 
-            {/* Thumbnail Brief Card */}
-            <div className="mb-6 break-inside-avoid">
-              <OutputCard
-                title="Thumbnail Brief"
-                icon={<Image className="h-4 w-4" />}
-                content={thumbnailDescription.content}
-                isLoading={thumbnailDescription.isLoading}
-                error={thumbnailDescription.error}
-                characterLimit={PACKAGING_LIMITS.thumbnailDescription}
-                onRegenerate={() => dispatch(generateThumbnail())}
-                onEdit={(value) => dispatch(updateThumbnailDescription(value))}
-                accentColor="emerald"
-                skeletonLines={5}
-              />
-            </div>
-          </div>
+          {/* Thumbnails - 3 variations */}
+          <ThumbnailsCard
+            descriptions={thumbnails.descriptions}
+            selectedIndex={thumbnails.selectedIndex}
+            isLoading={thumbnails.isLoading}
+            error={thumbnails.error}
+            onRegenerate={() => dispatch(generateThumbnail())}
+            onSelectThumbnail={(index) => dispatch(setSelectedThumbnail(index))}
+          />
 
-          {/* Hooks */}
-          <HooksCard
+          {/* Hooks - Paragraph style */}
+          <HooksParagraphCard
             hooks={hooks.hooks}
             isLoading={hooks.isLoading}
             error={hooks.error}
-            onRegenerateAll={() => dispatch(generateHooks())}
-            onEditHook={(index: number, field: keyof IHooks, value: string) =>
-              dispatch(updateHook({ index, field, value }))
-            }
+            onRegenerate={() => dispatch(generateHooks())}
+            onEditHook={(index, value) => dispatch(updateHook({ index, value }))}
+            onDeleteHook={(index) => dispatch(deleteHook(index))}
           />
 
           {/* Shorts Scripts - Multiple variations */}
