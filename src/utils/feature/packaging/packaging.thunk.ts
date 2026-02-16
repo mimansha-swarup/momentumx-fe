@@ -9,12 +9,13 @@ export const generateTitle = createAsyncThunk(
       const state = thunkAPI.getState() as RootState;
       const { script } = state.packaging;
       const response = await packagingService.generateTitle(script);
+      console.log("response 2", response);
       return response.data;
     } catch (error) {
       console.error("Error generating title:", error);
       return thunkAPI.rejectWithValue("Failed to generate title");
     }
-  },
+  }
 );
 
 export const generateDescription = createAsyncThunk(
@@ -22,17 +23,19 @@ export const generateDescription = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const state = thunkAPI.getState() as RootState;
-      const { script, title } = state.packaging;
+      const { script, titles } = state.packaging;
+      // Use selected title if available (extract title string from ITitle object)
+      const selectedTitle = titles.titles[titles.selectedIndex]?.title || undefined;
       const response = await packagingService.generateDescription(
         script,
-        title.content || undefined,
+        selectedTitle
       );
       return response.data;
     } catch (error) {
       console.error("Error generating description:", error);
       return thunkAPI.rejectWithValue("Failed to generate description");
     }
-  },
+  }
 );
 
 export const generateThumbnail = createAsyncThunk(
@@ -40,19 +43,21 @@ export const generateThumbnail = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const state = thunkAPI.getState() as RootState;
-      const { script, title } = state.packaging;
+      const { script, titles } = state.packaging;
+      // Use selected title if available (extract title string from ITitle object)
+      const selectedTitle = titles.titles[titles.selectedIndex]?.title || undefined;
       const response = await packagingService.generateThumbnail(
         script,
-        title.content || undefined,
+        selectedTitle
       );
       return response.data;
     } catch (error) {
       console.error("Error generating thumbnail:", error);
       return thunkAPI.rejectWithValue(
-        "Failed to generate thumbnail description",
+        "Failed to generate thumbnail description"
       );
     }
-  },
+  }
 );
 
 export const generateHooks = createAsyncThunk(
@@ -67,7 +72,7 @@ export const generateHooks = createAsyncThunk(
       console.error("Error generating hooks:", error);
       return thunkAPI.rejectWithValue("Failed to generate hooks");
     }
-  },
+  }
 );
 
 // Generate first shorts script (used in generateAll)
@@ -76,18 +81,19 @@ export const generateShorts = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const state = thunkAPI.getState() as RootState;
-      const { script, title } = state.packaging;
+      const { script, titles } = state.packaging;
+      const selectedTitle = titles.titles[titles.selectedIndex]?.title || undefined;
       const response = await packagingService.generateShorts(
         script,
-        title.content || undefined,
-        0,
+        selectedTitle,
+        0
       );
       return response.data;
     } catch (error) {
       console.error("Error generating shorts script:", error);
       return thunkAPI.rejectWithValue("Failed to generate shorts script");
     }
-  },
+  }
 );
 
 // Add a new shorts script (up to 5 total)
@@ -96,19 +102,20 @@ export const addNewShortsScript = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const state = thunkAPI.getState() as RootState;
-      const { script, title, shortsScript } = state.packaging;
+      const { script, titles, shortsScript } = state.packaging;
+      const selectedTitle = titles.titles[titles.selectedIndex]?.title || undefined;
       const variant = shortsScript.scripts.length; // Use current count as variant
       const response = await packagingService.generateShorts(
         script,
-        title.content || undefined,
-        variant,
+        selectedTitle,
+        variant
       );
       return response.data;
     } catch (error) {
       console.error("Error generating new shorts script:", error);
       return thunkAPI.rejectWithValue("Failed to generate shorts script");
     }
-  },
+  }
 );
 
 // Regenerate a specific shorts script by ID
@@ -117,16 +124,17 @@ export const regenerateShortsScript = createAsyncThunk(
   async (scriptId: string, thunkAPI) => {
     try {
       const state = thunkAPI.getState() as RootState;
-      const { script, title, shortsScript } = state.packaging;
+      const { script, titles, shortsScript } = state.packaging;
+      const selectedTitle = titles.titles[titles.selectedIndex]?.title || undefined;
       const scriptIndex = shortsScript.scripts.findIndex(
-        (s) => s.id === scriptId,
+        (s) => s.id === scriptId
       );
       // Use a different variant for regeneration
       const variant = (scriptIndex + Math.floor(Math.random() * 4) + 1) % 5;
       const response = await packagingService.generateShorts(
         script,
-        title.content || undefined,
-        variant,
+        selectedTitle,
+        variant
       );
       return {
         id: scriptId,
@@ -136,7 +144,7 @@ export const regenerateShortsScript = createAsyncThunk(
       console.error("Error regenerating shorts script:", error);
       return thunkAPI.rejectWithValue("Failed to regenerate shorts script");
     }
-  },
+  }
 );
 
 export const generateAllPackaging = createAsyncThunk(
@@ -153,8 +161,6 @@ export const generateAllPackaging = createAsyncThunk(
         packagingService.generateHooks(script),
       ]);
 
-      console.log("hooksResponse", hooksResponse);
-   
       return {
         title: titleDependentContent.title,
         description: titleDependentContent.description,
@@ -166,7 +172,7 @@ export const generateAllPackaging = createAsyncThunk(
       console.error("Error generating all packaging:", error);
       return thunkAPI.rejectWithValue("Failed to generate packaging");
     }
-  },
+  }
 );
 
 export const savePackaging = createAsyncThunk(
@@ -174,21 +180,17 @@ export const savePackaging = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const state = thunkAPI.getState() as RootState;
-      const {
-        script,
-        title,
-        description,
-        thumbnailDescription,
-        hooks,
-        shortsScript,
-      } = state.packaging;
+      const { script, titles, description, thumbnails, hooks, shortsScript } =
+        state.packaging;
 
       const response = await packagingService.savePackaging({
         script,
-        title: title.content,
+        titles: titles.titles,  // ITitle[]
+        selectedTitleIndex: titles.selectedIndex,
         description: description.content,
-        thumbnailDescription: thumbnailDescription.content,
-        hooks: hooks.hooks,
+        thumbnails: thumbnails.descriptions,  // IThumbnailDescription[]
+        selectedThumbnailIndex: thumbnails.selectedIndex,
+        hooks: hooks.hooks,  // string[]
         shortsScripts: shortsScript.scripts.map((s) => ({
           id: s.id,
           segments: s.segments,
@@ -199,5 +201,5 @@ export const savePackaging = createAsyncThunk(
       console.error("Error saving packaging:", error);
       return thunkAPI.rejectWithValue("Failed to save packaging");
     }
-  },
+  }
 );

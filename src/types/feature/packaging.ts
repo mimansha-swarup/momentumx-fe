@@ -7,20 +7,45 @@ export interface ITimestampedSegment {
   type: "hook" | "point" | "cta" | "transition";
 }
 
-export interface IHooks {
-  openingLine: string;
-  patternInterrupt: string;
-  ctaHook: string;
+// Title object from API
+export interface ITitle {
+  title: string;
 }
 
-export interface IPackagingOutput {
-  content: string;
+// Thumbnail description object from API
+export interface IThumbnailDescription {
+  visual_concept: string;
+  composition: string;
+  text_overlay: string;
+  colors: string;
+  facial_expression: string;
+  style_references: string;
+  reasoning: string;
+}
+
+// Multi-variant output types
+export interface ITitlesOutput {
+  titles: ITitle[];
+  selectedIndex: number;
+  isLoading: boolean;
+  error: string | null;
+}
+
+export interface IThumbnailsOutput {
+  descriptions: IThumbnailDescription[];
+  selectedIndex: number;
   isLoading: boolean;
   error: string | null;
 }
 
 export interface IHooksOutput {
-  hooks: IHooks[];
+  hooks: string[];  // Simple string array
+  isLoading: boolean;
+  error: string | null;
+}
+
+export interface IDescriptionOutput {
+  content: string;
   isLoading: boolean;
   error: string | null;
 }
@@ -43,10 +68,10 @@ export interface IPackagingState {
   // Input
   script: string;
 
-  // Generated outputs
-  title: IPackagingOutput;
-  description: IPackagingOutput;
-  thumbnailDescription: IPackagingOutput;
+  // Generated outputs (multi-variant)
+  titles: ITitlesOutput;
+  description: IDescriptionOutput;
+  thumbnails: IThumbnailsOutput;
   hooks: IHooksOutput;
   shortsScript: IShortsOutput;
 
@@ -64,8 +89,7 @@ export interface GenerateTitleRequest {
 }
 
 export interface GenerateTitleResponse {
-  title: string;
-  characterCount: number;
+  titles: ITitle[];  // 3 title variations as objects
 }
 
 export interface GenerateDescriptionRequest {
@@ -86,8 +110,7 @@ export interface GenerateThumbnailRequest {
 }
 
 export interface GenerateThumbnailResponse {
-  thumbnailDescription: string;
-  characterCount: number;
+  descriptions: IThumbnailDescription[];  // 3 thumbnail brief variations as objects
 }
 
 export interface GenerateHooksRequest {
@@ -96,7 +119,7 @@ export interface GenerateHooksRequest {
 }
 
 export interface GenerateHooksResponse {
-  hooks: IHooks[];
+  hooks: string[];  // Multiple hook strings
 }
 
 export interface GenerateShortsRequest {
@@ -114,10 +137,12 @@ export interface SavePackagingRequest {
   userId: string;
   scriptId?: string;
   script: string;
-  title: string;
+  titles: ITitle[];
+  selectedTitleIndex: number;
   description: string;
-  thumbnailDescription: string;
-  hooks: IHooks[];
+  thumbnails: IThumbnailDescription[];
+  selectedThumbnailIndex: number;
+  hooks: string[];
   shortsScripts: Array<{ id: string; segments: ITimestampedSegment[] }>;
 }
 
@@ -129,10 +154,12 @@ export interface SavePackagingResponse {
 export interface GetPackagingResponse {
   packagingId: string;
   script: string;
-  title: string;
+  titles: ITitle[];
+  selectedTitleIndex: number;
   description: string;
-  thumbnailDescription: string;
-  hooks: IHooks[];
+  thumbnails: IThumbnailDescription[];
+  selectedThumbnailIndex: number;
+  hooks: string[];
   shortsScripts: Array<{ id: string; segments: ITimestampedSegment[] }>;
   createdAt: string;
   updatedAt: string;
@@ -143,7 +170,9 @@ export const PACKAGING_LIMITS = {
   title: 100,
   description: 5000,
   thumbnailDescription: 500,
-  openingHook: 280,
-  patternInterrupt: 280,
-  ctaHook: 280,
+  hook: 500,
 } as const;
+
+export const MAX_TITLE_VARIATIONS = 3;
+export const MAX_THUMBNAIL_VARIATIONS = 3;
+export const MAX_HOOKS = 5;

@@ -1,5 +1,7 @@
 export { default as ScriptInput } from "./ScriptInput";
 export { default as OutputCard } from "./OutputCard";
-export { default as HooksCard } from "./HooksCard";
+export { default as TitlesCard } from "./TitlesCard";
+export { default as ThumbnailsCard } from "./ThumbnailsCard";
+export { default as HooksParagraphCard } from "./HooksParagraphCard";
 export { default as ShortsScriptCard } from "./ShortsScriptCard";
 export { default as GradientSkeleton } from "./GradientSkeleton";

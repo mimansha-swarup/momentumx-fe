@@ -7,7 +7,8 @@ import {
   GenerateShortsResponse,
   SavePackagingResponse,
   GetPackagingResponse,
-  IHooks,
+  ITitle,
+  IThumbnailDescription,
   ITimestampedSegment,
 } from "@/types/feature/packaging";
 
@@ -28,8 +29,11 @@ class PackagingService {
     this.urls = URLS;
   }
 
-  async generateTitle(script: string): Promise<IBaseFetchResponse<GenerateTitleResponse>> {
+  async generateTitle(
+    script: string
+  ): Promise<IBaseFetchResponse<GenerateTitleResponse>> {
     const response = await baseFetch.post(this.urls.generateTitle, { script });
+    console.log("response", response);
     return response.data;
   }
 
@@ -55,7 +59,9 @@ class PackagingService {
     return response.data;
   }
 
-  async generateHooks(script: string): Promise<IBaseFetchResponse<GenerateHooksResponse>> {
+  async generateHooks(
+    script: string
+  ): Promise<IBaseFetchResponse<GenerateHooksResponse>> {
     const response = await baseFetch.post(this.urls.generateHooks, { script });
     return response.data;
   }
@@ -85,9 +91,10 @@ class PackagingService {
     thumbnail: GenerateThumbnailResponse;
     shorts: GenerateShortsResponse;
   }> {
-    // First, get the title
+    // First, get titles (now returns array of 3)
     const titleResponse = await this.generateTitle(script);
-    const titleText = titleResponse?.data?.title;
+    // Use the first title for dependent content generation (extract title string from ITitle object)
+    const titleText = titleResponse?.data?.titles?.[0]?.title;
 
     // Then call description, thumbnail, and shorts in parallel with the title
     const [description, thumbnail, shorts] = await Promise.all([
@@ -97,19 +104,23 @@ class PackagingService {
     ]);
 
     return {
-      title: (titleResponse.data || {}) as GenerateTitleResponse,
-      description: (description.data || {}) as GenerateDescriptionResponse,
-      thumbnail: (thumbnail.data || {}) as GenerateThumbnailResponse,
+      title: (titleResponse.data || { titles: [] }) as GenerateTitleResponse,
+      description: (description.data ||
+        {}) as GenerateDescriptionResponse,
+      thumbnail: (thumbnail.data ||
+        { descriptions: [] }) as GenerateThumbnailResponse,
       shorts: (shorts.data || {}) as GenerateShortsResponse,
     };
   }
 
   async savePackaging(data: {
     script: string;
-    title: string;
+    titles: ITitle[];
+    selectedTitleIndex: number;
     description: string;
-    thumbnailDescription: string;
-    hooks: IHooks[];
+    thumbnails: IThumbnailDescription[];
+    selectedThumbnailIndex: number;
+    hooks: string[];
     shortsScripts: Array<{ id: string; segments: ITimestampedSegment[] }>;
   }): Promise<SavePackagingResponse> {
     const response = await baseFetch.post(this.urls.save, data);
