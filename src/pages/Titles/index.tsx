@@ -10,6 +10,7 @@ import {
   updateFilter,
 } from "@/utils/feature/titles/titles.slice";
 import { generateTitles } from "@/utils/feature/titles/titles.thunk";
+import { TitleFilters } from "@/types/feature/title";
 import { LoaderCircle, Plus } from "lucide-react";
 
 const filters = [
@@ -36,7 +37,7 @@ const TitlePage = () => {
 
   const onFiltersChange = (value: string) => () => {
     if (filterBy === value) return;
-    dispatch(updateFilter({ filter: value }));
+    dispatch(updateFilter({ filter: value as `${TitleFilters}` }));
     dispatch(resetTitle());
   };
 

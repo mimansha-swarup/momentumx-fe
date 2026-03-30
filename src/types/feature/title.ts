@@ -5,7 +5,7 @@ export interface ITitleData {
     nextCursor: {
       createdAt: string;
       docId: string;
-    };
+    } | null;
     hasNextPage: boolean;
   };
   lists: IGeneratedTopic[];
@@ -25,4 +25,10 @@ export interface ITitleState {
   params: ITitleParams;
   isLoading: boolean;
   isDone: boolean;
+  isEditing: boolean;
+  isRegenerating: boolean;
+  isExporting: boolean;
+  isSubmittingFeedback: boolean;
+  exportText: string | null;
+  error: string | null;
 }

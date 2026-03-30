@@ -19,17 +19,13 @@ export const persistLogin = async () => {
     });
 };
 export const googleLogin = async () => {
-  try {
-    const result = await signInWithPopup(auth, provider);
-    const userInfo = getAdditionalUserInfo(result);
-    const user = result.user;
-    if (userInfo?.isNewUser) {
-      localStorage.setItem(IS_NEW_USER, "true");
-    }
-    return user;
-  } catch (error) {
-    throw error;
+  const result = await signInWithPopup(auth, provider);
+  const userInfo = getAdditionalUserInfo(result);
+  const user = result.user;
+  if (userInfo?.isNewUser) {
+    localStorage.setItem(IS_NEW_USER, "true");
   }
+  return user;
 };
 
 export const googleLogOut = (navigate: NavigateFunction) => {

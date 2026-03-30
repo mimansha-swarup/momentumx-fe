@@ -1,6 +1,8 @@
 import { packagingService } from "@/service/packaging";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "@/utils/store";
+import { handleToast } from "@/utils/toast";
+import { RegenerateItemResponse } from "@/types/feature/packaging";
 
 export const generateTitle = createAsyncThunk(
   "packaging/generateTitle",
@@ -9,11 +11,9 @@ export const generateTitle = createAsyncThunk(
       const state = thunkAPI.getState() as RootState;
       const { script } = state.packaging;
       const response = await packagingService.generateTitle(script);
-      console.log("response 2", response);
       return response.data;
     } catch (error) {
-      console.error("Error generating title:", error);
-      return thunkAPI.rejectWithValue("Failed to generate title");
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -24,16 +24,14 @@ export const generateDescription = createAsyncThunk(
     try {
       const state = thunkAPI.getState() as RootState;
       const { script, titles } = state.packaging;
-      // Use selected title if available (extract title string from ITitle object)
-      const selectedTitle = titles.titles[titles.selectedIndex]?.title || undefined;
+      const selectedTitle = titles.titles[titles.selectedIndex]?.title ?? "";
       const response = await packagingService.generateDescription(
         script,
         selectedTitle
       );
       return response.data;
     } catch (error) {
-      console.error("Error generating description:", error);
-      return thunkAPI.rejectWithValue("Failed to generate description");
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -44,22 +42,19 @@ export const generateThumbnail = createAsyncThunk(
     try {
       const state = thunkAPI.getState() as RootState;
       const { script, titles } = state.packaging;
-      // Use selected title if available (extract title string from ITitle object)
-      const selectedTitle = titles.titles[titles.selectedIndex]?.title || undefined;
+      const selectedTitle = titles.titles[titles.selectedIndex]?.title ?? "";
       const response = await packagingService.generateThumbnail(
         script,
         selectedTitle
       );
       return response.data;
     } catch (error) {
-      console.error("Error generating thumbnail:", error);
-      return thunkAPI.rejectWithValue(
-        "Failed to generate thumbnail description"
-      );
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
 
+/** @deprecated Uses legacy stateless hooks endpoint. Migrate to hooks.thunk.ts when videoProjectId is available. */
 export const generateHooks = createAsyncThunk(
   "packaging/generateHooks",
   async (_, thunkAPI) => {
@@ -69,8 +64,7 @@ export const generateHooks = createAsyncThunk(
       const response = await packagingService.generateHooks(script);
       return response.data;
     } catch (error) {
-      console.error("Error generating hooks:", error);
-      return thunkAPI.rejectWithValue("Failed to generate hooks");
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -81,17 +75,11 @@ export const generateShorts = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const state = thunkAPI.getState() as RootState;
-      const { script, titles } = state.packaging;
-      const selectedTitle = titles.titles[titles.selectedIndex]?.title || undefined;
-      const response = await packagingService.generateShorts(
-        script,
-        selectedTitle,
-        0
-      );
+      const { script } = state.packaging;
+      const response = await packagingService.generateShorts(script);
       return response.data;
     } catch (error) {
-      console.error("Error generating shorts script:", error);
-      return thunkAPI.rejectWithValue("Failed to generate shorts script");
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -102,18 +90,11 @@ export const addNewShortsScript = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const state = thunkAPI.getState() as RootState;
-      const { script, titles, shortsScript } = state.packaging;
-      const selectedTitle = titles.titles[titles.selectedIndex]?.title || undefined;
-      const variant = shortsScript.scripts.length; // Use current count as variant
-      const response = await packagingService.generateShorts(
-        script,
-        selectedTitle,
-        variant
-      );
+      const { script } = state.packaging;
+      const response = await packagingService.generateShorts(script);
       return response.data;
     } catch (error) {
-      console.error("Error generating new shorts script:", error);
-      return thunkAPI.rejectWithValue("Failed to generate shorts script");
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -124,29 +105,20 @@ export const regenerateShortsScript = createAsyncThunk(
   async (scriptId: string, thunkAPI) => {
     try {
       const state = thunkAPI.getState() as RootState;
-      const { script, titles, shortsScript } = state.packaging;
-      const selectedTitle = titles.titles[titles.selectedIndex]?.title || undefined;
-      const scriptIndex = shortsScript.scripts.findIndex(
-        (s) => s.id === scriptId
-      );
-      // Use a different variant for regeneration
-      const variant = (scriptIndex + Math.floor(Math.random() * 4) + 1) % 5;
-      const response = await packagingService.generateShorts(
-        script,
-        selectedTitle,
-        variant
-      );
+      const { script } = state.packaging;
+      const response = await packagingService.generateShorts(script);
       return {
         id: scriptId,
         segments: response.data?.segments,
+        totalDuration: response.data?.totalDuration,
       };
     } catch (error) {
-      console.error("Error regenerating shorts script:", error);
-      return thunkAPI.rejectWithValue("Failed to regenerate shorts script");
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
 
+/** @deprecated Uses legacy stateless hooks endpoint via packagingService.generateHooks(). Migrate to hooks.thunk.ts when videoProjectId is available. */
 export const generateAllPackaging = createAsyncThunk(
   "packaging/generateAll",
   async (_, thunkAPI) => {
@@ -169,8 +141,7 @@ export const generateAllPackaging = createAsyncThunk(
         hooks: hooksResponse.data,
       };
     } catch (error) {
-      console.error("Error generating all packaging:", error);
-      return thunkAPI.rejectWithValue("Failed to generate packaging");
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -185,21 +156,114 @@ export const savePackaging = createAsyncThunk(
 
       const response = await packagingService.savePackaging({
         script,
-        titles: titles.titles,  // ITitle[]
+        titles: titles.titles,
         selectedTitleIndex: titles.selectedIndex,
         description: description.content,
-        thumbnails: thumbnails.descriptions,  // IThumbnailDescription[]
+        thumbnails: thumbnails.descriptions,
         selectedThumbnailIndex: thumbnails.selectedIndex,
-        hooks: hooks.hooks,  // string[]
+        hooks: hooks.hooks,
         shortsScripts: shortsScript.scripts.map((s) => ({
           id: s.id,
           segments: s.segments,
         })),
       });
-      return response;
+      handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
+      return response.data;
     } catch (error) {
-      console.error("Error saving packaging:", error);
-      return thunkAPI.rejectWithValue("Failed to save packaging");
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const listPackaging = createAsyncThunk(
+  "packaging/list",
+  async (_, thunkAPI) => {
+    try {
+      const response = await packagingService.listPackaging();
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const getPackaging = createAsyncThunk(
+  "packaging/get",
+  async (packagingId: string, thunkAPI) => {
+    try {
+      const response = await packagingService.getPackaging(packagingId);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const regenerateItem = createAsyncThunk<
+  RegenerateItemResponse,
+  {
+    packagingId: string;
+    item: "title" | "description" | "thumbnail" | "shorts";
+    script: string;
+    title?: string;
+    duration?: number;
+    selectedHook?: string;
+  }
+>(
+  "packaging/regenerateItem",
+  async (arg, thunkAPI) => {
+    try {
+      const { packagingId, item, script, title, duration, selectedHook } = arg;
+      const response = await packagingService.regenerateItem(
+        packagingId,
+        item,
+        { script, title, duration, selectedHook }
+      );
+      handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
+      if (!response.data) {
+        return thunkAPI.rejectWithValue({ message: "No data returned" });
+      }
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const submitPackagingFeedback = createAsyncThunk(
+  "packaging/submitFeedback",
+  async (
+    arg: {
+      packagingId: string;
+      item: "title" | "description" | "thumbnail" | "shorts";
+      feedback: "like" | "dislike" | null;
+    },
+    thunkAPI
+  ) => {
+    try {
+      const { packagingId, item, feedback } = arg;
+      const response = await packagingService.submitFeedback(
+        packagingId,
+        item,
+        feedback
+      );
+      handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const exportPackaging = createAsyncThunk(
+  "packaging/export",
+  async (packagingId: string, thunkAPI) => {
+    try {
+      const response = await packagingService.exportPackaging(packagingId);
+      handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );

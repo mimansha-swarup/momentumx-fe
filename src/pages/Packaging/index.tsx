@@ -40,7 +40,6 @@ import {
   Save,
   Loader2,
   RotateCcw,
-  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -57,13 +56,12 @@ const PackagingPage = () => {
     shortsScript,
     isSaving,
     isGeneratingAll,
-    savedAt,
   } = useAppSelector(selectPackaging);
   const canAddMoreShorts = useAppSelector(selectCanAddMoreShorts);
 
   const hasContent =
     titles.titles.length > 0 ||
-    description.content ||
+    !!description.content ||
     thumbnails.descriptions.length > 0 ||
     hooks.hooks.length > 0 ||
     shortsScript.scripts.length > 0;
@@ -92,9 +90,7 @@ const PackagingPage = () => {
       return;
     }
     const result = await dispatch(savePackaging());
-    if (savePackaging.fulfilled.match(result)) {
-      toast.success("Packaging saved successfully!");
-    } else {
+    if (savePackaging.rejected.match(result)) {
       toast.error("Failed to save packaging");
     }
   };
@@ -198,14 +194,6 @@ const PackagingPage = () => {
           </div>
         </header>
 
-        {/* Saved indicator */}
-        {savedAt && (
-          <div className="mb-6 flex items-center gap-2 text-xs text-emerald-400">
-            <Sparkles className="h-3 w-3" />
-            <span>Last saved: {new Date(savedAt).toLocaleString()}</span>
-          </div>
-        )}
-
         {/* Script Input Section */}
         <section className="mb-8">
           <ScriptInput
@@ -220,7 +208,6 @@ const PackagingPage = () => {
         <section className="space-y-6">
           {/* Titles - 3 variations */}
           <TitlesCard
-          // @ts-ignore
             titles={titles.titles}
             selectedIndex={titles.selectedIndex}
             isLoading={titles.isLoading}
@@ -262,7 +249,9 @@ const PackagingPage = () => {
             isLoading={hooks.isLoading}
             error={hooks.error}
             onRegenerate={() => dispatch(generateHooks())}
-            onEditHook={(index, value) => dispatch(updateHook({ index, value }))}
+            onEditHook={(index, value) =>
+              dispatch(updateHook({ index, value }))
+            }
             onDeleteHook={(index) => dispatch(deleteHook(index))}
           />
 
@@ -280,7 +269,8 @@ const PackagingPage = () => {
         {/* Footer */}
         <footer className="mt-12 border-t border-slate-800/50 pt-6 text-center">
           <p className="text-xs text-slate-500">
-            Generated content is AI-assisted. Review and edit before publishing.
+            Generated content is AI-assisted. Review and edit before
+            publishing.
           </p>
         </footer>
       </div>

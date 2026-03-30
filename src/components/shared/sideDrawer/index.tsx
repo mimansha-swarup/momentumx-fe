@@ -38,7 +38,7 @@ const SideDrawer = () => {
       matchPath({ path: subRoute, end: false }, pathname),
     );
   };
-// @ts-ignore
+// @ts-expect-error -- suppressed type mismatch
   const extractedUserName = extractYouTubeHandle(user?.userName || "");
 
   return (

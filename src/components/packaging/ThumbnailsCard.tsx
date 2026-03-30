@@ -1,21 +1,12 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  RefreshCw,
-  Copy,
-  Check,
-  Image,
-  Star,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
+import { RefreshCw, Copy, Check, Image, Star } from "lucide-react";
 import { toast } from "sonner";
 import GradientSkeleton from "./GradientSkeleton";
-import type { IThumbnailDescription } from "@/types/feature/packaging";
 
 interface ThumbnailsCardProps {
-  descriptions: IThumbnailDescription[];
+  descriptions: string[];
   selectedIndex: number;
   isLoading: boolean;
   error?: string | null;
@@ -24,7 +15,7 @@ interface ThumbnailsCardProps {
 }
 
 interface ThumbnailItemProps {
-  thumbnail: IThumbnailDescription | null;
+  thumbnail: string | null;
   index: number;
   isSelected: boolean;
   isLoading: boolean;
@@ -39,33 +30,19 @@ const ThumbnailItem = ({
   onSelect,
 }: ThumbnailItemProps) => {
   const [copied, setCopied] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!thumbnail) return;
 
-    const fullText = `Visual Concept: ${thumbnail.visual_concept}
-Composition: ${thumbnail.composition}
-Text Overlay: ${thumbnail.text_overlay}
-Colors: ${thumbnail.colors}
-Facial Expression: ${thumbnail.facial_expression}
-Style References: ${thumbnail.style_references}
-Reasoning: ${thumbnail.reasoning}`;
-
     try {
-      await navigator.clipboard.writeText(fullText);
+      await navigator.clipboard.writeText(thumbnail);
       setCopied(true);
       toast.success("Thumbnail brief copied to clipboard");
       setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error("Failed to copy");
     }
-  };
-
-  const toggleExpand = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsExpanded(!isExpanded);
   };
 
   return (
@@ -84,7 +61,9 @@ Reasoning: ${thumbnail.reasoning}`;
         {isSelected && (
           <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30">
             <Star className="h-3 w-3 text-emerald-400 fill-emerald-400" />
-            <span className="text-xs font-medium text-emerald-400">Selected</span>
+            <span className="text-xs font-medium text-emerald-400">
+              Selected
+            </span>
           </div>
         )}
         {!isLoading && thumbnail && (
@@ -107,10 +86,12 @@ Reasoning: ${thumbnail.reasoning}`;
 
       {/* Variation label */}
       <div className="mb-3 flex items-center gap-2">
-        <span className={cn(
-          "text-xs font-medium uppercase tracking-wider",
-          isSelected ? "text-emerald-400" : "text-slate-500"
-        )}>
+        <span
+          className={cn(
+            "text-xs font-medium uppercase tracking-wider",
+            isSelected ? "text-emerald-400" : "text-slate-500"
+          )}
+        >
           Variation {index + 1}
         </span>
       </div>
@@ -119,100 +100,14 @@ Reasoning: ${thumbnail.reasoning}`;
       {isLoading ? (
         <GradientSkeleton lines={4} />
       ) : thumbnail ? (
-        <div className="space-y-3">
-          {/* Visual Concept - Always visible */}
-          <div>
-            <span className="text-xs font-medium text-emerald-400 uppercase tracking-wider">
-              Visual Concept
-            </span>
-            <p className={cn(
-              "mt-1 text-sm font-medium leading-relaxed",
-              isSelected ? "text-slate-100" : "text-slate-200"
-            )}>
-              {thumbnail.visual_concept}
-            </p>
-          </div>
-
-          {/* Text Overlay */}
-          <div>
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-              Text Overlay
-            </span>
-            <p className="mt-1 text-sm text-slate-300 font-semibold">
-              "{thumbnail.text_overlay}"
-            </p>
-          </div>
-
-          {/* Expandable details */}
-          {isExpanded && (
-            <div className="space-y-3 pt-2 border-t border-slate-700/50">
-              <div>
-                <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Composition
-                </span>
-                <p className="mt-1 text-sm text-slate-400 leading-relaxed">
-                  {thumbnail.composition}
-                </p>
-              </div>
-
-              <div>
-                <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Colors
-                </span>
-                <p className="mt-1 text-sm text-slate-400 leading-relaxed">
-                  {thumbnail.colors}
-                </p>
-              </div>
-
-              <div>
-                <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Facial Expression
-                </span>
-                <p className="mt-1 text-sm text-slate-400 leading-relaxed">
-                  {thumbnail.facial_expression}
-                </p>
-              </div>
-
-              <div>
-                <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Style References
-                </span>
-                <p className="mt-1 text-sm text-slate-400 leading-relaxed">
-                  {thumbnail.style_references}
-                </p>
-              </div>
-
-              <div>
-                <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Reasoning
-                </span>
-                <p className="mt-1 text-sm text-slate-400 italic leading-relaxed">
-                  {thumbnail.reasoning}
-                </p>
-              </div>
-            </div>
+        <p
+          className={cn(
+            "text-sm leading-relaxed",
+            isSelected ? "text-slate-100" : "text-slate-200"
           )}
-
-          {/* Expand/Collapse button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full mt-2 text-slate-400 hover:text-slate-200 hover:bg-slate-700/50"
-            onClick={toggleExpand}
-          >
-            {isExpanded ? (
-              <>
-                <ChevronUp className="mr-1 h-3 w-3" />
-                Show Less
-              </>
-            ) : (
-              <>
-                <ChevronDown className="mr-1 h-3 w-3" />
-                Show Details
-              </>
-            )}
-          </Button>
-        </div>
+        >
+          {thumbnail}
+        </p>
       ) : (
         <p className="text-sm italic text-slate-500">Not generated yet</p>
       )}
@@ -229,7 +124,7 @@ const ThumbnailsCard = ({
   onSelectThumbnail,
 }: ThumbnailsCardProps) => {
   // Show 3 placeholders when loading or when no descriptions yet
-  const displayDescriptions: (IThumbnailDescription | null)[] =
+  const displayDescriptions: (string | null)[] =
     descriptions.length > 0 ? descriptions : [null, null, null];
 
   return (

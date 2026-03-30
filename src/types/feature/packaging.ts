@@ -1,5 +1,16 @@
 // Packaging Feature Types
 
+export type PackagingItemStatus = "not_started" | "completed" | "stale";
+
+export type PackagingItemName = "title" | "description" | "thumbnail" | "shorts";
+
+export interface PackagingItemStatuses {
+  title: PackagingItemStatus;
+  description: PackagingItemStatus;
+  thumbnail: PackagingItemStatus;
+  shorts: PackagingItemStatus;
+}
+
 export interface ITimestampedSegment {
   startTime: string; // "0:00"
   endTime: string; // "0:15"
@@ -10,17 +21,7 @@ export interface ITimestampedSegment {
 // Title object from API
 export interface ITitle {
   title: string;
-}
-
-// Thumbnail description object from API
-export interface IThumbnailDescription {
-  visual_concept: string;
-  composition: string;
-  text_overlay: string;
-  colors: string;
-  facial_expression: string;
-  style_references: string;
-  reasoning: string;
+  characterCount: number;
 }
 
 // Multi-variant output types
@@ -32,14 +33,14 @@ export interface ITitlesOutput {
 }
 
 export interface IThumbnailsOutput {
-  descriptions: IThumbnailDescription[];
+  descriptions: string[];
   selectedIndex: number;
   isLoading: boolean;
   error: string | null;
 }
 
 export interface IHooksOutput {
-  hooks: string[];  // Simple string array
+  hooks: string[]; // Simple string array
   isLoading: boolean;
   error: string | null;
 }
@@ -53,6 +54,7 @@ export interface IDescriptionOutput {
 export interface IShortsScript {
   id: string;
   segments: ITimestampedSegment[];
+  totalDuration?: string;
   isLoading: boolean;
   error: string | null;
 }
@@ -77,55 +79,67 @@ export interface IPackagingState {
 
   // Meta
   isSaving: boolean;
-  savedAt: string | null;
   packagingId: string | null;
   isGeneratingAll: boolean;
+
+  // List / detail
+  packagingList: GetPackagingResponse[];
+  isListLoading: boolean;
+  currentPackaging: GetPackagingResponse | null;
+  isDetailLoading: boolean;
+
+  // Per-item feedback state
+  itemFeedback: Partial<Record<PackagingItemName, "like" | "dislike" | null>>;
+
+  // Per-operation flags
+  isRegeneratingItem: boolean;
+  isSubmittingFeedback: boolean;
+  isExporting: boolean;
+
+  // Export result
+  exportText: string | null;
+
+  error: string | null;
 }
 
 // API Request/Response Types
 export interface GenerateTitleRequest {
   script: string;
-  userId: string;
 }
 
 export interface GenerateTitleResponse {
-  titles: ITitle[];  // 3 title variations as objects
+  titles: ITitle[]; // 3 title variations as objects
 }
 
 export interface GenerateDescriptionRequest {
   script: string;
-  title?: string;
-  userId: string;
+  title: string;
 }
 
 export interface GenerateDescriptionResponse {
   description: string;
-  characterCount: number;
 }
 
 export interface GenerateThumbnailRequest {
   script: string;
-  title?: string;
-  userId: string;
+  title: string;
 }
 
 export interface GenerateThumbnailResponse {
-  descriptions: IThumbnailDescription[];  // 3 thumbnail brief variations as objects
+  descriptions: string[]; // 3 thumbnail brief variations as plain strings
 }
 
 export interface GenerateHooksRequest {
   script: string;
-  userId: string;
 }
 
 export interface GenerateHooksResponse {
-  hooks: string[];  // Multiple hook strings
+  hooks: string[]; // Multiple hook strings
 }
 
 export interface GenerateShortsRequest {
   script: string;
-  userId: string;
-  maxDuration?: number;
+  duration: number;
 }
 
 export interface GenerateShortsResponse {
@@ -134,36 +148,44 @@ export interface GenerateShortsResponse {
 }
 
 export interface SavePackagingRequest {
-  userId: string;
-  scriptId?: string;
+  videoProjectId?: string;
   script: string;
   titles: ITitle[];
   selectedTitleIndex: number;
   description: string;
-  thumbnails: IThumbnailDescription[];
+  thumbnails: string[];
   selectedThumbnailIndex: number;
   hooks: string[];
   shortsScripts: Array<{ id: string; segments: ITimestampedSegment[] }>;
 }
 
 export interface SavePackagingResponse {
-  packagingId: string;
-  savedAt: string;
+  id: string;
 }
 
 export interface GetPackagingResponse {
-  packagingId: string;
+  id: string;
   script: string;
   titles: ITitle[];
   selectedTitleIndex: number;
   description: string;
-  thumbnails: IThumbnailDescription[];
+  thumbnails: string[];
   selectedThumbnailIndex: number;
   hooks: string[];
   shortsScripts: Array<{ id: string; segments: ITimestampedSegment[] }>;
   createdAt: string;
-  updatedAt: string;
+  isStale: boolean;
+  staleReason: "script_regenerated" | "hooks_regenerated" | null;
+  staleSince: string | null;
+  itemStatuses: PackagingItemStatuses;
 }
+
+// Discriminated union for regenerateItem thunk return type
+export type RegenerateItemResponse =
+  | { item: "title"; data: { titles?: ITitle[] } }
+  | { item: "description"; data: { description?: string } }
+  | { item: "thumbnail"; data: { descriptions?: string[] } }
+  | { item: "shorts"; data: { segments?: ITimestampedSegment[]; totalDuration?: string } };
 
 // Character limits for validation
 export const PACKAGING_LIMITS = {

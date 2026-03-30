@@ -1,6 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/utils/store";
-import { IPackagingState, IShortsScript, MAX_SHORTS_SCRIPTS } from "@/types/feature/packaging";
+import {
+  IPackagingState,
+  IShortsScript,
+  MAX_SHORTS_SCRIPTS,
+  RegenerateItemResponse,
+} from "@/types/feature/packaging";
 import {
   generateTitle,
   generateDescription,
@@ -11,6 +16,11 @@ import {
   regenerateShortsScript,
   generateAllPackaging,
   savePackaging,
+  listPackaging,
+  getPackaging,
+  regenerateItem,
+  submitPackagingFeedback,
+  exportPackaging,
 } from "./packaging.thunk";
 
 const initialState: IPackagingState = {
@@ -42,9 +52,18 @@ const initialState: IPackagingState = {
     isAddingNew: false,
   },
   isSaving: false,
-  savedAt: null,
   packagingId: null,
   isGeneratingAll: false,
+  packagingList: [],
+  isListLoading: false,
+  currentPackaging: null,
+  isDetailLoading: false,
+  itemFeedback: {},
+  isRegeneratingItem: false,
+  isSubmittingFeedback: false,
+  isExporting: false,
+  exportText: null,
+  error: null,
 };
 
 const packagingSlice = createSlice({
@@ -116,13 +135,12 @@ const packagingSlice = createSlice({
       })
       .addCase(generateTitle.fulfilled, (state, action) => {
         state.titles.isLoading = false;
-        console.log("action.payload", action.payload);
         state.titles.titles = action.payload?.titles || [];
         state.titles.selectedIndex = 0;
       })
       .addCase(generateTitle.rejected, (state, action) => {
         state.titles.isLoading = false;
-        state.titles.error = action.payload as string;
+        state.titles.error = (action.payload as { message?: string })?.message ?? "Unknown error";
       })
 
       // Generate Description
@@ -136,10 +154,10 @@ const packagingSlice = createSlice({
       })
       .addCase(generateDescription.rejected, (state, action) => {
         state.description.isLoading = false;
-        state.description.error = action.payload as string;
+        state.description.error = (action.payload as { message?: string })?.message ?? "Unknown error";
       })
 
-      // Generate Thumbnails (3 variations)
+      // Generate Thumbnails (3 variations as plain strings)
       .addCase(generateThumbnail.pending, (state) => {
         state.thumbnails.isLoading = true;
         state.thumbnails.error = null;
@@ -151,7 +169,7 @@ const packagingSlice = createSlice({
       })
       .addCase(generateThumbnail.rejected, (state, action) => {
         state.thumbnails.isLoading = false;
-        state.thumbnails.error = action.payload as string;
+        state.thumbnails.error = (action.payload as { message?: string })?.message ?? "Unknown error";
       })
 
       // Generate Hooks (multiple paragraphs)
@@ -165,7 +183,7 @@ const packagingSlice = createSlice({
       })
       .addCase(generateHooks.rejected, (state, action) => {
         state.hooks.isLoading = false;
-        state.hooks.error = action.payload as string;
+        state.hooks.error = (action.payload as { message?: string })?.message ?? "Unknown error";
       })
 
       // Generate Shorts
@@ -181,13 +199,18 @@ const packagingSlice = createSlice({
       .addCase(generateShorts.fulfilled, (state, action) => {
         if (state.shortsScript.scripts.length > 0) {
           state.shortsScript.scripts[0].isLoading = false;
-          state.shortsScript.scripts[0].segments = action.payload?.segments || [];
+          state.shortsScript.scripts[0].segments =
+            action.payload?.segments || [];
+          if (action.payload?.totalDuration) {
+            state.shortsScript.scripts[0].totalDuration =
+              action.payload.totalDuration;
+          }
         }
       })
       .addCase(generateShorts.rejected, (state, action) => {
         if (state.shortsScript.scripts.length > 0) {
           state.shortsScript.scripts[0].isLoading = false;
-          state.shortsScript.scripts[0].error = action.payload as string;
+          state.shortsScript.scripts[0].error = (action.payload as { message?: string })?.message ?? "Unknown error";
         }
       })
 
@@ -204,43 +227,58 @@ const packagingSlice = createSlice({
       })
       .addCase(addNewShortsScript.fulfilled, (state, action) => {
         state.shortsScript.isAddingNew = false;
-        // @ts-ignore
-        state.shortsScript.scripts.push(action?.payload || []);
+        const lastScript =
+          state.shortsScript.scripts[state.shortsScript.scripts.length - 1];
+        if (lastScript) {
+          lastScript.isLoading = false;
+          lastScript.segments = action.payload?.segments || [];
+          if (action.payload?.totalDuration) {
+            lastScript.totalDuration = action.payload.totalDuration;
+          }
+        }
       })
       .addCase(addNewShortsScript.rejected, (state, action) => {
         state.shortsScript.isAddingNew = false;
-        const lastScript = state.shortsScript.scripts[state.shortsScript.scripts.length - 1];
+        const lastScript =
+          state.shortsScript.scripts[state.shortsScript.scripts.length - 1];
         if (lastScript) {
           lastScript.isLoading = false;
-          lastScript.error = action.payload as string;
+          lastScript.error = (action.payload as { message?: string })?.message ?? "Unknown error";
         }
       })
 
       // Regenerate specific shorts script
       .addCase(regenerateShortsScript.pending, (state, action) => {
         const scriptId = action.meta.arg;
-        const script = state.shortsScript.scripts.find((s) => s.id === scriptId);
+        const script = state.shortsScript.scripts.find(
+          (s) => s.id === scriptId
+        );
         if (script) {
           script.isLoading = true;
           script.error = null;
         }
       })
       .addCase(regenerateShortsScript.fulfilled, (state, action) => {
-        const { id, segments } = action.payload;
+        const { id, segments, totalDuration } = action.payload;
         const script = state.shortsScript.scripts.find((s) => s.id === id);
         if (script) {
           script.isLoading = false;
           if (segments) {
             script.segments = segments;
           }
+          if (totalDuration) {
+            script.totalDuration = totalDuration;
+          }
         }
       })
       .addCase(regenerateShortsScript.rejected, (state, action) => {
         const scriptId = action.meta.arg;
-        const script = state.shortsScript.scripts.find((s) => s.id === scriptId);
+        const script = state.shortsScript.scripts.find(
+          (s) => s.id === scriptId
+        );
         if (script) {
           script.isLoading = false;
-          script.error = action.payload as string;
+          script.error = (action.payload as { message?: string })?.message ?? "Unknown error";
         }
       })
 
@@ -271,10 +309,12 @@ const packagingSlice = createSlice({
         state.titles.selectedIndex = 0;
         // Update description
         state.description.isLoading = false;
-        state.description.content = action.payload.description.description;
-        // Update thumbnails
+        state.description.content =
+          action.payload.description.description || "";
+        // Update thumbnails (plain strings)
         state.thumbnails.isLoading = false;
-        state.thumbnails.descriptions = action.payload.thumbnail.descriptions || [];
+        state.thumbnails.descriptions =
+          action.payload.thumbnail.descriptions || [];
         state.thumbnails.selectedIndex = 0;
         // Update hooks
         state.hooks.isLoading = false;
@@ -282,10 +322,15 @@ const packagingSlice = createSlice({
         // Update shorts
         if (state.shortsScript.scripts.length > 0) {
           state.shortsScript.scripts[0].isLoading = false;
-          state.shortsScript.scripts[0].segments = action.payload.shorts.segments;
+          state.shortsScript.scripts[0].segments =
+            action.payload.shorts.segments || [];
+          if (action.payload.shorts.totalDuration) {
+            state.shortsScript.scripts[0].totalDuration =
+              action.payload.shorts.totalDuration;
+          }
         }
       })
-      .addCase(generateAllPackaging.rejected, (state) => {
+      .addCase(generateAllPackaging.rejected, (state, action) => {
         state.isGeneratingAll = false;
         state.titles.isLoading = false;
         state.description.isLoading = false;
@@ -294,6 +339,7 @@ const packagingSlice = createSlice({
         if (state.shortsScript.scripts.length > 0) {
           state.shortsScript.scripts[0].isLoading = false;
         }
+        state.error = (action.payload as { message?: string })?.message ?? "Unknown error";
       })
 
       // Save Packaging
@@ -302,11 +348,115 @@ const packagingSlice = createSlice({
       })
       .addCase(savePackaging.fulfilled, (state, action) => {
         state.isSaving = false;
-        state.packagingId = action.payload.packagingId;
-        state.savedAt = action.payload.savedAt;
+        state.packagingId = action.payload?.id ?? null;
       })
-      .addCase(savePackaging.rejected, (state) => {
+      .addCase(savePackaging.rejected, (state, action) => {
         state.isSaving = false;
+        state.error = (action.payload as { message?: string })?.message ?? "Unknown error";
+      })
+
+      // List Packaging
+      .addCase(listPackaging.pending, (state) => {
+        state.isListLoading = true;
+        state.error = null;
+      })
+      .addCase(listPackaging.fulfilled, (state, action) => {
+        state.isListLoading = false;
+        state.packagingList = action.payload ?? [];
+      })
+      .addCase(listPackaging.rejected, (state, action) => {
+        state.isListLoading = false;
+        state.error = (action.payload as { message?: string })?.message ?? "Unknown error";
+      })
+
+      // Get Packaging
+      .addCase(getPackaging.pending, (state) => {
+        state.isDetailLoading = true;
+        state.error = null;
+      })
+      .addCase(getPackaging.fulfilled, (state, action) => {
+        state.isDetailLoading = false;
+        state.currentPackaging = action.payload ?? null;
+      })
+      .addCase(getPackaging.rejected, (state, action) => {
+        state.isDetailLoading = false;
+        state.error = (action.payload as { message?: string })?.message ?? "Unknown error";
+      })
+
+      // Regenerate Item
+      .addCase(regenerateItem.pending, (state) => {
+        state.isRegeneratingItem = true;
+        state.error = null;
+      })
+      .addCase(regenerateItem.fulfilled, (state, action) => {
+        state.isRegeneratingItem = false;
+        const payload: RegenerateItemResponse = action.payload;
+        switch (payload.item) {
+          case "title": {
+            if (payload.data.titles) {
+              state.titles.titles = payload.data.titles;
+              state.titles.selectedIndex = 0;
+            }
+            break;
+          }
+          case "description": {
+            if (payload.data.description !== undefined) {
+              state.description.content = payload.data.description;
+            }
+            break;
+          }
+          case "thumbnail": {
+            if (payload.data.descriptions) {
+              state.thumbnails.descriptions = payload.data.descriptions;
+              state.thumbnails.selectedIndex = 0;
+            }
+            break;
+          }
+          case "shorts": {
+            if (payload.data.segments && state.shortsScript.scripts.length > 0) {
+              state.shortsScript.scripts[0].segments = payload.data.segments;
+              if (payload.data.totalDuration) {
+                state.shortsScript.scripts[0].totalDuration = payload.data.totalDuration;
+              }
+            }
+            break;
+          }
+        }
+      })
+      .addCase(regenerateItem.rejected, (state, action) => {
+        state.isRegeneratingItem = false;
+        state.error = (action.payload as { message?: string })?.message ?? "Unknown error";
+      })
+
+      // Submit Packaging Feedback
+      .addCase(submitPackagingFeedback.pending, (state) => {
+        state.isSubmittingFeedback = true;
+        state.error = null;
+      })
+      .addCase(submitPackagingFeedback.fulfilled, (state, action) => {
+        state.isSubmittingFeedback = false;
+        if (action.payload) {
+          state.itemFeedback[action.payload.item] = action.payload.feedback;
+        }
+      })
+      .addCase(submitPackagingFeedback.rejected, (state, action) => {
+        state.isSubmittingFeedback = false;
+        state.error = (action.payload as { message?: string })?.message ?? "Unknown error";
+      })
+
+      // Export Packaging
+      .addCase(exportPackaging.pending, (state) => {
+        state.isExporting = true;
+        state.exportText = null;
+        state.error = null;
+      })
+      .addCase(exportPackaging.fulfilled, (state, action) => {
+        state.isExporting = false;
+        state.exportText = action.payload?.text ?? null;
+      })
+      .addCase(exportPackaging.rejected, (state, action) => {
+        state.isExporting = false;
+        state.error = (action.payload as { message?: string })?.message ?? "Unknown error";
       });
   },
 });
@@ -328,18 +478,39 @@ export const {
 export const selectPackaging = (state: RootState) => state.packaging;
 export const selectScript = (state: RootState) => state.packaging.script;
 export const selectTitles = (state: RootState) => state.packaging.titles;
-export const selectDescription = (state: RootState) => state.packaging.description;
-export const selectThumbnails = (state: RootState) => state.packaging.thumbnails;
+export const selectDescription = (state: RootState) =>
+  state.packaging.description;
+export const selectThumbnails = (state: RootState) =>
+  state.packaging.thumbnails;
 export const selectHooks = (state: RootState) => state.packaging.hooks;
-export const selectShortsScripts = (state: RootState) => state.packaging.shortsScript;
+export const selectShortsScripts = (state: RootState) =>
+  state.packaging.shortsScript;
 export const selectCanAddMoreShorts = (state: RootState) =>
   state.packaging.shortsScript.scripts.length < MAX_SHORTS_SCRIPTS;
 export const selectIsSaving = (state: RootState) => state.packaging.isSaving;
 export const selectIsGeneratingAll = (state: RootState) =>
   state.packaging.isGeneratingAll;
+export const selectPackagingList = (state: RootState) =>
+  state.packaging.packagingList;
+export const selectIsListLoading = (state: RootState) =>
+  state.packaging.isListLoading;
+export const selectCurrentPackaging = (state: RootState) =>
+  state.packaging.currentPackaging;
+export const selectIsDetailLoading = (state: RootState) =>
+  state.packaging.isDetailLoading;
+export const selectIsRegeneratingItem = (state: RootState) =>
+  state.packaging.isRegeneratingItem;
+export const selectIsSubmittingFeedback = (state: RootState) =>
+  state.packaging.isSubmittingFeedback;
+export const selectIsExporting = (state: RootState) =>
+  state.packaging.isExporting;
+export const selectExportText = (state: RootState) =>
+  state.packaging.exportText;
+export const selectPackagingError = (state: RootState) =>
+  state.packaging.error;
 export const selectHasContent = (state: RootState) =>
   state.packaging.titles.titles.length > 0 ||
-  state.packaging.description.content ||
+  !!state.packaging.description.content ||
   state.packaging.thumbnails.descriptions.length > 0 ||
   state.packaging.hooks.hooks.length > 0 ||
   state.packaging.shortsScript.scripts.length > 0;

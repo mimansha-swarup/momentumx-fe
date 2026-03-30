@@ -71,7 +71,6 @@ const SingleScript = ({
   onDelete,
 }: SingleScriptProps) => {
 
-  console.log("21345678", script)
   const [copied, setCopied] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -298,7 +297,6 @@ const ShortsScriptCard = ({
   onDelete,
 }: ShortsScriptCardProps) => {
 
-  console.log("scriptsss", 2314324234, scripts)
   return (
     <div
       className={cn(

@@ -51,7 +51,8 @@ export const useUserProfile = (
         .split(".")
         .map((part) => (isNaN(Number(part)) ? part : Number(part)));
 
-      let current: any = newState;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- dynamic path traversal requires runtime flexibility
+      let current: Record<string | number, any> = newState as Record<string | number, any>;
 
       for (let i = 0; i < parts.length - 1; i++) {
         const key = parts[i];
@@ -109,7 +110,7 @@ export const useUserProfile = (
       rows.forEach((_: unknown, idx: number) => {
         q.groupFields.forEach((field) => {
           const fullPath = `${q.path}[${idx}].${field.path}`;
-          const fieldValid = validateSimpleField(field as any, fullPath);
+          const fieldValid = validateSimpleField(field as unknown as QuestionType, fullPath);
           if (!fieldValid) ok = false;
         });
       });

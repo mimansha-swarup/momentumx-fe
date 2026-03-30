@@ -16,8 +16,10 @@ const useTitles = () => {
   const fetchTitle =useCallback( async ({ isFresh = false }) => {
     let params: {
       searchText?: string;
-      isScriptGenerated?: boolean;
+      isScriptGenerated?: string;
       isFresh: boolean;
+      createdAt?: string;
+      docId?: string;
     } = {
       isFresh,
     };
@@ -25,9 +27,9 @@ const useTitles = () => {
       params.searchText = searchText;
       dispatch(resetTitle());
     }
-    
+
     if (filterBy === "generated") {
-      params.isScriptGenerated = true;
+      params.isScriptGenerated = "true";
     }
     if (!isFresh && meta && meta?.hasNextPage) {
       params = {

@@ -4,6 +4,9 @@ import userReducer from "../feature/user/user.slice";
 import titlesReducer from "../feature/titles/titles.slice";
 import scriptsReducer from "../feature/scripts/script.slice";
 import packagingReducer from "../feature/packaging/packaging.slice";
+import videoProjectReducer from "../feature/videoProject/videoProject.slice";
+import hooksReducer from "../feature/hooks/hooks.slice";
+import researchReducer from "../feature/research/research.slice";
 
 const middlewares: Middleware[] = [];
 
@@ -17,6 +20,9 @@ export const store = configureStore({
     titles: titlesReducer,
     scripts: scriptsReducer,
     packaging: packagingReducer,
+    videoProject: videoProjectReducer,
+    hooks: hooksReducer,
+    research: researchReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(middlewares),

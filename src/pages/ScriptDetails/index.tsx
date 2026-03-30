@@ -79,7 +79,7 @@ const ScriptDetails = () => {
         setTitle(scriptObject?.title);
       } else {
         scriptService.getScriptById(scriptId).then(({ data }) => {
-          setScript(data.script);
+          setScript(data?.script ?? "");
         });
       }
     } else {
@@ -114,7 +114,6 @@ const ScriptDetails = () => {
         editScript({
           scriptId,
           script: htmlToMarkdown(scriptContent),
-          updatedAt: Date.now(),
         })
       );
     } catch {

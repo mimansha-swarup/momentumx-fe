@@ -48,7 +48,6 @@ const TitleCard: FC<IGeneratedTopic> = ({
         editTitles({
           titleId: id,
           title: titleText,
-          updatedAt: Date.now(),
         })
       );
     } catch {

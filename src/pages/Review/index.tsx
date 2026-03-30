@@ -23,8 +23,6 @@ interface ReviewProps {
   errors: Record<string, string>;
 }
 
-const onboardingServiceInstance = new onboardingService();
-
 const Review = ({ formState, updateField, errors }: ReviewProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -37,7 +35,7 @@ const Review = ({ formState, updateField, errors }: ReviewProps) => {
     // payload.purpose = purpose[1];
 
     const payload = { ...formState, isOnboardingCompleted: true };
-    const res = await onboardingServiceInstance.saveOnboardingData(payload);
+    const res = await onboardingService.saveOnboardingData(payload);
     if (res.success) {
       setTimeout(async () => {
         localStorage.removeItem(IS_NEW_USER);
@@ -64,7 +62,7 @@ const Review = ({ formState, updateField, errors }: ReviewProps) => {
             <AccordionContent className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {section?.questions?.map((q) => {
                 const { helperText: _helperText, ...restQus } = q;
-                // @ts-ignore
+                // @ts-expect-error -- suppressed type mismatch
                 return renderUserForm({
                   question: restQus as QuestionBase,
                   value: getValueByPath(formState, q.path),

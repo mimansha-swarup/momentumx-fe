@@ -166,7 +166,7 @@ const Onboarding = () => {
                   value: getValueByPath(formData, activeQuestion.path),
                   updateField,
                   formState: formData,
-                  // @ts-ignore
+                  // @ts-expect-error -- suppressed type mismatch
                   onEnter: handleKeypress
                 })}
               </OnboardingCard>

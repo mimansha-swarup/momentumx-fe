@@ -48,7 +48,6 @@ export const renderUserForm = ({
   updateField: (path: string, value: unknown) => void;
   formState: IOnboardingPayload;
   errors: Record<string, string>;
-  // @ts-ignore
   onEnter: (e: KeyboardEventHandler<HTMLInputElement>) => void
 }) => {
   /* -------------------------------------------------------------------------- */
@@ -65,7 +64,7 @@ export const renderUserForm = ({
             onChange={(e) => updateField(question.path || "", e.target.value)}
             placeholder={question.placeholder || ""}
             required={question.required}
-            // @ts-ignore
+            // @ts-expect-error -- suppressed type mismatch
             onKeyDown={onEnter}
           />
         );
@@ -78,7 +77,7 @@ export const renderUserForm = ({
             placeholder={question.placeholder || ""}
             rows={question.rows || 4}
             required={question.required}
-            // @ts-ignore
+            // @ts-expect-error -- suppressed type mismatch
             onKeyDown={onEnter}
           />
         );
