@@ -54,7 +54,7 @@ The backend automatically handles many state transitions. The frontend must NOT 
 ## Review Findings — Issues to Address Per Phase
 
 ### Prerequisites (before any phase)
-- [ ] Install `dialog` UI component: `npx shadcn@latest add dialog` — needed for Phase 2b delete confirm
+- [x] Install `dialog` UI component: `npx shadcn@latest add dialog` — needed for Phase 2b delete confirm
 - [x] Remove `console.log` in `src/components/packaging/ShortsScriptCard.tsx:74` and `:301`
 - [x] Fix `onboardingService` export — currently exports the class, not a singleton instance
 
@@ -95,10 +95,10 @@ The backend automatically handles many state transitions. The frontend must NOT 
 
 ## Phase 2 — Dashboard + Routes
 
-- [ ] **2a** Rewrite Dashboard to show video project list (ProjectCard, ProjectList, pagination, status filter). ProjectCard shows: `workingTitle`, `currentStep` badge, `overallStatus` badge, `thumbnailHint`, relative timestamp
-- [ ] **2b** Add delete project UI (confirm dialog) — requires `dialog` component
-- [ ] **2c** Add all new routes to `route.tsx` — remove dead imports for hidden pages
-- [ ] **2d** Update sidebar nav — add Research, remove standalone Packaging
+- [x] **2a** Rewrite Dashboard to show video project list (ProjectCard, ProjectList, pagination, status filter). ProjectCard shows: `workingTitle`, `currentStep` badge, `overallStatus` badge, `thumbnailHint`, relative timestamp
+- [x] **2b** Add delete project UI (confirm dialog) — requires `dialog` component
+- [x] **2c** Add all new routes to `route.tsx` — lazy-load all non-Dashboard pages, add `/app/project/:projectId` placeholder
+- [x] **2d** Update sidebar nav — add Research, remove standalone Packaging
 
 ## Phase 3 — Research Page
 

@@ -112,21 +112,18 @@ const videoProjectSlice = createSlice({
       })
       .addCase(updateWorkingTitle.fulfilled, (state, action) => {
         state.isUpdating = false;
-        if (action.payload?.id && action.payload?.workingTitle) {
-          const project = state.projects.find(
-            (p) => p.id === action.payload?.id
-          );
-          if (project) {
-            project.workingTitle = action.payload.workingTitle;
-          }
-          if (state.currentProject?.id === action.payload.id) {
-            state.currentProject.workingTitle = action.payload.workingTitle;
-          }
+        const { projectId, workingTitle } = action.meta.arg;
+        const project = state.projects.find((p) => p.id === projectId);
+        if (project) {
+          project.workingTitle = workingTitle;
+        }
+        if (state.currentProject?.id === projectId) {
+          state.currentProject.workingTitle = workingTitle;
         }
       })
       .addCase(updateWorkingTitle.rejected, (state, action) => {
         state.isUpdating = false;
-        state.error = action.payload as string;
+        state.projectError = action.payload as string;
       })
 
       // Delete Project

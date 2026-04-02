@@ -3,15 +3,19 @@ import ProtectedLayout from "@/components/shared/ProtectedRoute";
 import Dashboard from "@/pages/Dashboard";
 import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
-import Profile from "@/pages/Profile";
-import ScriptDetails from "@/pages/ScriptDetails";
-import ScriptPage from "@/pages/Scripts";
-import TitlePage from "@/pages/Titles";
-import PackagingPage from "@/pages/Packaging";
 import { createBrowserRouter } from "react-router-dom";
 import { HIDE_OLD_FLOW } from "./root";
 import RootLoader from "@/components/shared/Loader";
+
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
+const ResearchPage = lazy(() => import("@/pages/Research"));
+const PackagingPage = lazy(() => import("@/pages/Packaging"));
+const ProjectDetailPage = lazy(() => import("@/pages/ProjectDetail"));
+
+const Profile = lazy(() => import("@/pages/Profile"));
+const ScriptDetails = lazy(() => import("@/pages/ScriptDetails"));
+const ScriptPage = lazy(() => import("@/pages/Scripts"));
+const TitlePage = lazy(() => import("@/pages/Titles"));
 
 export const localRouter = createBrowserRouter([
   { path: "/login", element: <Login /> },
@@ -27,7 +31,27 @@ export const localRouter = createBrowserRouter([
           },
           {
             path: "packaging",
-            element: <PackagingPage />,
+            element: (
+              <Suspense fallback={<RootLoader />}>
+                <PackagingPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: "research",
+            element: (
+              <Suspense fallback={<RootLoader />}>
+                <ResearchPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: "project/:projectId",
+            element: (
+              <Suspense fallback={<RootLoader />}>
+                <ProjectDetailPage />
+              </Suspense>
+            ),
           },
         ]
       : [
@@ -45,23 +69,43 @@ export const localRouter = createBrowserRouter([
           },
           {
             path: "profile",
-            element: <Profile />,
+            element: (
+              <Suspense fallback={<RootLoader />}>
+                <Profile />
+              </Suspense>
+            ),
           },
           {
             path: "title",
-            element: <TitlePage />,
+            element: (
+              <Suspense fallback={<RootLoader />}>
+                <TitlePage />
+              </Suspense>
+            ),
           },
           {
             path: "scripts",
-            element: <ScriptPage />,
+            element: (
+              <Suspense fallback={<RootLoader />}>
+                <ScriptPage />
+              </Suspense>
+            ),
           },
           {
             path: "script/:scriptId",
-            element: <ScriptDetails />,
+            element: (
+              <Suspense fallback={<RootLoader />}>
+                <ScriptDetails />
+              </Suspense>
+            ),
           },
           {
             path: "packaging",
-            element: <PackagingPage />,
+            element: (
+              <Suspense fallback={<RootLoader />}>
+                <PackagingPage />
+              </Suspense>
+            ),
           },
         ],
   },

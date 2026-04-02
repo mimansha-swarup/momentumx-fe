@@ -1,4 +1,4 @@
-import { Home, Lightbulb, FileText, Settings, PackageOpen } from "lucide-react";
+import { Home, Lightbulb, FileText, Settings, Search } from "lucide-react";
 import { HIDE_OLD_FLOW } from "./root";
 
 export const urlMapping = HIDE_OLD_FLOW
@@ -11,10 +11,10 @@ export const urlMapping = HIDE_OLD_FLOW
         subRoutes: [],
       },
       {
-        name: "packaging",
-        label: "YT Packaging",
-        icon: PackageOpen,
-        route: "/app/packaging",
+        name: "research",
+        label: "Research",
+        icon: Search,
+        route: "/app/research",
         subRoutes: [],
       },
     ]

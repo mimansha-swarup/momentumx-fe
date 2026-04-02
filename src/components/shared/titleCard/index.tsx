@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { formatDateToWords } from "@/utils/titles";
+import { formatDateToWords } from "@/utils/date";
 import { FileText, LoaderCircle, Sparkles } from "lucide-react";
 import GlassCard from "../glassCard";
 import { useNavigate } from "react-router-dom";

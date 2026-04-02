@@ -1,20 +1,12 @@
-import DashboardCard from "@/components/dashboard/card";
-import GeneratedContent from "@/components/dashboard/generatedContent";
-import Greetings from "@/components/dashboard/greetings";
+import { DashboardCard, Greetings, ProjectList } from "@/components/dashboard";
 import { DASHBOARD_CARD } from "@/constants/dashboard";
 import Header from "@/components/shared/header";
 import { useAppSelector } from "@/hooks/useRedux";
-import { getTitlesData } from "@/utils/feature/titles/titles.slice";
 import { currentUser } from "@/utils/feature/user/user.slice";
 
 const Dashboard = () => {
-  const titles = useAppSelector(getTitlesData);
   const { stats = { topics: 0, scripts: 0, credits: 0 } } =
     useAppSelector(currentUser) ?? {};
-
-  const recentTitles = titles?.lists
-    ? [...(titles?.lists ?? [])]?.slice(0, 5)
-    : [];
 
   return (
     <div className="md:w-[90%] mx-auto pb-20">
@@ -26,7 +18,7 @@ const Dashboard = () => {
         {DASHBOARD_CARD(
           (stats?.topics ?? 0).toString(),
           (stats?.scripts ?? 0).toString(),
-          stats?.credits?.toString() ?? "FREE"
+          stats?.credits?.toString() ?? "FREE",
         )?.map((card, index) => (
           <div
             key={card.id}
@@ -38,11 +30,11 @@ const Dashboard = () => {
         ))}
       </div>
 
-      <div className="animate-fade-in" style={{ animationDelay: "300ms" }}>
-        <GeneratedContent
-          heading={"Recently Generated Titles"}
-          list={recentTitles}
-        />
+      <div
+        className="animate-fade-in"
+        style={{ animationDelay: "300ms" }}
+      >
+        <ProjectList />
       </div>
     </div>
   );
