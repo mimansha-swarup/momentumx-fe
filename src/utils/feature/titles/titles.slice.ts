@@ -64,6 +64,9 @@ const titlesSlice = createSlice({
         ...action.payload,
       };
     },
+    clearExportText: (state) => {
+      state.exportText = null;
+    },
     markScriptGenerated: (state, action: PayloadAction<string>) => {
       if (state.data?.lists) {
         state.data.lists = state.data?.lists?.map((title) =>
@@ -220,6 +223,7 @@ export const {
   markDone,
   resetTitle,
   updateFilter,
+  clearExportText,
   markScriptGenerated,
 } = titlesSlice.actions;
 
@@ -233,5 +237,14 @@ export const titlesIsExporting = (state: RootState) => state.titles.isExporting;
 export const titlesIsSubmittingFeedback = (state: RootState) => state.titles.isSubmittingFeedback;
 export const titlesExportText = (state: RootState) => state.titles.exportText;
 export const titlesError = (state: RootState) => state.titles.error;
+
+export const selectActiveTopics = (state: RootState): IGeneratedTopic[] =>
+  state.titles.data?.lists.filter((t) => !t.archived) ?? [];
+
+export const selectHasLinkedProjects = (state: RootState): boolean =>
+  (state.titles.data?.lists ?? []).some((t) => !t.archived && t.videoProjectId !== null);
+
+export const selectTopicsCursor = (state: RootState) =>
+  state.titles.data?.meta ?? null;
 
 export default titlesSlice.reducer;

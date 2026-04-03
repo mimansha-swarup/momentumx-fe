@@ -102,11 +102,11 @@ The backend automatically handles many state transitions. The frontend must NOT 
 
 ## Phase 3 — Research Page
 
-- [ ] **3a** Build Research page with topic generation grid
-- [ ] **3b** Wire topic selection → `createProject(topicId)` → navigate to `/app/project/:projectId` (ProjectDetailRedirect handles routing to current step)
-- [ ] **3c** Add topic feedback, regenerate single (with warning if topic linked to project), regenerate all (with stale cascade warning)
-- [ ] **3d** Add topic export button
-- [ ] **3e** Show `isScriptGenerated` badge, filter out `archived` topics, show `videoProjectId` linkage status
+- [x] **3a** Build Research page with topic generation grid
+- [x] **3b** Wire topic selection → `createProject(topicId)` → navigate to `/app/project/:projectId` (ProjectDetailRedirect handles routing to current step)
+- [x] **3c** Add topic feedback, regenerate single (with warning if topic linked to project), regenerate all (with stale cascade warning)
+- [x] **3d** Add topic export button
+- [x] **3e** Show `isScriptGenerated` badge, filter out `archived` topics, show `videoProjectId` linkage status
 
 ## Phase 4 — Pipeline Layout
 
