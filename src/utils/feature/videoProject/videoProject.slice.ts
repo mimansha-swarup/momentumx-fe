@@ -1,6 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createSelector } from "@reduxjs/toolkit";
 import { RootState } from "@/utils/store";
-import { IVideoProjectState, IPipelineStep, StepName } from "@/types/feature/videoProject";
+import { IVideoProjectState, IPipelineStep, StepName, StepStatus } from "@/types/feature/videoProject";
 import {
   createProject,
   listProjects,
@@ -276,7 +276,26 @@ export const selectIsUpdating = (state: RootState) =>
   state.videoProject.isUpdating;
 export const selectIsDeleting = (state: RootState) =>
   state.videoProject.isDeleting;
-export const projectIsLinkingResource = (state: RootState) =>
+export const selectIsLinkingResource = (state: RootState) =>
   state.videoProject.isLinkingResource;
+
+// Pre-built per-step selectors — avoids new function references on every render.
+// Usage: useAppSelector(selectStepStatus.script)
+export const selectPipeline = (state: RootState) =>
+  state.videoProject.currentProject?.pipeline;
+
+export const selectStepStatus: Record<StepName, (state: RootState) => StepStatus> = {
+  research: createSelector(selectPipeline, (p): StepStatus => p?.research?.status ?? "not_started"),
+  script: createSelector(selectPipeline, (p): StepStatus => p?.script?.status ?? "not_started"),
+  hooks: createSelector(selectPipeline, (p): StepStatus => p?.hooks?.status ?? "not_started"),
+  packaging: createSelector(selectPipeline, (p): StepStatus => p?.packaging?.status ?? "not_started"),
+};
+
+export const selectIsStepStale: Record<StepName, (state: RootState) => boolean> = {
+  research: createSelector(selectPipeline, (p) => p?.research?.status === "stale"),
+  script: createSelector(selectPipeline, (p) => p?.script?.status === "stale"),
+  hooks: createSelector(selectPipeline, (p) => p?.hooks?.status === "stale"),
+  packaging: createSelector(selectPipeline, (p) => p?.packaging?.status === "stale"),
+};
 
 export default videoProjectSlice.reducer;

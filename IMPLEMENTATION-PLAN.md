@@ -110,13 +110,13 @@ The backend automatically handles many state transitions. The frontend must NOT 
 
 ## Phase 4 — Pipeline Layout
 
-- [ ] **4a** Build `ProjectPipelineLayout` (nested layout with `<Outlet />`)
-- [ ] **4b** Build `PipelineTracker` from scratch — existing Stepper doesn't support `stale`. 4 steps with per-step status
-- [ ] **4c** Build `ProjectDetailRedirect` — fetch project, redirect to `currentStep` sub-route
-- [ ] **4d** Build `StaleStepBanner` — shows contextual message from `staleReason`
-- [ ] **4e** Build inline-editable working title in ProjectHeader
-- [ ] **4f** Add selector factories: `selectIsStepStale(stepName)`, `selectStepStatus(stepName)`
-- [ ] **4g** Handle navigation after project deletion — redirect to dashboard
+- [x] **4a** Build `ProjectPipelineLayout` (nested layout with `<Outlet />`)
+- [x] **4b** Build `PipelineTracker` from scratch — existing Stepper doesn't support `stale`. 4 steps with per-step status
+- [x] **4c** Build `ProjectDetailRedirect` — fetch project, redirect to `currentStep` sub-route
+- [x] **4d** Build `StaleStepBanner` — shows contextual message from `staleReason`
+- [x] **4e** Build inline-editable working title in ProjectHeader
+- [x] **4f** Add selector factories: `selectIsStepStale(stepName)`, `selectStepStatus(stepName)`
+- [x] **4g** Handle navigation after project deletion — redirect to dashboard
 
 ## Phase 5 — Script Step
 

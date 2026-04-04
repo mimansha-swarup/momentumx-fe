@@ -2,6 +2,9 @@ import { titleService, TopicsListParams } from "@/service/titles";
 import { handleToast } from "@/utils/toast";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : "An unexpected error occurred";
+
 type RetrieveTitlesParams = TopicsListParams & { isFresh?: boolean };
 
 export const retrieveTitles = createAsyncThunk(
@@ -12,7 +15,7 @@ export const retrieveTitles = createAsyncThunk(
       const response = await titleService.getGeneratedData(restFilter);
       return { data: response?.data, isFresh };
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -24,7 +27,7 @@ export const generateTitles = createAsyncThunk(
       handleToast({ message: response?.message ?? "", warning: response?.warning ?? "" });
       return { data: response?.data };
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -36,7 +39,7 @@ export const editTitles = createAsyncThunk(
       handleToast({ message: response?.message ?? "", warning: response?.warning ?? "" });
       return response?.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -49,7 +52,7 @@ export const regenerateAllTopics = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -62,7 +65,7 @@ export const regenerateOneTopic = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -78,7 +81,7 @@ export const submitTopicFeedback = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -91,7 +94,7 @@ export const exportTopics = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );

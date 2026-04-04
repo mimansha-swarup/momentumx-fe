@@ -4,6 +4,9 @@ import { RootState } from "@/utils/store";
 import { handleToast } from "@/utils/toast";
 import { RegenerateItemResponse } from "@/types/feature/packaging";
 
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : "An unexpected error occurred";
+
 export const generateTitle = createAsyncThunk(
   "packaging/generateTitle",
   async (_, thunkAPI) => {
@@ -13,7 +16,7 @@ export const generateTitle = createAsyncThunk(
       const response = await packagingService.generateTitle(script);
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -31,7 +34,7 @@ export const generateDescription = createAsyncThunk(
       );
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -49,7 +52,7 @@ export const generateThumbnail = createAsyncThunk(
       );
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -64,7 +67,7 @@ export const generateHooks = createAsyncThunk(
       const response = await packagingService.generateHooks(script);
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -79,7 +82,7 @@ export const generateShorts = createAsyncThunk(
       const response = await packagingService.generateShorts(script);
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -94,7 +97,7 @@ export const addNewShortsScript = createAsyncThunk(
       const response = await packagingService.generateShorts(script);
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -113,7 +116,7 @@ export const regenerateShortsScript = createAsyncThunk(
         totalDuration: response.data?.totalDuration,
       };
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -141,7 +144,7 @@ export const generateAllPackaging = createAsyncThunk(
         hooks: hooksResponse.data,
       };
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -170,7 +173,7 @@ export const savePackaging = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -182,7 +185,7 @@ export const listPackaging = createAsyncThunk(
       const response = await packagingService.listPackaging();
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -194,7 +197,7 @@ export const getPackaging = createAsyncThunk(
       const response = await packagingService.getPackaging(packagingId);
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -225,7 +228,7 @@ export const regenerateItem = createAsyncThunk<
       }
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -250,7 +253,7 @@ export const submitPackagingFeedback = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -263,7 +266,7 @@ export const exportPackaging = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );

@@ -3,6 +3,9 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { FeedbackValue } from "@/types/feature/hooks";
 import { handleToast } from "@/utils/toast";
 
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : "An unexpected error occurred";
+
 export const generateHooks = createAsyncThunk(
   "hooks/generate",
   async (
@@ -17,7 +20,7 @@ export const generateHooks = createAsyncThunk(
       handleToast({ message: response.message ?? '', warning: response.warning ?? '' });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -41,7 +44,7 @@ export const selectHook = createAsyncThunk(
       handleToast({ message: response.message ?? '', warning: response.warning ?? '' });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -57,7 +60,7 @@ export const regenerateHooks = createAsyncThunk(
       handleToast({ message: response.message ?? '', warning: response.warning ?? '' });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -81,7 +84,7 @@ export const submitHookFeedback = createAsyncThunk(
       handleToast({ message: response.message ?? '', warning: response.warning ?? '' });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -94,7 +97,7 @@ export const exportHooks = createAsyncThunk(
       handleToast({ message: response.message ?? '', warning: response.warning ?? '' });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );

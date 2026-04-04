@@ -2,6 +2,9 @@ import { researchService } from "@/service/research";
 import { handleToast } from "@/utils/toast";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : "An unexpected error occurred";
+
 export const fetchTrending = createAsyncThunk(
   "research/fetchTrending",
   async (_, thunkAPI) => {
@@ -10,7 +13,7 @@ export const fetchTrending = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -23,7 +26,7 @@ export const fetchCompetitors = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -36,7 +39,7 @@ export const fetchKeywords = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );

@@ -8,7 +8,7 @@ export const urlMapping = HIDE_OLD_FLOW
         label: "Dashboard",
         icon: Home,
         route: "/app/dashboard",
-        subRoutes: [],
+        subRoutes: ["/app/project/:projectId"],
       },
       {
         name: "research",

@@ -7,6 +7,9 @@ import {
   StepName,
 } from "@/types/feature/videoProject";
 
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : "An unexpected error occurred";
+
 export const createProject = createAsyncThunk(
   "videoProject/create",
   async (topicId: string, thunkAPI) => {
@@ -15,7 +18,7 @@ export const createProject = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -28,7 +31,7 @@ export const listProjects = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return { data: response.data, params };
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -41,7 +44,7 @@ export const getProject = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -60,7 +63,7 @@ export const updateWorkingTitle = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -73,7 +76,7 @@ export const deleteProject = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -92,7 +95,7 @@ export const startStep = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -111,7 +114,7 @@ export const completeStep = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -139,7 +142,7 @@ export const linkResource = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );

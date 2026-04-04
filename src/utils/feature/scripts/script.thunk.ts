@@ -2,6 +2,9 @@ import { scriptService } from "@/service/script";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { handleToast } from "@/utils/toast";
 
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : "An unexpected error occurred";
+
 export const retrieveScripts = createAsyncThunk(
   "scripts/retrieveScripts",
   async (_, thunkAPI) => {
@@ -9,7 +12,7 @@ export const retrieveScripts = createAsyncThunk(
       const response = await scriptService.getGeneratedScript();
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -25,7 +28,7 @@ export const editScript = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response?.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -44,7 +47,7 @@ export const submitScriptFeedback = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -57,7 +60,7 @@ export const exportScript = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -70,7 +73,7 @@ export const regenerateScript = createAsyncThunk(
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
