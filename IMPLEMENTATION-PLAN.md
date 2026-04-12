@@ -120,11 +120,11 @@ The backend automatically handles many state transitions. The frontend must NOT 
 
 ## Phase 5 — Script Step
 
-- [ ] **5a** Build Script step page — trigger SSE stream. Note: `:scriptId` param = `topicId`. Uses `?token=` not baseFetch
-- [ ] **5b** After stream completes, re-fetch project via `getProject(projectId)` — backend already started/linked/completed the step
-- [ ] **5c** Show script in editor (reuse shared Editor component), allow inline editing via `editScript`
-- [ ] **5d** Add script feedback (like/dislike), export, regenerate buttons
-- [ ] **5e** After `regenerateScript`, re-fetch project — backend auto-triggers stale cascade on hooks/packaging
+- [x] **5a** Build Script step page — trigger SSE stream. Note: `:scriptId` param = `topicId`. Uses `?token=` not baseFetch
+- [x] **5b** After stream completes, re-fetch project via `getProject(projectId)` — backend already started/linked/completed the step
+- [x] **5c** Show script in editor (reuse shared Editor component), allow inline editing via `editScript`
+- [x] **5d** Add script feedback (like/dislike), export, regenerate buttons
+- [x] **5e** After `regenerateScript`, re-fetch project — backend auto-triggers stale cascade on hooks/packaging
 
 ## Phase 6 — Hooks Step
 

@@ -19,33 +19,44 @@ class ScriptService {
     this.urls = URLS;
   }
 
+  // SSE via EventSource cannot send custom headers, so the Firebase token
+  // is passed as a query parameter. This is the only endpoint that does this.
   startStreamingScripts = async (
     id: string,
     setter: (prev: string) => void,
-    onDone: () => void
+    onDone: () => void,
+    onError: () => void
   ) => {
     const token = await auth.currentUser?.getIdToken();
+    if (!token) {
+      throw new Error("Authentication token unavailable");
+    }
+
     const url = this.urls.streamScript.replace("{scriptId}", id);
     const evtSource = new EventSource(
       getApiDomain(true) + url + `?token=${token}`
     );
 
     evtSource.onmessage = (e) => {
-      const script = JSON.parse(e.data);
-      setter(script);
+      try {
+        const script = JSON.parse(e.data);
+        setter(script);
+      } catch {
+        // Skip malformed SSE chunks
+      }
     };
 
     evtSource.addEventListener("done", () => {
-      onDone?.();
-
+      onDone();
       evtSource.close();
     });
 
     evtSource.onerror = () => {
       evtSource.close();
+      onError();
     };
 
-    return evtSource; // optionally return for later closing
+    return evtSource;
   };
 
   async getGeneratedScript(): Promise<IBaseFetchResponse<IGeneratedScript[]>> {

@@ -10,6 +10,8 @@ export interface IGeneratedScript {
 
 export interface IScriptState {
   data: IGeneratedScript[] | null;
+  currentScript: IGeneratedScript | null;
+  isLoadingCurrent: boolean;
   isLoading: boolean;
   isDone: boolean;
   error: string | null;

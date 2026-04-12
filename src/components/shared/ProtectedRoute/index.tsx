@@ -5,7 +5,7 @@ import { isUserLoggedIn } from "../../../utils/index";
 import RootLoader from "../Loader";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { getTitlesData } from "@/utils/feature/titles/titles.slice";
-import { getScriptsData } from "@/utils/feature/scripts/script.slice";
+import { selectScriptsData } from "@/utils/feature/scripts/script.slice";
 import { useEffect, useRef } from "react";
 import { retrieveTitles } from "@/utils/feature/titles/titles.thunk";
 import { retrieveScripts } from "@/utils/feature/scripts/script.thunk";
@@ -20,7 +20,7 @@ const ProtectedLayout = () => {
   const isLoggedIn = isUserLoggedIn();
 
   const titles = useAppSelector(getTitlesData);
-  const scripts = useAppSelector(getScriptsData);
+  const scripts = useAppSelector(selectScriptsData);
   const dispatch = useAppDispatch();
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 

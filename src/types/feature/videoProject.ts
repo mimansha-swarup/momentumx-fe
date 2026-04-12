@@ -27,6 +27,12 @@ export interface IPipeline {
 export interface IVideoProject {
   id: string;
   workingTitle: string;
+  /**
+   * The ID of the topic this project was created from.
+   * The backend uses this as the script's deterministic ID — `scriptId === topicId`
+   * until a script is explicitly saved, at which point `scriptId` is set separately.
+   * Use `topicId` when calling script endpoints (stream, fetch, edit, export).
+   */
   topicId: string;
   scriptId: string | null;
   hooksId: string | null;
