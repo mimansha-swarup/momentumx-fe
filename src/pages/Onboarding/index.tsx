@@ -1,6 +1,6 @@
 
 
-import { KeyboardEvent, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import OnboardingCard from "@/components/onboarding/card";
 
 import { useAuthCredential } from "@/hooks/useAuth";
@@ -65,11 +65,11 @@ const Onboarding = () => {
     [activeSection.questions.length, currentQuestionIndex]
   );
 
-  if (user?.business) {
+  if (user?.isOnboardingCompleted) {
     return <Navigate to="/app/dashboard" replace />;
   }
 
-  const handleKeypress = (e: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeypress = (e: React.KeyboardEvent) => {
     // Trigger next only when pressing Ctrl + Enter
     if (e.key === "Enter" && e.ctrlKey) {
       handleNext();
@@ -166,8 +166,8 @@ const Onboarding = () => {
                   value: getValueByPath(formData, activeQuestion.path),
                   updateField,
                   formState: formData,
-                  // @ts-expect-error -- suppressed type mismatch
-                  onEnter: handleKeypress
+                  errors,
+                  onEnter: handleKeypress,
                 })}
               </OnboardingCard>
             </div>

@@ -38,8 +38,7 @@ const SideDrawer = () => {
       matchPath({ path: subRoute, end: false }, pathname),
     );
   };
-// @ts-expect-error -- suppressed type mismatch
-  const extractedUserName = extractYouTubeHandle(user?.userName || "");
+  const extractedUserName = extractYouTubeHandle(user?.assets?.youtube_url || "");
 
   return (
     <Sidebar className="border-r border-sidebar-border bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">

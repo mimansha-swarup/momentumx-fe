@@ -156,9 +156,9 @@ The backend automatically handles many state transitions. The frontend must NOT 
 
 ## Phase 9 — Onboarding + Profile
 
-- [ ] **9a** Unhide onboarding — fix `user?.brandName` redirect guard, fix `@ts-expect-error`, verify end-to-end with transformation layer
-- [ ] **9b** Build profile editing page with `updateProfile` thunk, re-enrichment loading state
-- [ ] **9c** Fix `onboardingService` to singleton export
+- [x] **9a** Unhide onboarding — fix `user?.brandName` redirect guard, fix `@ts-expect-error`, verify end-to-end with transformation layer
+- [x] **9b** Build profile editing page with `updateProfile` thunk, re-enrichment loading state
+- [x] **9c** Fix `onboardingService` to singleton export (already correct — verified)
 
 ---
 

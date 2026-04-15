@@ -18,7 +18,7 @@ import {
   GroupField,
   ConditionalRule,
 } from "@/types/components/onboarding";
-import { KeyboardEventHandler } from "react";
+import React from "react";
 
 export const getValueByPath = (obj: DeepNest | IOnboardingPayload, path: string): unknown => {
   if (!obj || !path) return undefined;
@@ -48,7 +48,7 @@ export const renderUserForm = ({
   updateField: (path: string, value: unknown) => void;
   formState: IOnboardingPayload;
   errors: Record<string, string>;
-  onEnter: (e: KeyboardEventHandler<HTMLInputElement>) => void
+  onEnter?: (e: React.KeyboardEvent) => void;
 }) => {
   /* -------------------------------------------------------------------------- */
   /*                               RENDER INPUT                                 */
@@ -64,7 +64,6 @@ export const renderUserForm = ({
             onChange={(e) => updateField(question.path || "", e.target.value)}
             placeholder={question.placeholder || ""}
             required={question.required}
-            // @ts-expect-error -- suppressed type mismatch
             onKeyDown={onEnter}
           />
         );
@@ -77,7 +76,6 @@ export const renderUserForm = ({
             placeholder={question.placeholder || ""}
             rows={question.rows || 4}
             required={question.required}
-            // @ts-expect-error -- suppressed type mismatch
             onKeyDown={onEnter}
           />
         );

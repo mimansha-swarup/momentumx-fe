@@ -5,8 +5,7 @@ import { extractYouTubeHandle } from "@/utils/onboarding";
 import React from "react";
 
 const UserDetails: React.FC<IUserDetailsProps> = ({ user }) => {
-  // @ts-expect-error -- suppressed type mismatch
-  const extractedUserName = extractYouTubeHandle(user?.userName || "") || "A";
+  const extractedUserName = extractYouTubeHandle(user?.assets?.youtube_url || "") || "A";
   return (
     <div className="flex items-start flex-wrap-reverse">
       <div className="flex gap-6">
