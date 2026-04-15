@@ -151,8 +151,8 @@ The backend automatically handles many state transitions. The frontend must NOT 
 
 ## Phase 8 — Research Intel Panel (non-blocking)
 
-- [ ] **8a** Add trending tab, competitors tab, keywords tab to Research page
-- [ ] **8b** Wire `fetchTrending`, `fetchCompetitors`, `fetchKeywords`
+- [x] **8a** Add trending tab, competitors tab, keywords tab to Research page
+- [x] **8b** Wire `fetchTrending`, `fetchCompetitors`, `fetchKeywords`
 
 ## Phase 9 — Onboarding + Profile
 

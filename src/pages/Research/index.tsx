@@ -18,7 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { TopicGrid } from "@/components/research";
+import { TopicGrid, TrendingTab, CompetitorsTab, KeywordsTab } from "@/components/research";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import {
   selectActiveTopics,
@@ -32,6 +32,16 @@ import {
   clearExportText,
 } from "@/utils/feature/titles/titles.slice";
 import {
+  selectTrending,
+  selectCompetitors,
+  selectKeywords,
+} from "@/utils/feature/research/research.slice";
+import {
+  fetchTrending,
+  fetchCompetitors,
+  fetchKeywords,
+} from "@/utils/feature/research/research.thunk";
+import {
   retrieveTitles,
   generateTitles,
   regenerateAllTopics,
@@ -42,6 +52,7 @@ import {
 import { createProject } from "@/utils/feature/videoProject/videoProject.thunk";
 import { selectIsCreating } from "@/utils/feature/videoProject/videoProject.slice";
 import { toastError, toastSuccess } from "@/utils/toast";
+import { cn } from "@/lib/utils";
 
 type ConfirmDialog =
   | { type: "regenerateAll" }
@@ -61,7 +72,11 @@ const ResearchPage = () => {
   const hasLinkedProjects = useAppSelector(selectHasLinkedProjects);
   const cursor = useAppSelector(selectTopicsCursor);
   const isCreatingProject = useAppSelector(selectIsCreating);
+  const trending = useAppSelector(selectTrending);
+  const competitors = useAppSelector(selectCompetitors);
+  const keywords = useAppSelector(selectKeywords);
 
+  const [activeIntelTab, setActiveIntelTab] = useState<"trending" | "competitors" | "keywords">("trending");
   const [regeneratingTopicId, setRegeneratingTopicId] = useState<string | null>(
     null
   );
@@ -69,6 +84,8 @@ const ResearchPage = () => {
     null
   );
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialog>(null);
+
+  const hasTopics = topics.length > 0;
 
   useEffect(() => {
     dispatch(retrieveTitles({ isFresh: true }));
@@ -98,6 +115,17 @@ const ResearchPage = () => {
       setCreatingForTopicId(null);
     }
   }, [isCreatingProject, creatingForTopicId]);
+
+  // Fetch research data when a tab becomes active (only if not already loaded or errored)
+  useEffect(() => {
+    if (!hasTopics) return;
+    if (activeIntelTab === "trending" && !trending.videos.length && !trending.isLoading && !trending.error) {
+      dispatch(fetchTrending());
+    } else if (activeIntelTab === "competitors" && !competitors.channels.length && !competitors.isLoading && !competitors.error) {
+      dispatch(fetchCompetitors());
+    }
+    // Keywords are fetched on-demand via search, not on tab activation
+  }, [activeIntelTab, hasTopics, trending, competitors, dispatch]);
 
   const handleGenerate = useCallback(() => {
     dispatch(generateTitles());
@@ -179,7 +207,6 @@ const ResearchPage = () => {
     );
   }, [dispatch, cursor, isLoading]);
 
-  const hasTopics = topics.length > 0;
   const showEmptyState = !isLoading && !isRegenerating && !error && !hasTopics;
   const showGrid = hasTopics || isLoading || isRegenerating;
 
@@ -306,27 +333,53 @@ const ResearchPage = () => {
         </div>
       )}
 
-      {/* Research Intel Panel placeholder */}
+      {/* Research Intel Panel */}
       {hasTopics && (
         <section className="mt-12">
           <h2 className="text-heading-lg mb-4">Research Intel</h2>
-          <div className="flex gap-2 mb-4">
-            {["Trending", "Competitors", "Keywords"].map((tab) => (
+          <div className="flex gap-2 mb-4" role="tablist" aria-label="Research intelligence tabs">
+            {(["trending", "competitors", "keywords"] as const).map((tab) => (
               <Button
                 key={tab}
+                id={tab}
                 variant="outline"
                 size="sm"
-                className="btn-outline-hover cursor-default opacity-60"
-                disabled
+                role="tab"
+                aria-selected={activeIntelTab === tab}
+                aria-controls={`panel-${tab}`}
+                onClick={() => setActiveIntelTab(tab)}
+                className={cn(
+                  "btn-outline-hover capitalize",
+                  activeIntelTab === tab && "bg-white/10 border-white/20"
+                )}
               >
                 {tab}
               </Button>
             ))}
           </div>
-          <div className="glass-card p-8 text-center">
-            <p className="text-label">
-              Research intelligence tools are coming in a future update.
-            </p>
+          <div id={`panel-${activeIntelTab}`} role="tabpanel" aria-labelledby={activeIntelTab}>
+            {activeIntelTab === "trending" && (
+              <TrendingTab
+                videos={trending.videos}
+                isLoading={trending.isLoading}
+                error={trending.error}
+              />
+            )}
+            {activeIntelTab === "competitors" && (
+              <CompetitorsTab
+                channels={competitors.channels}
+                isLoading={competitors.isLoading}
+                error={competitors.error}
+              />
+            )}
+            {activeIntelTab === "keywords" && (
+              <KeywordsTab
+                results={keywords.results}
+                isLoading={keywords.isLoading}
+                error={keywords.error}
+                onSearch={(query) => dispatch(fetchKeywords(query))}
+              />
+            )}
           </div>
         </section>
       )}
