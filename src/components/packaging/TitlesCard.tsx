@@ -13,6 +13,7 @@ import {
 import { toast } from "sonner";
 import GradientSkeleton from "./GradientSkeleton";
 import { PACKAGING_LIMITS, type ITitle } from "@/types/feature/packaging";
+import { FeedbackButtons } from "@/components/research/FeedbackButtons";
 
 interface TitlesCardProps {
   titles: ITitle[];
@@ -22,6 +23,8 @@ interface TitlesCardProps {
   onRegenerate: () => void;
   onSelectTitle: (index: number) => void;
   onEditTitle: (index: number, value: string) => void;
+  feedback?: "like" | "dislike" | null;
+  onFeedback?: (feedback: "like" | "dislike" | null) => void;
 }
 
 interface TitleItemProps {
@@ -218,6 +221,8 @@ const TitlesCard = ({
   onRegenerate,
   onSelectTitle,
   onEditTitle,
+  feedback,
+  onFeedback,
 }: TitlesCardProps) => {
 
   // Show 3 placeholders when loading or when no titles yet
@@ -251,19 +256,28 @@ const TitlesCard = ({
               </p>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className={cn(
-              "text-slate-400 hover:text-slate-100 hover:bg-slate-800/50",
-              isLoading && "[&_svg]:animate-spin"
+          <div className="flex items-center gap-2">
+            {onFeedback && (
+              <FeedbackButtons
+                topicId="title"
+                feedback={feedback ?? null}
+                onFeedback={(_id, fb) => onFeedback(fb)}
+              />
             )}
-            onClick={onRegenerate}
-            disabled={isLoading}
-          >
-            <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
-            Regenerate
-          </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(
+                "text-slate-400 hover:text-slate-100 hover:bg-slate-800/50",
+                isLoading && "[&_svg]:animate-spin"
+              )}
+              onClick={onRegenerate}
+              disabled={isLoading}
+            >
+              <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+              Regenerate
+            </Button>
+          </div>
         </div>
 
         {error && (

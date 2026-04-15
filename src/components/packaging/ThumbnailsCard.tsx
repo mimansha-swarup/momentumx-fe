@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw, Copy, Check, Image, Star } from "lucide-react";
 import { toast } from "sonner";
 import GradientSkeleton from "./GradientSkeleton";
+import { FeedbackButtons } from "@/components/research/FeedbackButtons";
 
 interface ThumbnailsCardProps {
   descriptions: string[];
@@ -12,6 +13,8 @@ interface ThumbnailsCardProps {
   error?: string | null;
   onRegenerate: () => void;
   onSelectThumbnail: (index: number) => void;
+  feedback?: "like" | "dislike" | null;
+  onFeedback?: (feedback: "like" | "dislike" | null) => void;
 }
 
 interface ThumbnailItemProps {
@@ -122,6 +125,8 @@ const ThumbnailsCard = ({
   error,
   onRegenerate,
   onSelectThumbnail,
+  feedback,
+  onFeedback,
 }: ThumbnailsCardProps) => {
   // Show 3 placeholders when loading or when no descriptions yet
   const displayDescriptions: (string | null)[] =
@@ -154,19 +159,28 @@ const ThumbnailsCard = ({
               </p>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className={cn(
-              "text-slate-400 hover:text-slate-100 hover:bg-slate-800/50",
-              isLoading && "[&_svg]:animate-spin"
+          <div className="flex items-center gap-2">
+            {onFeedback && (
+              <FeedbackButtons
+                topicId="thumbnail"
+                feedback={feedback ?? null}
+                onFeedback={(_id, fb) => onFeedback(fb)}
+              />
             )}
-            onClick={onRegenerate}
-            disabled={isLoading}
-          >
-            <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
-            Regenerate
-          </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(
+                "text-slate-400 hover:text-slate-100 hover:bg-slate-800/50",
+                isLoading && "[&_svg]:animate-spin"
+              )}
+              onClick={onRegenerate}
+              disabled={isLoading}
+            >
+              <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+              Regenerate
+            </Button>
+          </div>
         </div>
 
         {error && (

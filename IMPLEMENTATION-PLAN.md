@@ -143,7 +143,7 @@ The backend automatically handles many state transitions. The frontend must NOT 
 - [x] **7b** `savePackaging` with `videoProjectId` — backend auto-links + auto-completes. Re-fetch project after save
 - [x] **7c** Remove `HooksParagraphCard` from this view
 - [x] **7d** Wire per-item regeneration (`regenerateItem`) — requires `packagingId` from prior save. Backend auto-updates `itemStatuses` and auto-clears `isStale`
-- [ ] **7e** Wire per-item feedback buttons
+- [x] **7e** Wire per-item feedback buttons
 - [x] **7f** Wire packaging export
 - [x] **7g** Build per-item stale indicators from `itemStatuses`, document-level stale from `isStale`/`staleReason`
 - [x] **7h** Pass `selectedHook` text to generation endpoints (`generateTitle`, `generateDescription`, `generateThumbnail`, `regenerateItem`)

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw, Copy, Check, Pencil, X } from "lucide-react";
 import { toast } from "sonner";
 import GradientSkeleton from "./GradientSkeleton";
+import { FeedbackButtons } from "@/components/research/FeedbackButtons";
 
 interface OutputCardProps {
   title: string;
@@ -18,6 +19,8 @@ interface OutputCardProps {
   skeletonLines?: number;
   className?: string;
   accentColor?: "violet" | "blue" | "emerald" | "amber";
+  feedback?: "like" | "dislike" | null;
+  onFeedback?: (feedback: "like" | "dislike" | null) => void;
 }
 
 const accentStyles = {
@@ -64,6 +67,8 @@ const OutputCard = ({
   skeletonLines = 3,
   className,
   accentColor = "violet",
+  feedback,
+  onFeedback,
 }: OutputCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(content);
@@ -187,6 +192,13 @@ const OutputCard = ({
                   )}
                 </Button>
               </>
+            )}
+            {onFeedback && (
+              <FeedbackButtons
+                topicId="output"
+                feedback={feedback ?? null}
+                onFeedback={(_id, fb) => onFeedback(fb)}
+              />
             )}
             <Button
               variant="ghost"

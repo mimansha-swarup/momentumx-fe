@@ -18,6 +18,7 @@ import {
   IShortsScript,
   MAX_SHORTS_SCRIPTS,
 } from "@/types/feature/packaging";
+import { FeedbackButtons } from "@/components/research/FeedbackButtons";
 
 interface ShortsScriptCardProps {
   scripts: IShortsScript[];
@@ -26,6 +27,8 @@ interface ShortsScriptCardProps {
   onAddNew: () => void;
   onRegenerate: (scriptId: string) => void;
   onDelete: (scriptId: string) => void;
+  feedback?: "like" | "dislike" | null;
+  onFeedback?: (feedback: "like" | "dislike" | null) => void;
 }
 
 const segmentStyles = {
@@ -295,6 +298,8 @@ const ShortsScriptCard = ({
   onAddNew,
   onRegenerate,
   onDelete,
+  feedback,
+  onFeedback,
 }: ShortsScriptCardProps) => {
 
   return (
@@ -325,22 +330,31 @@ const ShortsScriptCard = ({
             </div>
           </div>
 
-          {canAddMore && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-dashed border-slate-600 text-slate-400 hover:text-slate-100 hover:border-slate-500 hover:bg-slate-800/50"
-              onClick={onAddNew}
-              disabled={isAddingNew}
-            >
-              {isAddingNew ? (
-                <RefreshCw className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <Plus className="mr-1.5 h-3.5 w-3.5" />
-              )}
-              Add Variation
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {onFeedback && (
+              <FeedbackButtons
+                topicId="shorts"
+                feedback={feedback ?? null}
+                onFeedback={(_id, fb) => onFeedback(fb)}
+              />
+            )}
+            {canAddMore && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-dashed border-slate-600 text-slate-400 hover:text-slate-100 hover:border-slate-500 hover:bg-slate-800/50"
+                onClick={onAddNew}
+                disabled={isAddingNew}
+              >
+                {isAddingNew ? (
+                  <RefreshCw className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Plus className="mr-1.5 h-3.5 w-3.5" />
+                )}
+                Add Variation
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Scripts List */}
