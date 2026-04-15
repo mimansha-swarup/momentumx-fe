@@ -37,30 +37,38 @@ class PackagingService {
   }
 
   async generateTitle(
-    script: string
+    script: string,
+    selectedHook?: string
   ): Promise<IBaseFetchResponse<GenerateTitleResponse>> {
-    const response = await baseFetch.post(this.urls.generateTitle, { script });
+    const response = await baseFetch.post(this.urls.generateTitle, {
+      script,
+      ...(selectedHook !== undefined && { selectedHook }),
+    });
     return response.data;
   }
 
   async generateDescription(
     script: string,
-    title: string
+    title: string,
+    selectedHook?: string
   ): Promise<IBaseFetchResponse<GenerateDescriptionResponse>> {
     const response = await baseFetch.post(this.urls.generateDescription, {
       script,
       title,
+      ...(selectedHook !== undefined && { selectedHook }),
     });
     return response.data;
   }
 
   async generateThumbnail(
     script: string,
-    title: string
+    title: string,
+    selectedHook?: string
   ): Promise<IBaseFetchResponse<GenerateThumbnailResponse>> {
     const response = await baseFetch.post(this.urls.generateThumbnail, {
       script,
       title,
+      ...(selectedHook !== undefined && { selectedHook }),
     });
     return response.data;
   }
@@ -90,7 +98,8 @@ class PackagingService {
 
   async generateTitleDependentContent(
     script: string,
-    duration: number = 60
+    duration: number = 60,
+    selectedHook?: string
   ): Promise<{
     title: GenerateTitleResponse;
     description: GenerateDescriptionResponse;
@@ -98,14 +107,14 @@ class PackagingService {
     shorts: GenerateShortsResponse;
   }> {
     // First, get titles (returns array of 3)
-    const titleResponse = await this.generateTitle(script);
+    const titleResponse = await this.generateTitle(script, selectedHook);
     // Use the first title for dependent content generation
     const titleText = titleResponse?.data?.titles?.[0]?.title ?? "";
 
     // Then call description, thumbnail, and shorts in parallel with the title
     const [description, thumbnail, shorts] = await Promise.all([
-      this.generateDescription(script, titleText),
-      this.generateThumbnail(script, titleText),
+      this.generateDescription(script, titleText, selectedHook),
+      this.generateThumbnail(script, titleText, selectedHook),
       this.generateShorts(script, duration),
     ]);
 

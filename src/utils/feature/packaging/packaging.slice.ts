@@ -5,6 +5,7 @@ import {
   IShortsScript,
   MAX_SHORTS_SCRIPTS,
   RegenerateItemResponse,
+  GetPackagingResponse,
 } from "@/types/feature/packaging";
 import {
   generateTitle,
@@ -15,6 +16,7 @@ import {
   addNewShortsScript,
   regenerateShortsScript,
   generateAllPackaging,
+  generateAllPackagingForProject,
   savePackaging,
   listPackaging,
   getPackaging,
@@ -115,8 +117,34 @@ const packagingSlice = createSlice({
         (s) => s.id !== action.payload
       );
     },
+    hydrateFromResponse: (state, action: PayloadAction<GetPackagingResponse>) => {
+      const data = action.payload;
+      state.packagingId = data.id;
+      state.titles.titles = data.titles;
+      state.titles.selectedIndex = data.selectedTitleIndex;
+      state.titles.isLoading = false;
+      state.titles.error = null;
+      state.description.content = data.description;
+      state.description.isLoading = false;
+      state.description.error = null;
+      state.thumbnails.descriptions = data.thumbnails;
+      state.thumbnails.selectedIndex = data.selectedThumbnailIndex;
+      state.thumbnails.isLoading = false;
+      state.thumbnails.error = null;
+      state.hooks.hooks = data.hooks;
+      state.hooks.isLoading = false;
+      state.hooks.error = null;
+      state.shortsScript.scripts = data.shortsScripts.map((s) => ({
+        id: s.id,
+        segments: s.segments,
+        isLoading: false,
+        error: null,
+      }));
+      state.shortsScript.isAddingNew = false;
+    },
     resetPackaging: () => initialState,
     clearErrors: (state) => {
+      state.error = null;
       state.titles.error = null;
       state.description.error = null;
       state.thumbnails.error = null;
@@ -342,6 +370,52 @@ const packagingSlice = createSlice({
         state.error = (action.payload as { message?: string })?.message ?? "Unknown error";
       })
 
+      // Generate All (Pipeline — no hooks)
+      .addCase(generateAllPackagingForProject.pending, (state) => {
+        state.isGeneratingAll = true;
+        state.titles.isLoading = true;
+        state.titles.error = null;
+        state.description.isLoading = true;
+        state.description.error = null;
+        state.thumbnails.isLoading = true;
+        state.thumbnails.error = null;
+        const newScript: IShortsScript = {
+          id: `shorts_${Date.now()}`,
+          segments: [],
+          isLoading: true,
+          error: null,
+        };
+        state.shortsScript.scripts = [newScript];
+      })
+      .addCase(generateAllPackagingForProject.fulfilled, (state, action) => {
+        state.isGeneratingAll = false;
+        state.titles.isLoading = false;
+        state.titles.titles = action.payload.title.titles || [];
+        state.titles.selectedIndex = 0;
+        state.description.isLoading = false;
+        state.description.content = action.payload.description.description || "";
+        state.thumbnails.isLoading = false;
+        state.thumbnails.descriptions = action.payload.thumbnail.descriptions || [];
+        state.thumbnails.selectedIndex = 0;
+        if (state.shortsScript.scripts.length > 0) {
+          state.shortsScript.scripts[0].isLoading = false;
+          state.shortsScript.scripts[0].segments = action.payload.shorts.segments || [];
+          if (action.payload.shorts.totalDuration) {
+            state.shortsScript.scripts[0].totalDuration = action.payload.shorts.totalDuration;
+          }
+        }
+      })
+      .addCase(generateAllPackagingForProject.rejected, (state, action) => {
+        state.isGeneratingAll = false;
+        state.titles.isLoading = false;
+        state.description.isLoading = false;
+        state.thumbnails.isLoading = false;
+        if (state.shortsScript.scripts.length > 0) {
+          state.shortsScript.scripts[0].isLoading = false;
+        }
+        state.error = (action.payload as { message?: string })?.message ?? "Unknown error";
+      })
+
       // Save Packaging
       .addCase(savePackaging.pending, (state) => {
         state.isSaving = true;
@@ -470,6 +544,7 @@ export const {
   updateHook,
   deleteHook,
   deleteShortsScript,
+  hydrateFromResponse,
   resetPackaging,
   clearErrors,
 } = packagingSlice.actions;
@@ -508,6 +583,7 @@ export const selectExportText = (state: RootState) =>
   state.packaging.exportText;
 export const selectPackagingError = (state: RootState) =>
   state.packaging.error;
+export const selectItemFeedback = (state: RootState) => state.packaging.itemFeedback;
 export const selectHasContent = (state: RootState) =>
   state.packaging.titles.titles.length > 0 ||
   !!state.packaging.description.content ||

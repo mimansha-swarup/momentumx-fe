@@ -128,26 +128,26 @@ The backend automatically handles many state transitions. The frontend must NOT 
 
 ## Phase 6 — Hooks Step
 
-- [ ] **6a** Build Hooks step page — 5 hook cards, selection UI
-- [ ] **6b** If hooks not generated yet, show "Generate hooks" button → `generateHooks({ videoProjectId, script })`
-- [ ] **6c** Wire `selectHook` — backend auto-completes the step. Re-fetch project after. Navigate to packaging step
-- [ ] **6d** Wire hooks regenerate, per-hook feedback (indexed by string "0"-"4"), export
-- [ ] **6e** Build stale banner with "Regenerate" / "Keep as-is" actions
-- [ ] **6f** Cache hooks batch in Redux — no GET endpoint exists. On revisit, only `hooksId` + `selectedHookIndex` are available from project
-- [ ] **6g** On page load, hydrate `selectedHookIndex` from `currentProject`
-- [ ] **6h** After `regenerateHooks`, re-fetch project — backend clears `selectedHookIndex` and triggers packaging stale
+- [x] **6a** Build Hooks step page — 5 hook cards, selection UI
+- [x] **6b** If hooks not generated yet, show "Generate hooks" button → `generateHooks({ videoProjectId, script })`
+- [x] **6c** Wire `selectHook` — backend auto-completes the step. Re-fetch project after. Navigate to packaging step
+- [x] **6d** Wire hooks regenerate, per-hook feedback (indexed by string "0"-"4"), export
+- [x] **6e** Build stale banner with "Regenerate" / "Keep as-is" actions
+- [x] **6f** Cache hooks batch in Redux — no GET endpoint exists. On revisit, only `hooksId` + `selectedHookIndex` are available from project
+- [x] **6g** On page load, hydrate `selectedHookIndex` from `currentProject`
+- [x] **6h** After `regenerateHooks`, re-fetch project — backend clears `selectedHookIndex` and triggers packaging stale
 
 ## Phase 7 — Packaging Step (Pipeline-Integrated)
 
-- [ ] **7a** Build pipeline-integrated Packaging page — pre-load script, load existing packaging via `getPackaging(packagingId)` if available
-- [ ] **7b** `savePackaging` with `videoProjectId` — backend auto-links + auto-completes. Re-fetch project after save
-- [ ] **7c** Remove `HooksParagraphCard` from this view
-- [ ] **7d** Wire per-item regeneration (`regenerateItem`) — requires `packagingId` from prior save. Backend auto-updates `itemStatuses` and auto-clears `isStale`
+- [x] **7a** Build pipeline-integrated Packaging page — pre-load script, load existing packaging via `getPackaging(packagingId)` if available
+- [x] **7b** `savePackaging` with `videoProjectId` — backend auto-links + auto-completes. Re-fetch project after save
+- [x] **7c** Remove `HooksParagraphCard` from this view
+- [x] **7d** Wire per-item regeneration (`regenerateItem`) — requires `packagingId` from prior save. Backend auto-updates `itemStatuses` and auto-clears `isStale`
 - [ ] **7e** Wire per-item feedback buttons
-- [ ] **7f** Wire packaging export
-- [ ] **7g** Build per-item stale indicators from `itemStatuses`, document-level stale from `isStale`/`staleReason`
-- [ ] **7h** Pass `selectedHook` text to generation endpoints (`generateTitle`, `generateDescription`, `generateThumbnail`, `regenerateItem`)
-- [ ] **7i** Build completion celebration when `overallStatus === "completed"` (all 4 steps done)
+- [x] **7f** Wire packaging export
+- [x] **7g** Build per-item stale indicators from `itemStatuses`, document-level stale from `isStale`/`staleReason`
+- [x] **7h** Pass `selectedHook` text to generation endpoints (`generateTitle`, `generateDescription`, `generateThumbnail`, `regenerateItem`)
+- [x] **7i** Build completion celebration when `overallStatus === "completed"` (all 4 steps done)
 
 ## Phase 8 — Research Intel Panel (non-blocking)
 

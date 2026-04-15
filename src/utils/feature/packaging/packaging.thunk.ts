@@ -149,15 +149,40 @@ export const generateAllPackaging = createAsyncThunk(
   }
 );
 
+export const generateAllPackagingForProject = createAsyncThunk(
+  "packaging/generateAllForProject",
+  async (
+    { script, selectedHook }: { script: string; selectedHook?: string },
+    thunkAPI
+  ) => {
+    try {
+      const result = await packagingService.generateTitleDependentContent(
+        script,
+        60,
+        selectedHook
+      );
+      return {
+        title: result.title,
+        description: result.description,
+        thumbnail: result.thumbnail,
+        shorts: result.shorts,
+      };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
 export const savePackaging = createAsyncThunk(
   "packaging/save",
-  async (_, thunkAPI) => {
+  async (videoProjectId: string | undefined, thunkAPI) => {
     try {
       const state = thunkAPI.getState() as RootState;
       const { script, titles, description, thumbnails, hooks, shortsScript } =
         state.packaging;
 
       const response = await packagingService.savePackaging({
+        ...(videoProjectId !== undefined && { videoProjectId }),
         script,
         titles: titles.titles,
         selectedTitleIndex: titles.selectedIndex,
