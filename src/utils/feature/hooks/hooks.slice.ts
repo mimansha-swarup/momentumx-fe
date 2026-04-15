@@ -1,7 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { AxiosError } from "axios";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/utils/store";
-import { IHooksState } from "@/types/feature/hooks";
+import { IHooksBatch, IHooksState } from "@/types/feature/hooks";
 import {
   generateHooks,
   selectHook,
@@ -26,6 +25,12 @@ const hooksSlice = createSlice({
   initialState,
   reducers: {
     clearHooks: () => initialState,
+    clearError: (state) => {
+      state.error = null;
+    },
+    hydrateSelectedIndex: (state, action: PayloadAction<number | null>) => {
+      state.selectedHookIndex = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -41,7 +46,7 @@ const hooksSlice = createSlice({
       })
       .addCase(generateHooks.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = (action.payload as AxiosError)?.message ?? "Unknown error";
+        state.error = (action.payload as string) ?? "Unknown error";
       })
 
       // Select Hook
@@ -56,7 +61,7 @@ const hooksSlice = createSlice({
       })
       .addCase(selectHook.rejected, (state, action) => {
         state.isSelecting = false;
-        state.error = (action.payload as AxiosError)?.message ?? "Unknown error";
+        state.error = (action.payload as string) ?? "Unknown error";
       })
 
       // Regenerate Hooks
@@ -66,15 +71,20 @@ const hooksSlice = createSlice({
       })
       .addCase(regenerateHooks.fulfilled, (state, action) => {
         state.isRegenerating = false;
-        if (state.batch && action.payload) {
-          state.batch.hooks = action.payload.hooks ?? state.batch.hooks;
-          state.batch.hookFeedback = {};
+        if (action.payload) {
+          if (state.batch) {
+            state.batch.hooks = action.payload.hooks ?? state.batch.hooks;
+            state.batch.hookFeedback = {};
+          } else if (action.payload.hooks) {
+            // Cache-miss revisit: populate batch from regenerate response
+            state.batch = action.payload as IHooksBatch;
+          }
           state.selectedHookIndex = null;
         }
       })
       .addCase(regenerateHooks.rejected, (state, action) => {
         state.isRegenerating = false;
-        state.error = (action.payload as AxiosError)?.message ?? "Unknown error";
+        state.error = (action.payload as string) ?? "Unknown error";
       })
 
       // Submit Feedback
@@ -89,7 +99,7 @@ const hooksSlice = createSlice({
       })
       .addCase(submitHookFeedback.rejected, (state, action) => {
         state.isSubmittingFeedback = false;
-        state.error = (action.payload as AxiosError)?.message ?? "Unknown error";
+        state.error = (action.payload as string) ?? "Unknown error";
       })
 
       // Export Hooks
@@ -101,12 +111,12 @@ const hooksSlice = createSlice({
       })
       .addCase(exportHooks.rejected, (state, action) => {
         state.isExporting = false;
-        state.error = (action.payload as AxiosError)?.message ?? "Unknown error";
+        state.error = (action.payload as string) ?? "Unknown error";
       });
   },
 });
 
-export const { clearHooks } = hooksSlice.actions;
+export const { clearHooks, clearError, hydrateSelectedIndex } = hooksSlice.actions;
 
 // Selectors
 export const selectHooksBatch = (state: RootState) => state.hooks.batch;
@@ -119,5 +129,6 @@ export const selectHooksError = (state: RootState) => state.hooks.error;
 export const selectIsExporting = (state: RootState) => state.hooks.isExporting;
 export const selectIsSubmittingFeedback = (state: RootState) =>
   state.hooks.isSubmittingFeedback;
+export const selectIsSelecting = (state: RootState) => state.hooks.isSelecting;
 
 export default hooksSlice.reducer;
