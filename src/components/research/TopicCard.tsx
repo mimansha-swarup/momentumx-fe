@@ -40,13 +40,13 @@ export const TopicCard: React.FC<TopicCardProps> = ({
       <div className="mt-3 flex flex-row flex-wrap gap-2">
         {topic.isScriptGenerated && (
           <Badge variant="secondary" className="text-emerald-400">
-            <FileText size={12} />
+            <FileText className="h-3 w-3" />
             Script done
           </Badge>
         )}
         {hasProject && (
           <Badge variant="secondary" className="text-blue-400">
-            <Link2 size={12} />
+            <Link2 className="h-3 w-3" />
             In project
           </Badge>
         )}
@@ -73,9 +73,9 @@ export const TopicCard: React.FC<TopicCardProps> = ({
             )}
           >
             {isRegenerating ? (
-              <Loader2 size={16} className="size-4 animate-spin" />
+              <Loader2 className="h-4 w-4 motion-safe:animate-spin" />
             ) : (
-              <RotateCcw size={16} className="size-4" />
+              <RotateCcw className="h-4 w-4" />
             )}
           </button>
         </div>
@@ -88,7 +88,7 @@ export const TopicCard: React.FC<TopicCardProps> = ({
         >
           {isCreating ? (
             <>
-              <Loader2 className="animate-spin" />
+              <Loader2 className="h-4 w-4 motion-safe:animate-spin" />
               Creating...
             </>
           ) : hasProject ? (

@@ -17,7 +17,7 @@ const Greetings = () => {
 
       <Button
         size={"lg"}
-        className="rounded-full py-3 !px-6 ml-auto btn-primary-glow"
+        className="rounded-full py-3 px-6 ml-auto btn-primary-glow"
         onClick={() => navigate("/app/research")}
       >
         <Plus className="size-5" /> Start New Video

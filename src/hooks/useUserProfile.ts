@@ -3,6 +3,7 @@
 import {
   INITIAL_ONBOARDING_STATE,
   ONBOARDING_FORM,
+  ONBOARDING_FORM_VERSION,
 } from "@/constants/onboarding";
 import {
   IOnboardingPayload,
@@ -22,22 +23,31 @@ export const useUserProfile = (
 ) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState<IOnboardingPayload>(() => {
-    if (!saveFormData) return preFilledState || INITIAL_ONBOARDING_STATE;
+    if (!saveFormData)
+      return (
+        (preFilledState as unknown as IOnboardingPayload) ||
+        INITIAL_ONBOARDING_STATE
+      );
     try {
       const saved = localStorage.getItem(ONBOARDING_FORM);
-      return saved
-        ? (JSON.parse(saved) satisfies DeepNest)
-        : INITIAL_ONBOARDING_STATE;
+      const version = localStorage.getItem(ONBOARDING_FORM + "_version");
+      if (saved && version === ONBOARDING_FORM_VERSION) {
+        return JSON.parse(saved) as IOnboardingPayload;
+      }
+      return INITIAL_ONBOARDING_STATE;
     } catch {
       return INITIAL_ONBOARDING_STATE;
     }
   });
 
   useEffect(() => {
-    if (saveFormData) {
+    if (!saveFormData) return;
+    const timer = setTimeout(() => {
       localStorage.setItem(ONBOARDING_FORM, JSON.stringify(formData));
-    }
-  }, [formData]);
+      localStorage.setItem(ONBOARDING_FORM + "_version", ONBOARDING_FORM_VERSION);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [formData, saveFormData]);
 
   // ===========================
   //   UPDATE FIELD SAFE TYPING
@@ -51,7 +61,7 @@ export const useUserProfile = (
         .split(".")
         .map((part) => (isNaN(Number(part)) ? part : Number(part)));
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- dynamic path traversal requires runtime flexibility
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- dynamic nested path traversal requires runtime key indexing that cannot be statically typed
       let current: Record<string | number, any> = newState as Record<string | number, any>;
 
       for (let i = 0; i < parts.length - 1; i++) {

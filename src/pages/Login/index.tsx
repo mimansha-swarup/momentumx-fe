@@ -1,10 +1,11 @@
 import LoginForm from "@/components/login/loginForm";
 import { Separator } from "@/components/ui/separator";
-import { useAuthCredential } from "@/hooks/useAuth";
+import { useAppSelector } from "@/hooks/useRedux";
+import { currentUser } from "@/utils/feature/user/user.slice";
 import { Navigate, useLocation } from "react-router-dom";
 
 const Login = () => {
-  const { user } = useAuthCredential();
+  const user = useAppSelector(currentUser);
   const { state } = useLocation();
 
   if (user)

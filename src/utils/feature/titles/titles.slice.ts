@@ -227,16 +227,16 @@ export const {
   markScriptGenerated,
 } = titlesSlice.actions;
 
-export const rootTitle = (state: RootState) => state.titles;
-export const getTitlesData = (state: RootState) => state.titles.data;
-export const titlesLoading = (state: RootState) => state.titles.isLoading;
-export const titlesDone = (state: RootState) => state.titles.isDone;
-export const titlesIsEditing = (state: RootState) => state.titles.isEditing;
-export const titlesIsRegenerating = (state: RootState) => state.titles.isRegenerating;
-export const titlesIsExporting = (state: RootState) => state.titles.isExporting;
-export const titlesIsSubmittingFeedback = (state: RootState) => state.titles.isSubmittingFeedback;
-export const titlesExportText = (state: RootState) => state.titles.exportText;
-export const titlesError = (state: RootState) => state.titles.error;
+export const selectTitlesRoot = (state: RootState) => state.titles;
+export const selectTitlesData = (state: RootState) => state.titles.data;
+export const selectTitlesLoading = (state: RootState) => state.titles.isLoading;
+export const selectTitlesDone = (state: RootState) => state.titles.isDone;
+export const selectTitlesIsEditing = (state: RootState) => state.titles.isEditing;
+export const selectTitlesIsRegenerating = (state: RootState) => state.titles.isRegenerating;
+export const selectTitlesIsExporting = (state: RootState) => state.titles.isExporting;
+export const selectTitlesIsSubmittingFeedback = (state: RootState) => state.titles.isSubmittingFeedback;
+export const selectTitlesExportText = (state: RootState) => state.titles.exportText;
+export const selectTitlesError = (state: RootState) => state.titles.error;
 
 export const selectActiveTopics = (state: RootState): IGeneratedTopic[] =>
   state.titles.data?.lists.filter((t) => !t.archived) ?? [];

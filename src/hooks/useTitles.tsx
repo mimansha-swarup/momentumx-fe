@@ -1,4 +1,4 @@
-import { resetTitle, rootTitle } from "@/utils/feature/titles/titles.slice";
+import { resetTitle, selectTitlesRoot } from "@/utils/feature/titles/titles.slice";
 import { retrieveTitles } from "@/utils/feature/titles/titles.thunk";
 import { useCallback, useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "./useRedux";
@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "./useRedux";
 const useTitles = () => {
   
   const dispatch = useAppDispatch();
-  const { data, params:{searchText, filter:filterBy} } = useAppSelector(rootTitle);
+  const { data, params:{searchText, filter:filterBy} } = useAppSelector(selectTitlesRoot);
   const { meta, lists } = data || {};
 
   const isFirstRun = useRef(true);
@@ -50,7 +50,7 @@ const useTitles = () => {
     }
 
     fetchTitle({ isFresh: true });
-  }, [filterBy, searchText]);
+  }, [filterBy, searchText, fetchTitle, lists?.length]);
 
   return [fetchTitle];
 };

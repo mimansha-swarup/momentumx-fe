@@ -12,7 +12,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { urlMapping } from "@/constants/navigate";
 import { DrawerMenu } from "./menu";
-import { useAuthCredential } from "@/hooks/useAuth";
+import { useAppSelector } from "@/hooks/useRedux";
+import { currentUser, userLoading } from "@/utils/feature/user/user.slice";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSidebar } from "@/components/ui/sidebar";
@@ -20,7 +21,8 @@ import { extractYouTubeHandle } from "@/utils/onboarding";
 
 type RouteObjType = (typeof urlMapping)[number];
 const SideDrawer = () => {
-  const { user, loading } = useAuthCredential();
+  const user = useAppSelector(currentUser);
+  const loading = useAppSelector(userLoading);
   const { toggleSidebar } = useSidebar();
   const navigate = useNavigate();
   const { pathname } = useLocation();

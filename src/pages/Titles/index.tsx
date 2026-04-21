@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import useTitles from "@/hooks/useTitles";
 import {
   resetTitle,
-  rootTitle,
+  selectTitlesRoot,
   updateFilter,
 } from "@/utils/feature/titles/titles.slice";
 import { generateTitles } from "@/utils/feature/titles/titles.thunk";
@@ -27,7 +27,7 @@ const TitlePage = () => {
   const {
     params: { searchText, filter: filterBy },
     isDone: isTitleFetched,
-  } = useAppSelector(rootTitle);
+  } = useAppSelector(selectTitlesRoot);
   const dispatch = useAppDispatch();
   const [fetchTitles] = useTitles();
 

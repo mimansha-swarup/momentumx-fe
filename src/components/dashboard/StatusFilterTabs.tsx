@@ -18,11 +18,12 @@ export const StatusFilterTabs: React.FC<StatusFilterTabsProps> = ({
   onChange,
 }) => {
   return (
-    <nav aria-label="Filter projects by status" className="flex gap-2 flex-wrap">
+    <div role="radiogroup" aria-label="Filter projects by status" className="flex gap-2 flex-wrap">
       {FILTERS.map(({ value, label }) => (
         <button
           key={value}
-          aria-pressed={activeFilter === value}
+          role="radio"
+          aria-checked={activeFilter === value}
           className={cn(
             "rounded-full px-4 py-1.5 text-sm font-medium border transition-colors duration-200",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
@@ -35,6 +36,6 @@ export const StatusFilterTabs: React.FC<StatusFilterTabsProps> = ({
           {label}
         </button>
       ))}
-    </nav>
+    </div>
   );
 };

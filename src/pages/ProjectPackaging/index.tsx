@@ -112,7 +112,6 @@ const ProjectPackagingPage = () => {
     hookIndex != null ? (hooksBatch?.hooks?.[hookIndex] ?? "") : "";
 
   // Effect 1 — Load script if not cached
-  // scriptId = topicId — backend uses topic ID as the script's deterministic ID
   useEffect(() => {
     const scriptId = project?.topicId;
     if (scriptId && !currentScript) {

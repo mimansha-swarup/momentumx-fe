@@ -21,7 +21,7 @@ import {
   retrieveScripts,
 } from "@/utils/feature/scripts/script.thunk";
 import {
-  getTitlesData,
+  selectTitlesData,
   markScriptGenerated,
 } from "@/utils/feature/titles/titles.slice";
 import { htmlToMarkdown } from "@/utils/markdown";
@@ -41,7 +41,7 @@ const ScriptDetails = () => {
   const { hash } = useLocation();
   const navigate = useNavigate();
 
-  const { lists: titleLists = [] } = useAppSelector(getTitlesData) || {};
+  const { lists: titleLists = [] } = useAppSelector(selectTitlesData) || {};
   const {
     isDone,
     data: scriptRecord = [],

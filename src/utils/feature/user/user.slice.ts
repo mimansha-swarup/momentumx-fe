@@ -1,11 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
 import { getUser, updateProfile } from "./user.thunk";
-import { IUserInitialState } from "@/types/feature/user";
+import { IUserInitialState, IUserProfile } from "@/types/feature/user";
 
 const initialState: IUserInitialState = {
   data: null,
-  isLoading: false,
+  isLoading: true,
   isUpdating: false,
   error: null,
 };
@@ -15,11 +15,9 @@ const userSlice = createSlice({
   initialState,
 
   reducers: {
-    setUser: (state, action) => {
+    setUser: (state, action: PayloadAction<IUserProfile | null>) => {
       state.data = action.payload;
-    },
-    setLoading: (state, action) => {
-      state.isLoading = action.payload;
+      state.isLoading = false;
     },
   },
   extraReducers: (builder) => {
@@ -28,7 +26,7 @@ const userSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(getUser.fulfilled, (state, action) => {
-        state.data = action.payload;
+        state.data = action.payload ?? null;
         state.isLoading = false;
       })
       .addCase(getUser.rejected, (state, action) => {
@@ -52,7 +50,7 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUser, setLoading } = userSlice.actions;
+export const { setUser } = userSlice.actions;
 
 export const currentUser = (state: RootState) => state.user.data;
 export const userLoading = (state: RootState) => state.user.isLoading;

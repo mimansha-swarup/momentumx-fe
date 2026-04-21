@@ -37,12 +37,18 @@ class ScriptService {
       getApiDomain(true) + url + `?token=${token}`
     );
 
+    let consecutiveErrors = 0;
     evtSource.onmessage = (e) => {
       try {
         const script = JSON.parse(e.data);
+        consecutiveErrors = 0;
         setter(script);
       } catch {
-        // Skip malformed SSE chunks
+        consecutiveErrors++;
+        if (consecutiveErrors >= 10) {
+          onError();
+          evtSource.close();
+        }
       }
     };
 

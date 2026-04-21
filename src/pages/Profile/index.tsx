@@ -2,10 +2,11 @@ import UserDetails from "@/components/profile/userDetails";
 import UserSettings from "@/components/profile/userSettings";
 import GlassCard from "@/components/shared/glassCard";
 import Header from "@/components/shared/header";
-import { useAuthCredential } from "@/hooks/useAuth";
+import { useAppSelector } from "@/hooks/useRedux";
+import { currentUser } from "@/utils/feature/user/user.slice";
 
 const Profile = () => {
-  const { user } = useAuthCredential();
+  const user = useAppSelector(currentUser);
   return (
     <div className="min-h-screen md:w-[90%] mx-auto md:pt-4 pb-20">
       <Header title="Profile" />

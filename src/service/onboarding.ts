@@ -27,7 +27,7 @@ class OnboardingService {
   private transformPayload(payload: IOnboardingPayload): IOnboardingApiPayload {
     const niche =
       payload.business?.type === "other"
-        ? payload.business?.type_other
+        ? payload.business?.type_other || ""
         : payload.business?.type || "";
 
     const website = payload.cta?.primary_url || undefined;

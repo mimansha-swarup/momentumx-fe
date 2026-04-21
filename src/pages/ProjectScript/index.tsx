@@ -62,7 +62,6 @@ const ProjectScriptPage = () => {
 
   const [isEditMode, setIsEditMode] = useState(false);
 
-  // scriptId = topicId — backend uses topic ID as the script's deterministic ID
   const scriptId = project?.topicId ?? "";
   const hasScript = !!project?.scriptId;
   const projectId = project?.id ?? "";
@@ -311,7 +310,9 @@ const ProjectScriptPage = () => {
         />
       ) : (
         <GlassCard>
-          <MarkdownPreview content={currentScript.script} />
+          <div aria-busy={isRegenerating} aria-live="polite">
+            <MarkdownPreview content={currentScript.script} />
+          </div>
         </GlassCard>
       )}
     </div>

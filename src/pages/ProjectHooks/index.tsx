@@ -78,7 +78,6 @@ const ProjectHooksPage = () => {
 
   // Effect 2 — Load script if not already loaded (needed for generate/regenerate)
   useEffect(() => {
-    // scriptId = topicId — backend uses topic ID as the script's deterministic ID
     const scriptId = project?.topicId;
     if (scriptId && !currentScript) {
       dispatch(getScriptById(scriptId));

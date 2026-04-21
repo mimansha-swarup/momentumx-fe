@@ -3,7 +3,8 @@
 import React, { useMemo, useRef, useState } from "react";
 import OnboardingCard from "@/components/onboarding/card";
 
-import { useAuthCredential } from "@/hooks/useAuth";
+import { useAppSelector } from "@/hooks/useRedux";
+import { currentUser } from "@/utils/feature/user/user.slice";
 import { Navigate } from "react-router-dom";
 import useUserProfile from "@/hooks/useUserProfile";
 
@@ -28,7 +29,7 @@ onboardingSteps.push({
 });
 
 const Onboarding = () => {
-  const { user } = useAuthCredential();
+  const user = useAppSelector(currentUser);
   const [currentSectionIndex, setCurrentSectionIndex] = useState<number>(
     getLocalStorageData(CURRENT_SECTION, 0)
   );

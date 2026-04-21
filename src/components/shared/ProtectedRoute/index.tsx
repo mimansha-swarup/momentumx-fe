@@ -1,30 +1,32 @@
-// src/routes/ProtectedLayout.jsx
 import { Outlet, Navigate, useLocation } from "react-router-dom";
-import { useAuthCredential } from "@/hooks/useAuth";
-import { isUserLoggedIn } from "../../../utils/index";
-import RootLoader from "../Loader";
+import { isUserLoggedIn } from "@/utils";
+import RootLoader from "@/components/shared/Loader";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
-import { getTitlesData } from "@/utils/feature/titles/titles.slice";
+import { currentUser, userLoading } from "@/utils/feature/user/user.slice";
+import { selectTitlesData } from "@/utils/feature/titles/titles.slice";
 import { selectScriptsData } from "@/utils/feature/scripts/script.slice";
 import { useEffect, useRef } from "react";
 import { retrieveTitles } from "@/utils/feature/titles/titles.thunk";
 import { retrieveScripts } from "@/utils/feature/scripts/script.thunk";
 import { getApiDomain } from "@/utils/network";
-import RootLayout from "../rootLayout";
+import RootLayout from "@/components/shared/rootLayout";
 import { HEALTH_CHECK_INTERVAL_MS } from "@/constants/app";
+import { HIDE_OLD_FLOW } from "@/constants/root";
 
 const ProtectedLayout = () => {
-  const { user, loading } = useAuthCredential();
+  const user = useAppSelector(currentUser);
+  const loading = useAppSelector(userLoading);
   const location = useLocation();
 
   const isLoggedIn = isUserLoggedIn();
 
-  const titles = useAppSelector(getTitlesData);
+  const titles = useAppSelector(selectTitlesData);
   const scripts = useAppSelector(selectScriptsData);
   const dispatch = useAppDispatch();
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
+    if (HIDE_OLD_FLOW) return;
     if (user && user?.isOnboardingCompleted) {
       if (!titles) {
         dispatch(retrieveTitles({ isFresh: true }));
@@ -33,7 +35,8 @@ const ProtectedLayout = () => {
         dispatch(retrieveScripts());
       }
     }
-  }, [user?.uid]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- depends on user.uid, not the full user object (avoids re-fetch on every profile field change)
+  }, [user?.uid, dispatch, titles, scripts]);
 
   useEffect(() => {
     const executeFn = () => {

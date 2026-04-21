@@ -49,6 +49,7 @@ export const ProjectList: React.FC = () => {
     }
     const params = statusFilter === "all" ? undefined : { status: statusFilter };
     dispatch(listProjects(params));
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- projects.length intentionally excluded to prevent re-fetch when project list updates
   }, [dispatch, statusFilter]);
 
   useEffect(() => {

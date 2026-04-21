@@ -24,11 +24,11 @@ import {
   selectActiveTopics,
   selectHasLinkedProjects,
   selectTopicsCursor,
-  titlesLoading,
-  titlesIsRegenerating,
-  titlesIsExporting,
-  titlesExportText,
-  titlesError,
+  selectTitlesLoading,
+  selectTitlesIsRegenerating,
+  selectTitlesIsExporting,
+  selectTitlesExportText,
+  selectTitlesError,
   clearExportText,
 } from "@/utils/feature/titles/titles.slice";
 import {
@@ -64,11 +64,11 @@ const ResearchPage = () => {
   const navigate = useNavigate();
 
   const topics = useAppSelector(selectActiveTopics);
-  const isLoading = useAppSelector(titlesLoading);
-  const isRegenerating = useAppSelector(titlesIsRegenerating);
-  const isExporting = useAppSelector(titlesIsExporting);
-  const exportText = useAppSelector(titlesExportText);
-  const error = useAppSelector(titlesError);
+  const isLoading = useAppSelector(selectTitlesLoading);
+  const isRegenerating = useAppSelector(selectTitlesIsRegenerating);
+  const isExporting = useAppSelector(selectTitlesIsExporting);
+  const exportText = useAppSelector(selectTitlesExportText);
+  const error = useAppSelector(selectTitlesError);
   const hasLinkedProjects = useAppSelector(selectHasLinkedProjects);
   const cursor = useAppSelector(selectTopicsCursor);
   const isCreatingProject = useAppSelector(selectIsCreating);
