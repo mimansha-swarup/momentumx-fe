@@ -39,36 +39,43 @@ const ScriptInput = ({
   return (
     <div className={"glass-card"}>
       {/* Animated gradient border effect */}
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-violet-500/20 via-blue-500/20 to-violet-500/20 opacity-0 transition-opacity duration-500 hover:opacity-100" />
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary/20 via-blue-500/20 to-primary/20 opacity-0 transition-opacity duration-500 hover:opacity-100" />
 
       <div className="relative z-10">
         {/* Tab Header */}
-        <div className="flex items-center gap-1 border-b border-slate-700/50 p-2">
+        <div role="tablist" aria-label="Script input method" className="flex items-center gap-1 border-b border-white/10 p-2">
           <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "paste"}
             onClick={() => setActiveTab("paste")}
             className={cn(
               "flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
               activeTab === "paste"
-                ? "bg-gradient-to-r from-violet-600/20 to-blue-600/20 text-white shadow-lg shadow-violet-500/10"
-                : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200",
+                ? "bg-gradient-to-r from-primary/20 to-blue-500/20 text-foreground shadow-lg shadow-primary/10"
+                : "text-muted-foreground hover:bg-white/5 hover:text-foreground",
             )}
           >
             <FileText className="h-4 w-4" />
             Paste Script
           </button>
           <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "youtube"}
             onClick={() => setActiveTab("youtube")}
             disabled
             className={cn(
               "flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all",
-              "text-slate-500 cursor-not-allowed opacity-60",
+              "text-muted-foreground cursor-not-allowed opacity-60",
             )}
           >
             <Youtube className="h-4 w-4" />
             YouTube Link
             <Badge
               variant="outline"
-              className="ml-1 border-slate-600 bg-slate-800/50 text-[10px] text-slate-400"
+              className="ml-1 border-white/10 bg-white/5 text-[10px] text-muted-foreground"
             >
               Coming Soon
             </Badge>
@@ -79,21 +86,25 @@ const ScriptInput = ({
         <div className="p-5">
           {activeTab === "paste" ? (
             <div className="space-y-4">
+              <label htmlFor="script-textarea" className="sr-only">
+                Paste your podcast script
+              </label>
               <div className="relative">
                 <textarea
+                  id="script-textarea"
                   value={value}
                   onChange={(e) => onChange(e.target.value)}
                   disabled={disabled || isGenerating}
                   placeholder="Paste your podcast script here... The more detailed your script, the better the generated content will be."
                   className={cn(
-                    "min-h-[200px] w-full resize-none rounded-xl border bg-slate-800/30 p-4",
-                    "text-sm leading-relaxed text-slate-200 placeholder:text-slate-500",
-                    "focus:outline-none focus:ring-2 focus:ring-violet-500/30",
+                    "min-h-[200px] w-full resize-none rounded-xl border bg-white/5 p-4",
+                    "text-sm leading-relaxed text-foreground placeholder:text-muted-foreground",
+                    "focus:outline-none focus:ring-2 focus:ring-primary/30",
                     "transition-all duration-200",
                     isGenerating ? "opacity-50" : "",
                     !isValid && value.length > 0
                       ? "border-amber-500/50"
-                      : "border-slate-700/50 focus:border-violet-500/50",
+                      : "border-white/10 focus:border-primary/50",
                   )}
                 />
 
@@ -104,13 +115,13 @@ const ScriptInput = ({
                       "text-xs font-medium tabular-nums",
                       !isValid && value.length > 0
                         ? "text-amber-400"
-                        : "text-slate-500",
+                        : "text-muted-foreground",
                     )}
                   >
                     {wordCount.toLocaleString()} words
                   </span>
-                  <span className="text-slate-600">|</span>
-                  <span className="text-xs text-slate-500 tabular-nums">
+                  <span className="text-muted-foreground">|</span>
+                  <span className="text-xs text-muted-foreground tabular-nums">
                     {charCount.toLocaleString()} chars
                   </span>
                 </div>
@@ -129,22 +140,26 @@ const ScriptInput = ({
             </div>
           ) : (
             <div className="space-y-4">
+              <label htmlFor="youtube-url" className="sr-only">
+                YouTube video URL
+              </label>
               <div className="relative">
                 <input
+                  id="youtube-url"
                   type="url"
                   value={youtubeUrl}
                   onChange={(e) => setYoutubeUrl(e.target.value)}
                   disabled
                   placeholder="https://youtube.com/watch?v=..."
                   className={cn(
-                    "w-full rounded-xl border border-slate-700/50 bg-slate-800/30 p-4",
-                    "text-sm text-slate-200 placeholder:text-slate-500",
-                    "focus:outline-none focus:ring-2 focus:ring-violet-500/30",
+                    "w-full rounded-xl border border-white/10 bg-white/5 p-4",
+                    "text-sm text-foreground placeholder:text-muted-foreground",
+                    "focus:outline-none focus:ring-2 focus:ring-primary/30",
                     "disabled:cursor-not-allowed disabled:opacity-50",
                   )}
                 />
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 YouTube link import will be available soon. For now, please copy
                 and paste your script directly.
               </p>
@@ -153,9 +168,9 @@ const ScriptInput = ({
         </div>
 
         {/* Action Footer */}
-        <div className="border-t border-slate-700/50 bg-slate-900/50 px-5 py-4">
+        <div className="border-t border-white/10 bg-white/5 px-5 py-4">
           <div className="flex items-center justify-between">
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               Generate title, description, thumbnail brief, hooks, and YT Shorts
               script
             </p>
@@ -166,7 +181,7 @@ const ScriptInput = ({
             >
               {isGenerating ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 h-4 w-4 motion-safe:animate-spin" />
                   Generating...
                 </>
               ) : (

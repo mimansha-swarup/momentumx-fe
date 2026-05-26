@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../../store";
+import { RootState } from "@/utils/store";
 import { getUser, updateProfile } from "./user.thunk";
 import { IUserInitialState, IUserProfile } from "@/types/feature/user";
 

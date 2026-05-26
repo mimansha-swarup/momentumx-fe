@@ -1,6 +1,5 @@
 import { IOnboardingPayload } from "@/types/components/onboarding";
-import { baseFetch } from "@/utils/network";
-import { handleToast } from "@/utils/toast";
+import { baseFetch, IBaseFetchResponse } from "@/utils/network";
 
 const URLS = {
   SAVE_FORM: "/v1/user/onboarding",
@@ -47,22 +46,20 @@ class OnboardingService {
     };
   }
 
-  async getUserRecord() {
+  async getUserRecord(): Promise<IBaseFetchResponse<unknown>> {
     const response = await baseFetch.get(this.urls.PROFILE);
-    return response?.data;
-  }
-
-  async saveOnboardingData(payload: IOnboardingPayload) {
-    const transformed = this.transformPayload(payload);
-    const response = await baseFetch.patch(this.urls.SAVE_FORM, transformed);
-    handleToast(response.data);
     return response.data;
   }
 
-  async updateProfile(payload: IOnboardingPayload) {
+  async saveOnboardingData(payload: IOnboardingPayload): Promise<IBaseFetchResponse<unknown>> {
+    const transformed = this.transformPayload(payload);
+    const response = await baseFetch.patch(this.urls.SAVE_FORM, transformed);
+    return response.data;
+  }
+
+  async updateProfile(payload: IOnboardingPayload): Promise<IBaseFetchResponse<unknown>> {
     const transformed = this.transformPayload(payload);
     const response = await baseFetch.patch(this.urls.PROFILE, transformed);
-    handleToast(response.data);
     return response.data;
   }
 }

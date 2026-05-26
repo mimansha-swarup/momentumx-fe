@@ -35,7 +35,7 @@ export const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({
           feedback === 'like' ? 'text-emerald-400' : 'text-muted-foreground',
         )}
       >
-        <ThumbsUp size={16} className="size-4" />
+        <ThumbsUp className="size-4" />
       </button>
       <button
         type="button"
@@ -45,10 +45,10 @@ export const FeedbackButtons: React.FC<FeedbackButtonsProps> = ({
         aria-pressed={feedback === 'dislike'}
         className={cn(
           'rounded-lg p-1.5 transition-colors duration-200 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
-          feedback === 'dislike' ? 'text-red-400' : 'text-muted-foreground',
+          feedback === 'dislike' ? 'text-destructive' : 'text-muted-foreground',
         )}
       >
-        <ThumbsDown size={16} className="size-4" />
+        <ThumbsDown className="size-4" />
       </button>
     </div>
   );

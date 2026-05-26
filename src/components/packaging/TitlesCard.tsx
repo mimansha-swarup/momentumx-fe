@@ -10,7 +10,7 @@ import {
   Type,
   Star,
 } from "lucide-react";
-import { toast } from "sonner";
+import { toastError, toastSuccess } from "@/utils/toast";
 import GradientSkeleton from "./GradientSkeleton";
 import { PACKAGING_LIMITS, type ITitle } from "@/types/feature/packaging";
 import { FeedbackButtons } from "@/components/research/FeedbackButtons";
@@ -57,10 +57,10 @@ const TitleItem = ({
     try {
       await navigator.clipboard.writeText(title);
       setCopied(true);
-      toast.success("Title copied to clipboard");
+      toastSuccess("Title copied to clipboard");
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("Failed to copy");
+      toastError("Failed to copy");
     }
   };
 
@@ -78,22 +78,24 @@ const TitleItem = ({
   };
 
   return (
-    <div
+    <button
+      type="button"
       onClick={() => !isEditing && onSelect()}
       className={cn(
-        "group relative rounded-xl p-4 cursor-pointer",
+        "group relative w-full text-left rounded-xl p-4",
         "border transition-all duration-300",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
         isSelected
-          ? "bg-violet-500/10 border-violet-500/50 shadow-lg shadow-violet-500/10"
-          : "bg-slate-800/30 border-slate-700/50 hover:bg-slate-800/50 hover:border-slate-600/50"
+          ? "bg-primary/10 border-primary/50 shadow-lg shadow-primary/10"
+          : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20"
       )}
     >
       {/* Selection indicator */}
       <div className="absolute top-3 right-3 flex items-center gap-2">
         {isSelected && (
-          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-500/20 border border-violet-500/30">
-            <Star className="h-3 w-3 text-violet-400 fill-violet-400" />
-            <span className="text-xs font-medium text-violet-400">Selected</span>
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/20 border border-primary/30">
+            <Star className="h-3 w-3 text-primary fill-primary" />
+            <span className="text-xs font-medium text-primary">Selected</span>
           </div>
         )}
         {!isLoading && title && !isEditing && (
@@ -101,7 +103,8 @@ const TitleItem = ({
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 text-slate-500 hover:text-slate-200"
+              aria-label="Edit title"
+              className="h-6 w-6 text-muted-foreground hover:text-foreground"
               onClick={handleStartEdit}
             >
               <Pencil className="h-3 w-3" />
@@ -109,7 +112,8 @@ const TitleItem = ({
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 text-slate-500 hover:text-slate-200"
+              aria-label="Copy title"
+              className="h-6 w-6 text-muted-foreground hover:text-foreground"
               onClick={handleCopy}
             >
               {copied ? (
@@ -126,7 +130,7 @@ const TitleItem = ({
       <div className="mb-2 flex items-center gap-2">
         <span className={cn(
           "text-xs font-medium uppercase tracking-wider",
-          isSelected ? "text-violet-400" : "text-slate-500"
+          isSelected ? "text-primary" : "text-muted-foreground"
         )}>
           Option {index + 1}
         </span>
@@ -142,10 +146,10 @@ const TitleItem = ({
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
             className={cn(
-              "w-full rounded-lg border bg-slate-900/50 px-3 py-2",
-              "text-base font-medium text-slate-200",
-              "focus:outline-none focus:ring-2 focus:ring-violet-500/50",
-              isOverLimit ? "border-red-500/50" : "border-slate-600/50"
+              "w-full rounded-lg border bg-white/5 px-3 py-2",
+              "text-base font-medium text-foreground",
+              "focus:outline-none focus:ring-2 focus:ring-primary/50",
+              isOverLimit ? "border-destructive/50" : "border-white/10"
             )}
             autoFocus
             onKeyDown={(e) => {
@@ -157,7 +161,7 @@ const TitleItem = ({
             <span
               className={cn(
                 "text-xs tabular-nums",
-                isOverLimit ? "text-red-400" : "text-slate-500"
+                isOverLimit ? "text-destructive" : "text-muted-foreground"
               )}
             >
               {editValue.length}/{PACKAGING_LIMITS.title}
@@ -166,7 +170,7 @@ const TitleItem = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 text-xs text-slate-400"
+                className="h-6 text-xs text-muted-foreground"
                 onClick={() => setIsEditing(false)}
               >
                 <X className="mr-1 h-3 w-3" />
@@ -174,7 +178,7 @@ const TitleItem = ({
               </Button>
               <Button
                 size="sm"
-                className="h-6 bg-violet-600 text-xs hover:bg-violet-500"
+                className="h-6 bg-primary text-xs hover:bg-primary/90"
                 onClick={handleSave}
               >
                 <Check className="mr-1 h-3 w-3" />
@@ -187,7 +191,7 @@ const TitleItem = ({
         <>
           <p className={cn(
             "text-base font-medium leading-relaxed pr-20",
-            isSelected ? "text-slate-100" : "text-slate-300"
+            isSelected ? "text-foreground" : "text-foreground/80"
           )}>
             {title}
           </p>
@@ -196,10 +200,10 @@ const TitleItem = ({
               className={cn(
                 "text-xs tabular-nums",
                 isOverLimit
-                  ? "text-red-400"
+                  ? "text-destructive"
                   : isNearLimit
                     ? "text-amber-400"
-                    : "text-slate-500"
+                    : "text-muted-foreground"
               )}
             >
               {charCount}/{PACKAGING_LIMITS.title}
@@ -207,9 +211,9 @@ const TitleItem = ({
           </div>
         </>
       ) : (
-        <p className="text-sm italic text-slate-500">Not generated yet</p>
+        <p className="text-sm italic text-muted-foreground">Not generated yet</p>
       )}
-    </div>
+    </button>
   );
 };
 
@@ -234,24 +238,24 @@ const TitlesCard = ({
       className={cn(
         "glass-card",
         "transition-all duration-300",
-        "hover:border-slate-600/50"
+        "hover:border-white/20"
       )}
     >
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 via-transparent to-purple-500/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
       <div className="relative z-10 p-5">
         {/* Header */}
         <div className="mb-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/20 to-purple-500/20 border border-violet-500/30">
-              <Type className="h-4 w-4 text-violet-400" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/30">
+              <Type className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold tracking-tight text-slate-100">
+              <h3 className="font-semibold tracking-tight text-foreground">
                 Titles
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 Choose from 3 AI-generated options
               </p>
             </div>
@@ -267,9 +271,10 @@ const TitlesCard = ({
             <Button
               variant="ghost"
               size="sm"
+              aria-label="Regenerate titles"
               className={cn(
-                "text-slate-400 hover:text-slate-100 hover:bg-slate-800/50",
-                isLoading && "[&_svg]:animate-spin"
+                "text-muted-foreground hover:text-foreground hover:bg-white/5",
+                isLoading && "[&_svg]:motion-safe:animate-spin"
               )}
               onClick={onRegenerate}
               disabled={isLoading}
@@ -281,7 +286,7 @@ const TitlesCard = ({
         </div>
 
         {error && (
-          <div className="mb-4 rounded-lg bg-red-500/10 border border-red-500/30 p-3 text-sm text-red-400">
+          <div className="mb-4 rounded-lg bg-destructive/10 border border-destructive/30 p-3 text-sm text-destructive">
             {error}
           </div>
         )}

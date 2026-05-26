@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/utils/store";
-import { IHooksBatch, IHooksState } from "@/types/feature/hooks";
+import { IHooksState } from "@/types/feature/hooks";
 import {
   generateHooks,
   selectHook,
@@ -52,6 +52,7 @@ const hooksSlice = createSlice({
       // Select Hook
       .addCase(selectHook.pending, (state) => {
         state.isSelecting = true;
+        state.error = null;
       })
       .addCase(selectHook.fulfilled, (state, action) => {
         state.isSelecting = false;
@@ -71,14 +72,9 @@ const hooksSlice = createSlice({
       })
       .addCase(regenerateHooks.fulfilled, (state, action) => {
         state.isRegenerating = false;
-        if (action.payload) {
-          if (state.batch) {
-            state.batch.hooks = action.payload.hooks ?? state.batch.hooks;
-            state.batch.hookFeedback = {};
-          } else if (action.payload.hooks) {
-            // Cache-miss revisit: populate batch from regenerate response
-            state.batch = action.payload as IHooksBatch;
-          }
+        if (action.payload && state.batch) {
+          state.batch.hooks = action.payload.hooks ?? state.batch.hooks;
+          state.batch.hookFeedback = {};
           state.selectedHookIndex = null;
         }
       })
@@ -90,6 +86,7 @@ const hooksSlice = createSlice({
       // Submit Feedback
       .addCase(submitHookFeedback.pending, (state) => {
         state.isSubmittingFeedback = true;
+        state.error = null;
       })
       .addCase(submitHookFeedback.fulfilled, (state, action) => {
         state.isSubmittingFeedback = false;
@@ -105,6 +102,7 @@ const hooksSlice = createSlice({
       // Export Hooks
       .addCase(exportHooks.pending, (state) => {
         state.isExporting = true;
+        state.error = null;
       })
       .addCase(exportHooks.fulfilled, (state) => {
         state.isExporting = false;

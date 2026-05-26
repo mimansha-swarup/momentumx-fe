@@ -71,7 +71,7 @@ const TitleCard: FC<IGeneratedTopic> = ({
       ) : (
         <div>
           <h3 className="font-semibold text-base">{title}</h3>
-          <p className="text-gray-600 text-xs">
+          <p className="text-muted-foreground text-xs">
             {updatedAt
               ? `last updated on: ${formatDateToWords(updatedAt)}`
               : `created on: ${formatDateToWords(createdAt)}`}

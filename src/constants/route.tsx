@@ -100,7 +100,7 @@ export const localRouter = createBrowserRouter([
               },
               {
                 path: "*",
-                element: <Navigate to="" replace />,
+                element: <Navigate to="." replace />,
               },
             ],
           },
@@ -164,4 +164,5 @@ export const localRouter = createBrowserRouter([
           },
         ],
   },
+  { path: "*", element: <Navigate to="/" replace /> },
 ]);

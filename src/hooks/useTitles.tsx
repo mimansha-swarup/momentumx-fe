@@ -11,9 +11,7 @@ const useTitles = () => {
 
   const isFirstRun = useRef(true);
 
-  useEffect(()=>{
-  },[filterBy])
-  const fetchTitle =useCallback( async ({ isFresh = false }) => {
+  const fetchTitle = useCallback(async ({ isFresh = false }) => {
     let params: {
       searchText?: string;
       isScriptGenerated?: string;
@@ -43,14 +41,16 @@ const useTitles = () => {
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
-      if (lists?.length === 0) {
+      if (!lists || lists.length === 0) {
         fetchTitle({ isFresh: true });
       }
       return;
     }
 
     fetchTitle({ isFresh: true });
-  }, [filterBy, searchText, fetchTitle, lists?.length]);
+    // Intentional: lists.length excluded — only re-fetch on filter/search change, not after fetch completes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterBy, searchText, fetchTitle]);
 
   return [fetchTitle];
 };

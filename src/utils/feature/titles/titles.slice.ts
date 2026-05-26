@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AxiosError } from "axios";
 import { RootState } from "@/utils/store";
 import {
   editTitles,
@@ -34,7 +33,6 @@ const titlesSlice = createSlice({
   reducers: {
     resetState: (state) => {
       state.isDone = false;
-      state.isLoading = true;
     },
     addTitle: (state, action: PayloadAction<{ meta?: ITitleData['meta']; list?: IGeneratedTopic[] }>) => {
       state.data = {
@@ -104,7 +102,7 @@ const titlesSlice = createSlice({
       })
       .addCase(retrieveTitles.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = (action.payload as AxiosError)?.message ?? "Unknown error";
+        state.error = (action.payload as string) ?? "Unknown error";
       })
       .addCase(generateTitles.pending, (state) => {
         state.isLoading = true;
@@ -112,7 +110,6 @@ const titlesSlice = createSlice({
       })
       .addCase(generateTitles.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isDone = false;
         state.data = {
           ...state.data,
           meta: {
@@ -128,7 +125,7 @@ const titlesSlice = createSlice({
       .addCase(generateTitles.rejected, (state, action) => {
         state.isLoading = false;
         state.isDone = false;
-        state.error = (action.payload as AxiosError)?.message ?? "Unknown error";
+        state.error = (action.payload as string) ?? "Unknown error";
       })
 
       .addCase(editTitles.pending, (state) => {
@@ -147,7 +144,7 @@ const titlesSlice = createSlice({
       })
       .addCase(editTitles.rejected, (state, action) => {
         state.isEditing = false;
-        state.error = (action.payload as AxiosError)?.message ?? "Unknown error";
+        state.error = (action.payload as string) ?? "Unknown error";
       })
 
       .addCase(regenerateAllTopics.pending, (state) => {
@@ -162,7 +159,7 @@ const titlesSlice = createSlice({
       })
       .addCase(regenerateAllTopics.rejected, (state, action) => {
         state.isRegenerating = false;
-        state.error = (action.payload as AxiosError)?.message ?? "Unknown error";
+        state.error = (action.payload as string) ?? "Unknown error";
       })
 
       .addCase(regenerateOneTopic.pending, (state) => {
@@ -181,7 +178,7 @@ const titlesSlice = createSlice({
       })
       .addCase(regenerateOneTopic.rejected, (state, action) => {
         state.isRegenerating = false;
-        state.error = (action.payload as AxiosError)?.message ?? "Unknown error";
+        state.error = (action.payload as string) ?? "Unknown error";
       })
 
       .addCase(submitTopicFeedback.pending, (state) => {
@@ -199,7 +196,7 @@ const titlesSlice = createSlice({
       })
       .addCase(submitTopicFeedback.rejected, (state, action) => {
         state.isSubmittingFeedback = false;
-        state.error = (action.payload as AxiosError)?.message ?? "Unknown error";
+        state.error = (action.payload as string) ?? "Unknown error";
       })
 
       .addCase(exportTopics.pending, (state) => {
@@ -212,7 +209,7 @@ const titlesSlice = createSlice({
       })
       .addCase(exportTopics.rejected, (state, action) => {
         state.isExporting = false;
-        state.error = (action.payload as AxiosError)?.message ?? "Unknown error";
+        state.error = (action.payload as string) ?? "Unknown error";
       })
   },
 });

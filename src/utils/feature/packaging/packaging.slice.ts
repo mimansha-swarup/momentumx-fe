@@ -168,7 +168,7 @@ const packagingSlice = createSlice({
       })
       .addCase(generateTitle.rejected, (state, action) => {
         state.titles.isLoading = false;
-        state.titles.error = (action.payload as { message?: string })?.message ?? "Unknown error";
+        state.titles.error = (action.payload as string) ?? "Unknown error";
       })
 
       // Generate Description
@@ -182,7 +182,7 @@ const packagingSlice = createSlice({
       })
       .addCase(generateDescription.rejected, (state, action) => {
         state.description.isLoading = false;
-        state.description.error = (action.payload as { message?: string })?.message ?? "Unknown error";
+        state.description.error = (action.payload as string) ?? "Unknown error";
       })
 
       // Generate Thumbnails (3 variations as plain strings)
@@ -197,7 +197,7 @@ const packagingSlice = createSlice({
       })
       .addCase(generateThumbnail.rejected, (state, action) => {
         state.thumbnails.isLoading = false;
-        state.thumbnails.error = (action.payload as { message?: string })?.message ?? "Unknown error";
+        state.thumbnails.error = (action.payload as string) ?? "Unknown error";
       })
 
       // Generate Hooks (multiple paragraphs)
@@ -211,7 +211,7 @@ const packagingSlice = createSlice({
       })
       .addCase(generateHooks.rejected, (state, action) => {
         state.hooks.isLoading = false;
-        state.hooks.error = (action.payload as { message?: string })?.message ?? "Unknown error";
+        state.hooks.error = (action.payload as string) ?? "Unknown error";
       })
 
       // Generate Shorts
@@ -238,7 +238,7 @@ const packagingSlice = createSlice({
       .addCase(generateShorts.rejected, (state, action) => {
         if (state.shortsScript.scripts.length > 0) {
           state.shortsScript.scripts[0].isLoading = false;
-          state.shortsScript.scripts[0].error = (action.payload as { message?: string })?.message ?? "Unknown error";
+          state.shortsScript.scripts[0].error = (action.payload as string) ?? "Unknown error";
         }
       })
 
@@ -271,7 +271,7 @@ const packagingSlice = createSlice({
           state.shortsScript.scripts[state.shortsScript.scripts.length - 1];
         if (lastScript) {
           lastScript.isLoading = false;
-          lastScript.error = (action.payload as { message?: string })?.message ?? "Unknown error";
+          lastScript.error = (action.payload as string) ?? "Unknown error";
         }
       })
 
@@ -306,7 +306,7 @@ const packagingSlice = createSlice({
         );
         if (script) {
           script.isLoading = false;
-          script.error = (action.payload as { message?: string })?.message ?? "Unknown error";
+          script.error = (action.payload as string) ?? "Unknown error";
         }
       })
 
@@ -367,7 +367,7 @@ const packagingSlice = createSlice({
         if (state.shortsScript.scripts.length > 0) {
           state.shortsScript.scripts[0].isLoading = false;
         }
-        state.error = (action.payload as { message?: string })?.message ?? "Unknown error";
+        state.error = (action.payload as string) ?? "Unknown error";
       })
 
       // Generate All (Pipeline — no hooks)
@@ -413,12 +413,13 @@ const packagingSlice = createSlice({
         if (state.shortsScript.scripts.length > 0) {
           state.shortsScript.scripts[0].isLoading = false;
         }
-        state.error = (action.payload as { message?: string })?.message ?? "Unknown error";
+        state.error = (action.payload as string) ?? "Unknown error";
       })
 
       // Save Packaging
       .addCase(savePackaging.pending, (state) => {
         state.isSaving = true;
+        state.error = null;
       })
       .addCase(savePackaging.fulfilled, (state, action) => {
         state.isSaving = false;
@@ -426,7 +427,7 @@ const packagingSlice = createSlice({
       })
       .addCase(savePackaging.rejected, (state, action) => {
         state.isSaving = false;
-        state.error = (action.payload as { message?: string })?.message ?? "Unknown error";
+        state.error = (action.payload as string) ?? "Unknown error";
       })
 
       // List Packaging
@@ -440,7 +441,7 @@ const packagingSlice = createSlice({
       })
       .addCase(listPackaging.rejected, (state, action) => {
         state.isListLoading = false;
-        state.error = (action.payload as { message?: string })?.message ?? "Unknown error";
+        state.error = (action.payload as string) ?? "Unknown error";
       })
 
       // Get Packaging
@@ -454,7 +455,7 @@ const packagingSlice = createSlice({
       })
       .addCase(getPackaging.rejected, (state, action) => {
         state.isDetailLoading = false;
-        state.error = (action.payload as { message?: string })?.message ?? "Unknown error";
+        state.error = (action.payload as string) ?? "Unknown error";
       })
 
       // Regenerate Item
@@ -499,7 +500,7 @@ const packagingSlice = createSlice({
       })
       .addCase(regenerateItem.rejected, (state, action) => {
         state.isRegeneratingItem = false;
-        state.error = (action.payload as { message?: string })?.message ?? "Unknown error";
+        state.error = (action.payload as string) ?? "Unknown error";
       })
 
       // Submit Packaging Feedback
@@ -515,7 +516,7 @@ const packagingSlice = createSlice({
       })
       .addCase(submitPackagingFeedback.rejected, (state, action) => {
         state.isSubmittingFeedback = false;
-        state.error = (action.payload as { message?: string })?.message ?? "Unknown error";
+        state.error = (action.payload as string) ?? "Unknown error";
       })
 
       // Export Packaging
@@ -530,7 +531,7 @@ const packagingSlice = createSlice({
       })
       .addCase(exportPackaging.rejected, (state, action) => {
         state.isExporting = false;
-        state.error = (action.payload as { message?: string })?.message ?? "Unknown error";
+        state.error = (action.payload as string) ?? "Unknown error";
       });
   },
 });

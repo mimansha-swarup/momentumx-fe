@@ -1,4 +1,4 @@
-import { IGeneratedTopic } from "../components/dashboard";
+import { IGeneratedTopic } from "@/types/components/dashboard";
 
 export interface ITitleData {
   meta: {

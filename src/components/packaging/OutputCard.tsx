@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Copy, Check, Pencil, X } from "lucide-react";
-import { toast } from "sonner";
+import { toastError, toastSuccess } from "@/utils/toast";
 import GradientSkeleton from "./GradientSkeleton";
 import { FeedbackButtons } from "@/components/research/FeedbackButtons";
 
@@ -96,10 +96,10 @@ const OutputCard = ({
     try {
       await navigator.clipboard.writeText(content);
       setCopied(true);
-      toast.success("Copied to clipboard");
+      toastSuccess("Copied to clipboard");
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("Failed to copy");
+      toastError("Failed to copy");
     }
   };
 
@@ -127,11 +127,11 @@ const OutputCard = ({
     <div
       className={cn(
         "group relative overflow-hidden rounded-2xl",
-        "bg-gradient-to-br from-slate-900/90 to-slate-950/90",
-        "border border-slate-700/50",
-        "backdrop-blur-xl",
+        "bg-white/5",
+        "border border-white/10",
+        "backdrop-blur-sm",
         "transition-all duration-300",
-        "hover:border-slate-600/50 hover:shadow-xl hover:shadow-slate-900/50",
+        "hover:border-white/20",
         className
       )}
     >
@@ -160,7 +160,7 @@ const OutputCard = ({
             >
               <span className={accent.text}>{icon}</span>
             </div>
-            <h3 className="font-semibold tracking-tight text-slate-100">
+            <h3 className="font-semibold tracking-tight text-foreground">
               {title}
             </h3>
           </div>
@@ -173,7 +173,8 @@ const OutputCard = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-slate-400 hover:text-slate-100 hover:bg-slate-800/50"
+                    aria-label="Edit content"
+                    className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-white/5"
                     onClick={() => setIsEditing(true)}
                   >
                     <Pencil className="h-4 w-4" />
@@ -182,7 +183,8 @@ const OutputCard = ({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 text-slate-400 hover:text-slate-100 hover:bg-slate-800/50"
+                  aria-label="Copy to clipboard"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-white/5"
                   onClick={handleCopy}
                 >
                   {copied ? (
@@ -203,14 +205,12 @@ const OutputCard = ({
             <Button
               variant="ghost"
               size="icon"
-              className={cn(
-                "h-8 w-8 text-slate-400 hover:text-slate-100 hover:bg-slate-800/50",
-                isLoading && "animate-spin"
-              )}
+              aria-label="Regenerate"
+              className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-white/5"
               onClick={onRegenerate}
               disabled={isLoading}
             >
-              <RefreshCw className="h-4 w-4" />
+              <RefreshCw className={cn("h-4 w-4", isLoading && "motion-safe:animate-spin")} />
             </Button>
           </div>
         </div>
@@ -220,7 +220,7 @@ const OutputCard = ({
           {isLoading ? (
             <GradientSkeleton lines={skeletonLines} />
           ) : error ? (
-            <div className="flex items-center gap-2 text-red-400">
+            <div className="flex items-center gap-2 text-destructive">
               <span className="text-sm">{error}</span>
             </div>
           ) : isEditing ? (
@@ -231,19 +231,19 @@ const OutputCard = ({
                 onChange={(e) => setEditValue(e.target.value)}
                 onKeyDown={handleKeyDown}
                 className={cn(
-                  "w-full resize-none rounded-lg border bg-slate-800/50 p-3",
-                  "text-sm text-slate-200 placeholder:text-slate-500",
+                  "w-full resize-none rounded-lg border bg-white/5 p-3",
+                  "text-sm text-foreground placeholder:text-muted-foreground",
                   "focus:outline-none focus:ring-2",
                   isOverLimit
-                    ? "border-red-500/50 focus:ring-red-500/30"
-                    : "border-slate-600/50 focus:ring-violet-500/30"
+                    ? "border-destructive/50 focus:ring-destructive/30"
+                    : "border-white/10 focus:ring-primary/30"
                 )}
                 placeholder="Enter content..."
               />
               <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-500">
-                  Press <kbd className="rounded bg-slate-700 px-1">Esc</kbd> to
-                  cancel, <kbd className="rounded bg-slate-700 px-1">Cmd+Enter</kbd>{" "}
+                <span className="text-xs text-muted-foreground">
+                  Press <kbd className="rounded bg-secondary px-1">Esc</kbd> to
+                  cancel, <kbd className="rounded bg-secondary px-1">Cmd+Enter</kbd>{" "}
                   to save
                 </span>
                 <div className="flex gap-2">
@@ -251,7 +251,7 @@ const OutputCard = ({
                     variant="ghost"
                     size="sm"
                     onClick={handleCancelEdit}
-                    className="h-7 text-slate-400 hover:text-slate-100"
+                    className="h-7 text-muted-foreground hover:text-foreground"
                   >
                     <X className="mr-1 h-3 w-3" />
                     Cancel
@@ -259,7 +259,7 @@ const OutputCard = ({
                   <Button
                     size="sm"
                     onClick={handleSaveEdit}
-                    className="h-7 bg-violet-600 hover:bg-violet-500"
+                    className="h-7 bg-primary hover:bg-primary/90"
                   >
                     <Check className="mr-1 h-3 w-3" />
                     Save
@@ -268,11 +268,11 @@ const OutputCard = ({
               </div>
             </div>
           ) : content ? (
-            <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-300">
+            <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">
               {content}
             </p>
           ) : (
-            <p className="text-sm italic text-slate-500">
+            <p className="text-sm italic text-muted-foreground">
               Click regenerate to generate content
             </p>
           )}
@@ -285,10 +285,10 @@ const OutputCard = ({
               className={cn(
                 "text-xs font-medium tabular-nums",
                 isOverLimit
-                  ? "text-red-400"
+                  ? "text-destructive"
                   : isNearLimit
                     ? "text-amber-400"
-                    : "text-slate-500"
+                    : "text-muted-foreground"
               )}
             >
               {charCount.toLocaleString()}/{characterLimit.toLocaleString()}
@@ -301,4 +301,3 @@ const OutputCard = ({
 };
 
 export default OutputCard;
-

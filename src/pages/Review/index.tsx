@@ -10,6 +10,7 @@ import { IS_NEW_USER } from "@/constants/root";
 import { SUBMIT_SUCCESS_DELAY_MS } from "@/constants/app";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { onboardingService } from "@/service/onboarding";
+import { handleToast } from "@/utils/toast";
 import { getUser } from "@/utils/feature/user/user.thunk";
 import { getValueByPath, renderUserForm } from "@/utils/onboarding";
 import { Loader } from "lucide-react";
@@ -32,7 +33,11 @@ const Review = ({ formState, updateField, errors }: ReviewProps) => {
     setIsLoading(true);
     try {
       const payload = { ...formState, isOnboardingCompleted: true };
-      await onboardingService.saveOnboardingData(payload);
+      const response = await onboardingService.saveOnboardingData(payload);
+      handleToast({
+        message: response.message ?? "",
+        warning: response.warning ?? "",
+      });
       setTimeout(async () => {
         localStorage.removeItem(IS_NEW_USER);
         await dispatch(getUser());

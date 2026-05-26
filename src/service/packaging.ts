@@ -119,11 +119,10 @@ class PackagingService {
     ]);
 
     return {
-      title: (titleResponse.data || { titles: [] }) as GenerateTitleResponse,
-      description: (description.data || {}) as GenerateDescriptionResponse,
-      thumbnail: (thumbnail.data ||
-        { descriptions: [] }) as GenerateThumbnailResponse,
-      shorts: (shorts.data || {}) as GenerateShortsResponse,
+      title: titleResponse.data ?? { titles: [] },
+      description: description.data ?? { description: "" },
+      thumbnail: thumbnail.data ?? { descriptions: [] },
+      shorts: shorts.data ?? { segments: [], totalDuration: "0:00" },
     };
   }
 

@@ -28,7 +28,9 @@ export const listProjects = createAsyncThunk(
   async (params: ListProjectsParams | undefined, thunkAPI) => {
     try {
       const response = await videoProjectService.listProjects(params);
-      handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
+      if (response.warning) {
+        handleToast({ message: "", warning: response.warning });
+      }
       return { data: response.data, params };
     } catch (error) {
       return thunkAPI.rejectWithValue(getErrorMessage(error));
@@ -41,7 +43,9 @@ export const getProject = createAsyncThunk(
   async (projectId: string, thunkAPI) => {
     try {
       const response = await videoProjectService.getProject(projectId);
-      handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
+      if (response.warning) {
+        handleToast({ message: "", warning: response.warning });
+      }
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(getErrorMessage(error));

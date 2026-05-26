@@ -2,7 +2,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Copy, Check, Image, Star } from "lucide-react";
-import { toast } from "sonner";
+import { toastError, toastSuccess } from "@/utils/toast";
 import GradientSkeleton from "./GradientSkeleton";
 import { FeedbackButtons } from "@/components/research/FeedbackButtons";
 
@@ -41,22 +41,24 @@ const ThumbnailItem = ({
     try {
       await navigator.clipboard.writeText(thumbnail);
       setCopied(true);
-      toast.success("Thumbnail brief copied to clipboard");
+      toastSuccess("Thumbnail brief copied to clipboard");
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("Failed to copy");
+      toastError("Failed to copy");
     }
   };
 
   return (
-    <div
+    <button
+      type="button"
       onClick={onSelect}
       className={cn(
-        "group relative rounded-xl p-4 cursor-pointer",
+        "group relative w-full text-left rounded-xl p-4",
         "border transition-all duration-300",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
         isSelected
           ? "bg-emerald-500/10 border-emerald-500/50 shadow-lg shadow-emerald-500/10"
-          : "bg-slate-800/30 border-slate-700/50 hover:bg-slate-800/50 hover:border-slate-600/50"
+          : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20"
       )}
     >
       {/* Selection indicator and actions */}
@@ -74,7 +76,8 @@ const ThumbnailItem = ({
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 text-slate-500 hover:text-slate-200"
+              aria-label="Copy thumbnail brief"
+              className="h-6 w-6 text-muted-foreground hover:text-foreground"
               onClick={handleCopy}
             >
               {copied ? (
@@ -92,7 +95,7 @@ const ThumbnailItem = ({
         <span
           className={cn(
             "text-xs font-medium uppercase tracking-wider",
-            isSelected ? "text-emerald-400" : "text-slate-500"
+            isSelected ? "text-emerald-400" : "text-muted-foreground"
           )}
         >
           Variation {index + 1}
@@ -106,15 +109,15 @@ const ThumbnailItem = ({
         <p
           className={cn(
             "text-sm leading-relaxed",
-            isSelected ? "text-slate-100" : "text-slate-200"
+            isSelected ? "text-foreground" : "text-foreground/80"
           )}
         >
           {thumbnail}
         </p>
       ) : (
-        <p className="text-sm italic text-slate-500">Not generated yet</p>
+        <p className="text-sm italic text-muted-foreground">Not generated yet</p>
       )}
-    </div>
+    </button>
   );
 };
 
@@ -137,7 +140,7 @@ const ThumbnailsCard = ({
       className={cn(
         "glass-card",
         "transition-all duration-300",
-        "hover:border-slate-600/50"
+        "hover:border-white/20"
       )}
     >
       {/* Gradient overlay */}
@@ -151,10 +154,10 @@ const ThumbnailsCard = ({
               <Image className="h-4 w-4 text-emerald-400" />
             </div>
             <div>
-              <h3 className="font-semibold tracking-tight text-slate-100">
+              <h3 className="font-semibold tracking-tight text-foreground">
                 Thumbnail Briefs
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 Choose from 3 creative directions
               </p>
             </div>
@@ -170,9 +173,10 @@ const ThumbnailsCard = ({
             <Button
               variant="ghost"
               size="sm"
+              aria-label="Regenerate thumbnails"
               className={cn(
-                "text-slate-400 hover:text-slate-100 hover:bg-slate-800/50",
-                isLoading && "[&_svg]:animate-spin"
+                "text-muted-foreground hover:text-foreground hover:bg-white/5",
+                isLoading && "[&_svg]:motion-safe:animate-spin"
               )}
               onClick={onRegenerate}
               disabled={isLoading}
@@ -184,7 +188,7 @@ const ThumbnailsCard = ({
         </div>
 
         {error && (
-          <div className="mb-4 rounded-lg bg-red-500/10 border border-red-500/30 p-3 text-sm text-red-400">
+          <div className="mb-4 rounded-lg bg-destructive/10 border border-destructive/30 p-3 text-sm text-destructive">
             {error}
           </div>
         )}

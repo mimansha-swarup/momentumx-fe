@@ -1,6 +1,13 @@
 import { IS_NEW_USER, LOGGED_IN } from "@/constants/root";
 
-export const getIsNewUser = (): boolean =>
-  JSON.parse(localStorage.getItem(IS_NEW_USER) || "false");
+const parseBool = (key: string): boolean => {
+  try {
+    return JSON.parse(localStorage.getItem(key) || "false");
+  } catch {
+    return false;
+  }
+};
 
-export const isUserLoggedIn= (): boolean => JSON.parse(localStorage.getItem(LOGGED_IN) || "false")
+export const getIsNewUser = (): boolean => parseBool(IS_NEW_USER);
+
+export const isUserLoggedIn = (): boolean => parseBool(LOGGED_IN);

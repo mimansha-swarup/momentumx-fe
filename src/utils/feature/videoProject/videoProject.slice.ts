@@ -112,13 +112,14 @@ const videoProjectSlice = createSlice({
       })
       .addCase(updateWorkingTitle.fulfilled, (state, action) => {
         state.isUpdating = false;
-        const { projectId, workingTitle } = action.meta.arg;
+        const { projectId } = action.meta.arg;
+        const newTitle = action.payload?.workingTitle ?? action.meta.arg.workingTitle;
         const project = state.projects.find((p) => p.id === projectId);
         if (project) {
-          project.workingTitle = workingTitle;
+          project.workingTitle = newTitle;
         }
         if (state.currentProject?.id === projectId) {
-          state.currentProject.workingTitle = workingTitle;
+          state.currentProject.workingTitle = newTitle;
         }
       })
       .addCase(updateWorkingTitle.rejected, (state, action) => {
@@ -143,7 +144,7 @@ const videoProjectSlice = createSlice({
       })
       .addCase(deleteProject.rejected, (state, action) => {
         state.isDeleting = false;
-        state.error = action.payload as string;
+        state.projectError = action.payload as string;
       })
 
       // Start Step — deep merge: only update the returned pipeline step(s)

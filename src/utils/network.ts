@@ -1,9 +1,8 @@
 import axios from "axios";
 import { getAuth } from "firebase/auth";
 export const getApiDomain = (isLongResponse = false) => {
-  return "http://localhost:3000";
-  const env = import.meta.env.VITE_ENV || "production";
   if (isLongResponse) return "https://momentumx-be.onrender.com";
+  const env = import.meta.env.VITE_ENV || "production";
   switch (env) {
     case "dev":
       return "https://momentumx-be.vercel.app";
@@ -14,7 +13,6 @@ export const getApiDomain = (isLongResponse = false) => {
 };
 
 export interface IBaseFetchResponse<T> {
-
   message?: string;
   warning?: string;
   statusCode?: number;
@@ -22,7 +20,6 @@ export interface IBaseFetchResponse<T> {
   data?: T;
 }
 
-// const user = auth.currentUser;
 const apiDomain = getApiDomain();
 
 const baseFetch = axios.create({

@@ -249,7 +249,7 @@ export const regenerateItem = createAsyncThunk<
       );
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       if (!response.data) {
-        return thunkAPI.rejectWithValue({ message: "No data returned" });
+        return thunkAPI.rejectWithValue("No data returned");
       }
       return response.data;
     } catch (error) {

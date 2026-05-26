@@ -1,12 +1,12 @@
 import { configureStore, Middleware } from "@reduxjs/toolkit";
 import { logger } from "redux-logger";
-import userReducer from "../feature/user/user.slice";
-import titlesReducer from "../feature/titles/titles.slice";
-import scriptsReducer from "../feature/scripts/script.slice";
-import packagingReducer from "../feature/packaging/packaging.slice";
-import videoProjectReducer from "../feature/videoProject/videoProject.slice";
-import hooksReducer from "../feature/hooks/hooks.slice";
-import researchReducer from "../feature/research/research.slice";
+import userReducer from "@/utils/feature/user/user.slice";
+import titlesReducer from "@/utils/feature/titles/titles.slice";
+import scriptsReducer from "@/utils/feature/scripts/script.slice";
+import packagingReducer from "@/utils/feature/packaging/packaging.slice";
+import videoProjectReducer from "@/utils/feature/videoProject/videoProject.slice";
+import hooksReducer from "@/utils/feature/hooks/hooks.slice";
+import researchReducer from "@/utils/feature/research/research.slice";
 
 const middlewares: Middleware[] = [];
 

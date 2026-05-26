@@ -1,12 +1,19 @@
+import { useEffect } from "react";
 import { DashboardCard, Greetings, ProjectList } from "@/components/dashboard";
 import { DASHBOARD_CARD } from "@/constants/dashboard";
 import Header from "@/components/shared/header";
-import { useAppSelector } from "@/hooks/useRedux";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { currentUser } from "@/utils/feature/user/user.slice";
+import { getUser } from "@/utils/feature/user/user.thunk";
 
 const Dashboard = () => {
+  const dispatch = useAppDispatch();
   const { stats = { topics: 0, scripts: 0, credits: 0 } } =
     useAppSelector(currentUser) ?? {};
+
+  useEffect(() => {
+    dispatch(getUser());
+  }, [dispatch]);
 
   return (
     <div className="md:w-[90%] mx-auto pb-20">

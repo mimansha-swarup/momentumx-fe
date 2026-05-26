@@ -32,12 +32,18 @@ export const ProjectPipelineLayout: React.FC = () => {
 
   const loadedProjectId = project?.id ?? null;
   const wasDeletingRef = useRef(false);
+  const fetchedForIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (projectId && loadedProjectId !== projectId) {
-      dispatch(clearCurrentProject());
-      dispatch(getProject(projectId));
+    if (!projectId) return;
+    if (fetchedForIdRef.current === projectId) return;
+    if (loadedProjectId === projectId) {
+      fetchedForIdRef.current = projectId;
+      return;
     }
+    fetchedForIdRef.current = projectId;
+    dispatch(clearCurrentProject());
+    dispatch(getProject(projectId));
   }, [dispatch, projectId, loadedProjectId]);
 
   // Redirect to dashboard after deletion
@@ -80,7 +86,7 @@ export const ProjectPipelineLayout: React.FC = () => {
   if (!project) return null;
 
   return (
-    <main id="main-content" className="w-full md:max-w-7xl mx-auto pb-20">
+    <div className="w-full md:max-w-7xl mx-auto pb-20">
       <ProjectHeader />
       <PipelineTracker />
       <div className="mt-6 md:mt-8">
@@ -95,6 +101,6 @@ export const ProjectPipelineLayout: React.FC = () => {
           <Loader2 className="h-8 w-8 motion-safe:animate-spin text-primary" />
         </div>
       )}
-    </main>
+    </div>
   );
 };

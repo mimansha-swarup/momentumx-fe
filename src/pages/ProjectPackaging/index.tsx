@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Package,
@@ -140,6 +140,15 @@ const ProjectPackagingPage = () => {
     }
   }, [scriptText, dispatch]);
 
+  // Mounted ref for abort on unmount
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
   // Effect 5 — Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -150,19 +159,19 @@ const ProjectPackagingPage = () => {
   const handleGenerateAll = async () => {
     if (!projectId || !scriptText || isGeneratingAll) return;
     dispatch(clearErrors());
-    if (!packagingId) {
-      const stepResult = await dispatch(
-        startStep({ projectId, stepName: "packaging" })
-      );
-      if (startStep.rejected.match(stepResult)) return;
-    }
+    const stepResult = await dispatch(
+      startStep({ projectId, stepName: "packaging" })
+    );
+    if (startStep.rejected.match(stepResult)) return;
     await dispatch(
       generateAllPackagingForProject({
         script: scriptText,
         selectedHook: selectedHookText || undefined,
       })
     );
-    dispatch(getProject(projectId));
+    if (mountedRef.current) {
+      dispatch(getProject(projectId));
+    }
   };
 
   const handleSave = async () => {
@@ -216,6 +225,7 @@ const ProjectPackagingPage = () => {
       .map(([item]) => item);
 
     for (const item of staleItems) {
+      if (!mountedRef.current) return;
       const result = await dispatch(
         regenerateItem({
           packagingId,
@@ -227,6 +237,7 @@ const ProjectPackagingPage = () => {
       );
       if (regenerateItem.rejected.match(result)) break;
     }
+    if (!mountedRef.current) return;
     dispatch(getPackaging(packagingId));
     dispatch(getProject(projectId));
   };

@@ -1,4 +1,4 @@
-import { IUserProfile } from "../feature/user";
+import { IUserProfile } from "@/types/feature/user";
 
 export interface IUserDetailsProps {
   user: IUserProfile | null;
