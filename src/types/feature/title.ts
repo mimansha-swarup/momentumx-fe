@@ -1,11 +1,11 @@
-import { IGeneratedTopic } from "../components/dashboard";
+import { IGeneratedTopic } from "@/types/components/dashboard";
 
 export interface ITitleData {
   meta: {
     nextCursor: {
       createdAt: string;
       docId: string;
-    };
+    } | null;
     hasNextPage: boolean;
   };
   lists: IGeneratedTopic[];
@@ -25,4 +25,10 @@ export interface ITitleState {
   params: ITitleParams;
   isLoading: boolean;
   isDone: boolean;
+  isEditing: boolean;
+  isRegenerating: boolean;
+  isExporting: boolean;
+  isSubmittingFeedback: boolean;
+  exportText: string | null;
+  error: string | null;
 }

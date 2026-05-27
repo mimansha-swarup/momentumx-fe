@@ -1,9 +1,19 @@
-export const getLocalStorageData = <T>(key: string, state: T) => {
+export const getLocalStorageData = <T>(key: string, fallback: T): T => {
   try {
     const saved = localStorage.getItem(key);
-    return saved ? JSON.parse(saved) : state;
+    if (!saved) return fallback;
+    const parsed: unknown = JSON.parse(saved);
+    if (typeof fallback === typeof parsed) return parsed as T;
+    if (
+      typeof fallback === "object" &&
+      typeof parsed === "object" &&
+      parsed !== null
+    ) {
+      return parsed as T;
+    }
+    return fallback;
   } catch {
-    return state;
+    return fallback;
   }
 };
 

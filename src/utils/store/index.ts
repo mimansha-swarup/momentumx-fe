@@ -1,9 +1,12 @@
 import { configureStore, Middleware } from "@reduxjs/toolkit";
 import { logger } from "redux-logger";
-import userReducer from "../feature/user/user.slice";
-import titlesReducer from "../feature/titles/titles.slice";
-import scriptsReducer from "../feature/scripts/script.slice";
-import packagingReducer from "../feature/packaging/packaging.slice";
+import userReducer from "@/utils/feature/user/user.slice";
+import titlesReducer from "@/utils/feature/titles/titles.slice";
+import scriptsReducer from "@/utils/feature/scripts/script.slice";
+import packagingReducer from "@/utils/feature/packaging/packaging.slice";
+import videoProjectReducer from "@/utils/feature/videoProject/videoProject.slice";
+import hooksReducer from "@/utils/feature/hooks/hooks.slice";
+import researchReducer from "@/utils/feature/research/research.slice";
 
 const middlewares: Middleware[] = [];
 
@@ -17,6 +20,9 @@ export const store = configureStore({
     titles: titlesReducer,
     scripts: scriptsReducer,
     packaging: packagingReducer,
+    videoProject: videoProjectReducer,
+    hooks: hooksReducer,
+    research: researchReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(middlewares),
@@ -24,5 +30,4 @@ export const store = configureStore({
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
-// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch;

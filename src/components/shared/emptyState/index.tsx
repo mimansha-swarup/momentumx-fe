@@ -19,11 +19,11 @@ const EmptyState: FC<EmptyStateProps> = ({
     <div
       className={cn(
         "group relative overflow-hidden",
-        "bg-gradient-to-br from-slate-900/90 to-slate-950/90",
-        "border border-slate-700/50",
-        "backdrop-blur-xl",
+        "bg-white/5",
+        "border border-white/10",
+        "backdrop-blur-sm",
         "transition-all duration-300",
-        "hover:border-slate-600/50 hover:shadow-xl hover:shadow-slate-900/50",
+        "hover:border-white/20",
         "flex flex-col flex-center text-center px-4 py-12 rounded-xl",
         className,
       )}

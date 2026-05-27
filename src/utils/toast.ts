@@ -22,6 +22,10 @@ export const toastInfo = (message: string) => {
   toast(message, { description: "Just so you know." });
 };
 
+export const toastWarning = (message: string) => {
+  toast.warning(message);
+};
+
 export const handleToast = ({
   message,
   warning,
@@ -33,6 +37,6 @@ export const handleToast = ({
     toastSuccess(message);
   }
   if (warning) {
-    toastError(warning);
+    toastWarning(warning);
   }
 };

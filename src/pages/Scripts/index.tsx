@@ -4,14 +4,14 @@ import GlassCard from "@/components/shared/glassCard";
 import { useAppSelector } from "@/hooks/useRedux";
 import { FileText } from "lucide-react";
 import EmptyState from "@/components/shared/emptyState";
-import { rootScripts } from "@/utils/feature/scripts/script.slice";
+import { selectScripts } from "@/utils/feature/scripts/script.slice";
 import { useNavigate } from "react-router-dom";
 import { stripMarkdown } from "@/utils/scripts";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const ScriptPage = () => {
   const navigate = useNavigate();
-  const { data: scripts, isLoading } = useAppSelector(rootScripts);
+  const { data: scripts, isLoading } = useAppSelector(selectScripts);
 
   return (
     <div className="md:w-[90%] mx-auto md:pt-4 pb-20">

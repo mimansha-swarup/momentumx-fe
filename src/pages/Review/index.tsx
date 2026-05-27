@@ -10,6 +10,7 @@ import { IS_NEW_USER } from "@/constants/root";
 import { SUBMIT_SUCCESS_DELAY_MS } from "@/constants/app";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { onboardingService } from "@/service/onboarding";
+import { handleToast } from "@/utils/toast";
 import { getUser } from "@/utils/feature/user/user.thunk";
 import { getValueByPath, renderUserForm } from "@/utils/onboarding";
 import { Loader } from "lucide-react";
@@ -23,28 +24,28 @@ interface ReviewProps {
   errors: Record<string, string>;
 }
 
-const onboardingServiceInstance = new onboardingService();
-
 const Review = ({ formState, updateField, errors }: ReviewProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const disptach = useAppDispatch();
+  const dispatch = useAppDispatch();
 
   const onSubmitClick = async () => {
     setIsLoading(true);
-    // const { purpose, ...payload } = formState;
-    // payload.targetAudience = purpose[0];
-    // payload.purpose = purpose[1];
-
-    const payload = { ...formState, isOnboardingCompleted: true };
-    const res = await onboardingServiceInstance.saveOnboardingData(payload);
-    if (res.success) {
+    try {
+      const payload = { ...formState, isOnboardingCompleted: true };
+      const response = await onboardingService.saveOnboardingData(payload);
+      handleToast({
+        message: response.message ?? "",
+        warning: response.warning ?? "",
+      });
       setTimeout(async () => {
         localStorage.removeItem(IS_NEW_USER);
-        await disptach(getUser());
+        await dispatch(getUser());
         navigate("/app/dashboard");
         setIsLoading(false);
       }, SUBMIT_SUCCESS_DELAY_MS);
+    } catch {
+      setIsLoading(false);
     }
   };
   return (
@@ -64,7 +65,6 @@ const Review = ({ formState, updateField, errors }: ReviewProps) => {
             <AccordionContent className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {section?.questions?.map((q) => {
                 const { helperText: _helperText, ...restQus } = q;
-                // @ts-ignore
                 return renderUserForm({
                   question: restQus as QuestionBase,
                   value: getValueByPath(formState, q.path),

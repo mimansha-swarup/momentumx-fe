@@ -10,7 +10,7 @@ import {
   Zap,
   Trash2,
 } from "lucide-react";
-import { toast } from "sonner";
+import { toastError, toastSuccess } from "@/utils/toast";
 import GradientSkeleton from "./GradientSkeleton";
 import { PACKAGING_LIMITS } from "@/types/feature/packaging";
 
@@ -52,10 +52,10 @@ const HookItem = ({
     try {
       await navigator.clipboard.writeText(hook);
       setCopied(true);
-      toast.success("Hook copied to clipboard");
+      toastSuccess("Hook copied to clipboard");
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("Failed to copy");
+      toastError("Failed to copy");
     }
   };
 
@@ -76,7 +76,7 @@ const HookItem = ({
     { accent: "text-amber-400", border: "border-amber-500/20 hover:border-amber-500/40", bg: "bg-amber-500/10" },
     { accent: "text-rose-400", border: "border-rose-500/20 hover:border-rose-500/40", bg: "bg-rose-500/10" },
     { accent: "text-cyan-400", border: "border-cyan-500/20 hover:border-cyan-500/40", bg: "bg-cyan-500/10" },
-    { accent: "text-violet-400", border: "border-violet-500/20 hover:border-violet-500/40", bg: "bg-violet-500/10" },
+    { accent: "text-primary", border: "border-primary/20 hover:border-primary/40", bg: "bg-primary/10" },
     { accent: "text-emerald-400", border: "border-emerald-500/20 hover:border-emerald-500/40", bg: "bg-emerald-500/10" },
   ];
   const color = colors[index % colors.length];
@@ -85,7 +85,7 @@ const HookItem = ({
     <div
       className={cn(
         "group relative rounded-xl p-4",
-        "bg-slate-800/30 border",
+        "bg-white/5 border",
         color.border,
         "transition-all duration-300"
       )}
@@ -105,7 +105,8 @@ const HookItem = ({
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 text-slate-500 hover:text-slate-200"
+              aria-label="Edit hook"
+              className="h-6 w-6 text-muted-foreground hover:text-foreground"
               onClick={handleStartEdit}
             >
               <Pencil className="h-3 w-3" />
@@ -113,7 +114,8 @@ const HookItem = ({
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 text-slate-500 hover:text-slate-200"
+              aria-label="Copy hook"
+              className="h-6 w-6 text-muted-foreground hover:text-foreground"
               onClick={handleCopy}
             >
               {copied ? (
@@ -126,7 +128,8 @@ const HookItem = ({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 text-slate-500 hover:text-red-400"
+                aria-label="Delete hook"
+                className="h-6 w-6 text-muted-foreground hover:text-destructive"
                 onClick={onDelete}
               >
                 <Trash2 className="h-3 w-3" />
@@ -145,10 +148,10 @@ const HookItem = ({
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
             className={cn(
-              "w-full resize-none rounded-lg border bg-slate-900/50 p-3",
-              "text-sm text-slate-200",
+              "w-full resize-none rounded-lg border bg-white/5 p-3",
+              "text-sm text-foreground",
               "focus:outline-none focus:ring-2 focus:ring-amber-500/50",
-              isOverLimit ? "border-red-500/50" : "border-slate-600/50"
+              isOverLimit ? "border-destructive/50" : "border-white/10"
             )}
             rows={3}
             autoFocus
@@ -161,7 +164,7 @@ const HookItem = ({
             <span
               className={cn(
                 "text-xs tabular-nums",
-                isOverLimit ? "text-red-400" : "text-slate-500"
+                isOverLimit ? "text-destructive" : "text-muted-foreground"
               )}
             >
               {editValue.length}/{PACKAGING_LIMITS.hook}
@@ -170,7 +173,7 @@ const HookItem = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 text-xs text-slate-400"
+                className="h-6 text-xs text-muted-foreground"
                 onClick={() => setIsEditing(false)}
               >
                 <X className="mr-1 h-3 w-3" />
@@ -178,7 +181,7 @@ const HookItem = ({
               </Button>
               <Button
                 size="sm"
-                className="h-6 bg-amber-600 text-xs hover:bg-amber-500"
+                className="h-6 bg-primary text-xs hover:bg-primary/90"
                 onClick={handleSave}
               >
                 <Check className="mr-1 h-3 w-3" />
@@ -189,7 +192,7 @@ const HookItem = ({
         </div>
       ) : hook ? (
         <>
-          <p className="text-sm leading-relaxed text-slate-300 whitespace-pre-wrap">
+          <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-wrap">
             {hook}
           </p>
           <div className="mt-2 flex justify-end">
@@ -197,10 +200,10 @@ const HookItem = ({
               className={cn(
                 "text-xs tabular-nums",
                 isOverLimit
-                  ? "text-red-400"
+                  ? "text-destructive"
                   : isNearLimit
                     ? "text-amber-400"
-                    : "text-slate-500"
+                    : "text-muted-foreground"
               )}
             >
               {charCount}/{PACKAGING_LIMITS.hook}
@@ -208,7 +211,7 @@ const HookItem = ({
           </div>
         </>
       ) : (
-        <p className="text-sm italic text-slate-500">Not generated yet</p>
+        <p className="text-sm italic text-muted-foreground">Not generated yet</p>
       )}
     </div>
   );
@@ -230,7 +233,7 @@ const HooksParagraphCard = ({
       className={cn(
         "glass-card",
         "transition-all duration-300",
-        "hover:border-slate-600/50"
+        "hover:border-white/20"
       )}
     >
       {/* Gradient overlay */}
@@ -244,10 +247,10 @@ const HooksParagraphCard = ({
               <Zap className="h-4 w-4 text-amber-400" />
             </div>
             <div>
-              <h3 className="font-semibold tracking-tight text-slate-100">
+              <h3 className="font-semibold tracking-tight text-foreground">
                 Hooks
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 Attention-grabbing opening statements
               </p>
             </div>
@@ -255,9 +258,10 @@ const HooksParagraphCard = ({
           <Button
             variant="ghost"
             size="sm"
+            aria-label="Regenerate all hooks"
             className={cn(
-              "text-slate-400 hover:text-slate-100 hover:bg-slate-800/50",
-              isLoading && "[&_svg]:animate-spin"
+              "text-muted-foreground hover:text-foreground hover:bg-white/5",
+              isLoading && "[&_svg]:motion-safe:animate-spin"
             )}
             onClick={onRegenerate}
             disabled={isLoading}
@@ -268,7 +272,7 @@ const HooksParagraphCard = ({
         </div>
 
         {error && (
-          <div className="mb-4 rounded-lg bg-red-500/10 border border-red-500/30 p-3 text-sm text-red-400">
+          <div className="mb-4 rounded-lg bg-destructive/10 border border-destructive/30 p-3 text-sm text-destructive">
             {error}
           </div>
         )}
@@ -290,7 +294,7 @@ const HooksParagraphCard = ({
 
         {/* Empty state */}
         {!isLoading && hooks.length === 0 && (
-          <div className="text-center py-8 text-slate-500">
+          <div className="text-center py-8 text-muted-foreground">
             <Zap className="mx-auto h-8 w-8 mb-2 opacity-50" />
             <p className="text-sm">Click regenerate to generate hooks</p>
           </div>

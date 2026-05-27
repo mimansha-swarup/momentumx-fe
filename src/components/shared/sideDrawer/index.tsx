@@ -12,7 +12,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { urlMapping } from "@/constants/navigate";
 import { DrawerMenu } from "./menu";
-import { useAuthCredential } from "@/hooks/useAuth";
+import { useAppSelector } from "@/hooks/useRedux";
+import { currentUser, userLoading } from "@/utils/feature/user/user.slice";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSidebar } from "@/components/ui/sidebar";
@@ -20,7 +21,8 @@ import { extractYouTubeHandle } from "@/utils/onboarding";
 
 type RouteObjType = (typeof urlMapping)[number];
 const SideDrawer = () => {
-  const { user, loading } = useAuthCredential();
+  const user = useAppSelector(currentUser);
+  const loading = useAppSelector(userLoading);
   const { toggleSidebar } = useSidebar();
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -38,30 +40,28 @@ const SideDrawer = () => {
       matchPath({ path: subRoute, end: false }, pathname),
     );
   };
-// @ts-ignore
-  const extractedUserName = extractYouTubeHandle(user?.userName || "");
+  const extractedUserName = extractYouTubeHandle(user?.assets?.youtube_url || "");
 
   return (
-    <Sidebar className="border-r border-sidebar-border bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+    <Sidebar className="border-r border-sidebar-border bg-background">
       <SidebarHeader className="text-heading-lg p-4 pt-8 text-center border-b border-sidebar-border mx-4">
         <span className="gradient-text">{brandName}</span>
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu className="p-3 mt-10">
           {urlMapping?.map((urlObj) => (
-            <SidebarMenuItem
-              key={urlObj.name}
-              onClick={handleNavigation(urlObj.route)}
-            >
-              <span
+            <SidebarMenuItem key={urlObj.name}>
+              <button
+                type="button"
+                onClick={handleNavigation(urlObj.route)}
                 className={cn(
-                  "nav-item",
+                  "nav-item w-full text-left",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                   isActive(urlObj) && "nav-item-active",
-                 
                 )}
               >
                 <urlObj.icon className="size-5" /> {urlObj.label}
-              </span>
+              </button>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>

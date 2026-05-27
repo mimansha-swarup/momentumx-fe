@@ -9,27 +9,23 @@ import { auth, provider } from "./config";
 import { IS_NEW_USER, LOGGED_IN } from "@/constants/root";
 import { NavigateFunction } from "react-router-dom";
 
-export const persistLogin = async () => {
-  setPersistence(auth, browserLocalPersistence)
-    .then(() => {
-      googleLogin();
-    })
-    .catch(() => {
-      // Persistence error - will fallback to session storage
-    });
-};
 export const googleLogin = async () => {
-  try {
-    const result = await signInWithPopup(auth, provider);
-    const userInfo = getAdditionalUserInfo(result);
-    const user = result.user;
-    if (userInfo?.isNewUser) {
-      localStorage.setItem(IS_NEW_USER, "true");
-    }
-    return user;
-  } catch (error) {
-    throw error;
+  const result = await signInWithPopup(auth, provider);
+  const userInfo = getAdditionalUserInfo(result);
+  const user = result.user;
+  if (userInfo?.isNewUser) {
+    localStorage.setItem(IS_NEW_USER, "true");
   }
+  return user;
+};
+
+export const persistLogin = async () => {
+  try {
+    await setPersistence(auth, browserLocalPersistence);
+  } catch {
+    // Persistence error — fall through to sign-in attempt; Firebase will fall back to session storage.
+  }
+  return googleLogin();
 };
 
 export const googleLogOut = (navigate: NavigateFunction) => {

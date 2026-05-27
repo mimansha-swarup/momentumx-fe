@@ -7,6 +7,10 @@ export interface IGeneratedTopic {
   updatedAt?: string;
   createdBy: string;
   isScriptGenerated: boolean;
+  archived: boolean;
+  batchId: string;
+  videoProjectId: string | null;
+  userFeedback: "like" | "dislike" | null;
 }
 export interface IGeneratedContentProps {
   heading: string;

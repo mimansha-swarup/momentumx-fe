@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { formatDateToWords } from "@/utils/titles";
+import { formatDateToWords } from "@/utils/date";
 import { FileText, LoaderCircle, Sparkles } from "lucide-react";
 import GlassCard from "../glassCard";
 import { useNavigate } from "react-router-dom";
@@ -48,7 +48,6 @@ const TitleCard: FC<IGeneratedTopic> = ({
         editTitles({
           titleId: id,
           title: titleText,
-          updatedAt: Date.now(),
         })
       );
     } catch {
@@ -72,7 +71,7 @@ const TitleCard: FC<IGeneratedTopic> = ({
       ) : (
         <div>
           <h3 className="font-semibold text-base">{title}</h3>
-          <p className="text-gray-600 text-xs">
+          <p className="text-muted-foreground text-xs">
             {updatedAt
               ? `last updated on: ${formatDateToWords(updatedAt)}`
               : `created on: ${formatDateToWords(createdAt)}`}

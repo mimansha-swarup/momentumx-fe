@@ -1,9 +1,10 @@
 
 
-import { KeyboardEvent, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import OnboardingCard from "@/components/onboarding/card";
 
-import { useAuthCredential } from "@/hooks/useAuth";
+import { useAppSelector } from "@/hooks/useRedux";
+import { currentUser } from "@/utils/feature/user/user.slice";
 import { Navigate } from "react-router-dom";
 import useUserProfile from "@/hooks/useUserProfile";
 
@@ -28,7 +29,7 @@ onboardingSteps.push({
 });
 
 const Onboarding = () => {
-  const { user } = useAuthCredential();
+  const user = useAppSelector(currentUser);
   const [currentSectionIndex, setCurrentSectionIndex] = useState<number>(
     getLocalStorageData(CURRENT_SECTION, 0)
   );
@@ -65,11 +66,11 @@ const Onboarding = () => {
     [activeSection.questions.length, currentQuestionIndex]
   );
 
-  if (user?.business) {
+  if (user?.isOnboardingCompleted) {
     return <Navigate to="/app/dashboard" replace />;
   }
 
-  const handleKeypress = (e: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeypress = (e: React.KeyboardEvent) => {
     // Trigger next only when pressing Ctrl + Enter
     if (e.key === "Enter" && e.ctrlKey) {
       handleNext();
@@ -166,8 +167,8 @@ const Onboarding = () => {
                   value: getValueByPath(formData, activeQuestion.path),
                   updateField,
                   formState: formData,
-                  // @ts-ignore
-                  onEnter: handleKeypress
+                  errors,
+                  onEnter: handleKeypress,
                 })}
               </OnboardingCard>
             </div>

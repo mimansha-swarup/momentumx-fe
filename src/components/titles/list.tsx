@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 // TODO: check and Fix
 import { useAppSelector } from "@/hooks/useRedux";
-import { rootTitle } from "@/utils/feature/titles/titles.slice";
+import { selectTitlesRoot } from "@/utils/feature/titles/titles.slice";
 import EmptyState from "../shared/emptyState";
 import TitleCard from "../shared/titleCard";
 import ListShimmer from "./listShimmer";
@@ -17,7 +17,7 @@ const TitleList = ({
     params: { searchText, filter },
     isLoading: isTitleFetched,
     isDone: isTitleDone,
-  } = useAppSelector(rootTitle);
+  } = useAppSelector(selectTitlesRoot);
   const { lists = [], meta } = titleData || {};
   const listRef = useRef<HTMLDivElement | null>(null);
   const loaderRef = useRef<HTMLDivElement | null>(null);

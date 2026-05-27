@@ -10,8 +10,6 @@ export interface StepperProps {
 export interface Steps {
   label: string;
   key: string;
-  // icon: any;
-  // component: any;
 }
 export interface IGlassCardProps {
   children: ReactNode;

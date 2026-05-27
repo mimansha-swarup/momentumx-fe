@@ -12,12 +12,13 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { toast } from "sonner";
+import { toastError, toastSuccess } from "@/utils/toast";
 import GradientSkeleton from "./GradientSkeleton";
 import {
   IShortsScript,
   MAX_SHORTS_SCRIPTS,
 } from "@/types/feature/packaging";
+import { FeedbackButtons } from "@/components/research/FeedbackButtons";
 
 interface ShortsScriptCardProps {
   scripts: IShortsScript[];
@@ -26,14 +27,16 @@ interface ShortsScriptCardProps {
   onAddNew: () => void;
   onRegenerate: (scriptId: string) => void;
   onDelete: (scriptId: string) => void;
+  feedback?: "like" | "dislike" | null;
+  onFeedback?: (feedback: "like" | "dislike" | null) => void;
 }
 
 const segmentStyles = {
   hook: {
-    bg: "bg-violet-500/10",
-    border: "border-violet-500/30",
-    text: "text-violet-400",
-    badge: "bg-violet-500/20 text-violet-300",
+    bg: "bg-primary/10",
+    border: "border-primary/30",
+    text: "text-primary",
+    badge: "bg-primary/20 text-primary",
   },
   point: {
     bg: "bg-blue-500/10",
@@ -71,7 +74,6 @@ const SingleScript = ({
   onDelete,
 }: SingleScriptProps) => {
 
-  console.log("21345678", script)
   const [copied, setCopied] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -82,10 +84,10 @@ const SingleScript = ({
         .join("\n\n");
       await navigator.clipboard.writeText(fullScript);
       setCopied(true);
-      toast.success("Script copied to clipboard");
+      toastSuccess("Script copied to clipboard");
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("Failed to copy");
+      toastError("Failed to copy");
     }
   };
 
@@ -98,14 +100,16 @@ const SingleScript = ({
   return (
     <div
       className={cn(
-        "rounded-xl border border-slate-700/50 bg-slate-800/30",
+        "rounded-xl border border-white/10 bg-white/5",
         "transition-all duration-300",
-        "hover:border-slate-600/50",
+        "hover:border-white/20",
       )}
     >
       {/* Script Header */}
-      <div
-        className="flex items-center justify-between p-4 cursor-pointer"
+      <button
+        type="button"
+        aria-expanded={isExpanded}
+        className="flex w-full items-center justify-between p-4 text-left"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-3">
@@ -113,11 +117,11 @@ const SingleScript = ({
             <span className="text-sm font-bold text-pink-400">{index + 1}</span>
           </div>
           <div>
-            <h4 className="text-sm font-medium text-slate-200">
+            <h4 className="text-sm font-medium text-foreground">
               Script Variation {index + 1}
             </h4>
             {!script.isLoading && script.segments.length > 0 && (
-              <div className="flex items-center gap-1.5 text-xs text-slate-500">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <Clock className="h-3 w-3" />
                 <span>{getTotalDuration()}</span>
               </div>
@@ -131,7 +135,8 @@ const SingleScript = ({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7 text-slate-500 hover:text-slate-200"
+                aria-label="Copy script"
+                className="h-7 w-7 text-muted-foreground hover:text-foreground"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleCopyAll();
@@ -146,17 +151,15 @@ const SingleScript = ({
               <Button
                 variant="ghost"
                 size="icon"
-                className={cn(
-                  "h-7 w-7 text-slate-500 hover:text-slate-200",
-                  script.isLoading && "animate-spin",
-                )}
+                aria-label="Regenerate script"
+                className="h-7 w-7 text-muted-foreground hover:text-foreground"
                 onClick={(e) => {
                   e.stopPropagation();
                   onRegenerate();
                 }}
                 disabled={script.isLoading}
               >
-                <RefreshCw className="h-3.5 w-3.5" />
+                <RefreshCw className={cn("h-3.5 w-3.5", script.isLoading && "motion-safe:animate-spin")} />
               </Button>
             </>
           )}
@@ -164,7 +167,8 @@ const SingleScript = ({
             <Button
               variant="ghost"
               size="icon"
-              className="h-7 w-7 text-slate-500 hover:text-red-400"
+              aria-label="Delete script variation"
+              className="h-7 w-7 text-muted-foreground hover:text-destructive"
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete();
@@ -176,7 +180,8 @@ const SingleScript = ({
           <Button
             variant="ghost"
             size="icon"
-            className="h-7 w-7 text-slate-500"
+            aria-label={isExpanded ? "Collapse script" : "Expand script"}
+            className="h-7 w-7 text-muted-foreground"
             onClick={(e) => {
               e.stopPropagation();
               setIsExpanded(!isExpanded);
@@ -189,11 +194,11 @@ const SingleScript = ({
             )}
           </Button>
         </div>
-      </div>
+      </button>
 
       {/* Script Content */}
       {isExpanded && (
-        <div className="border-t border-slate-700/50 p-4">
+        <div className="border-t border-white/10 p-4">
           {script.isLoading ? (
             <div className="space-y-4">
               {[1, 2, 3, 4].map((i) => (
@@ -208,13 +213,13 @@ const SingleScript = ({
               ))}
             </div>
           ) : script.error ? (
-            <div className="rounded-lg bg-red-500/10 border border-red-500/30 p-3 text-sm text-red-400">
+            <div className="rounded-lg bg-destructive/10 border border-destructive/30 p-3 text-sm text-destructive">
               {script.error}
             </div>
           ) : script.segments.length > 0 ? (
             <div className="relative space-y-0">
               {/* Timeline line */}
-              <div className="absolute left-[44px] top-0 bottom-0 w-px bg-gradient-to-b from-violet-500/50 via-pink-500/50 to-emerald-500/50" />
+              <div className="absolute left-[44px] top-0 bottom-0 w-px bg-gradient-to-b from-primary/50 via-pink-500/50 to-emerald-500/50" />
 
               {script.segments.map((segment, segIndex) => {
                 const style = segmentStyles[segment.type];
@@ -225,7 +230,7 @@ const SingleScript = ({
                   >
                     {/* Timestamp */}
                     <div className="w-10 shrink-0 pt-0.5 text-right">
-                      <span className="text-[10px] font-mono font-medium text-slate-400">
+                      <span className="text-[10px] font-mono font-medium text-muted-foreground">
                         {segment.startTime}
                       </span>
                     </div>
@@ -235,7 +240,7 @@ const SingleScript = ({
                       <div
                         className={cn(
                           "h-2.5 w-2.5 rounded-full",
-                          "ring-2 ring-slate-900",
+                          "ring-2 ring-background",
                           style.bg,
                           "border",
                           style.border,
@@ -263,11 +268,11 @@ const SingleScript = ({
                         >
                           {segment.type}
                         </span>
-                        <span className="text-[9px] text-slate-500">
+                        <span className="text-[9px] text-muted-foreground">
                           {segment.startTime} - {segment.endTime}
                         </span>
                       </div>
-                      <p className="text-xs leading-relaxed text-slate-300">
+                      <p className="text-xs leading-relaxed text-foreground/80">
                         {segment.content}
                       </p>
                     </div>
@@ -277,8 +282,8 @@ const SingleScript = ({
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-6 text-center">
-              <Film className="mb-2 h-6 w-6 text-slate-600" />
-              <p className="text-xs text-slate-500">
+              <Film className="mb-2 h-6 w-6 text-muted-foreground" />
+              <p className="text-xs text-muted-foreground">
                 Click regenerate to generate this script
               </p>
             </div>
@@ -296,53 +301,63 @@ const ShortsScriptCard = ({
   onAddNew,
   onRegenerate,
   onDelete,
+  feedback,
+  onFeedback,
 }: ShortsScriptCardProps) => {
 
-  console.log("scriptsss", 2314324234, scripts)
   return (
     <div
       className={cn(
         "glass-card",
         "transition-all duration-300",
-        "hover:border-slate-600/50",
+        "hover:border-white/20",
       )}
     >
       {/* Gradient accent */}
-      <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 via-transparent to-violet-500/5" />
+      <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 via-transparent to-primary/5" />
 
       <div className="relative z-10 p-5">
         {/* Header */}
         <div className="mb-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-pink-500/20 to-violet-500/20 border border-pink-500/30">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-pink-500/20 to-primary/20 border border-pink-500/30">
               <Film className="h-4 w-4 text-pink-400" />
             </div>
             <div>
-              <h3 className="font-semibold tracking-tight text-slate-100">
+              <h3 className="font-semibold tracking-tight text-foreground">
                 YT Shorts Scripts
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 {scripts.length} of {MAX_SHORTS_SCRIPTS} variations
               </p>
             </div>
           </div>
 
-          {canAddMore && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-dashed border-slate-600 text-slate-400 hover:text-slate-100 hover:border-slate-500 hover:bg-slate-800/50"
-              onClick={onAddNew}
-              disabled={isAddingNew}
-            >
-              {isAddingNew ? (
-                <RefreshCw className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <Plus className="mr-1.5 h-3.5 w-3.5" />
-              )}
-              Add Variation
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {onFeedback && (
+              <FeedbackButtons
+                topicId="shorts"
+                feedback={feedback ?? null}
+                onFeedback={(_id, fb) => onFeedback(fb)}
+              />
+            )}
+            {canAddMore && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-dashed border-white/20 text-muted-foreground hover:text-foreground hover:border-white/30 hover:bg-white/5"
+                onClick={onAddNew}
+                disabled={isAddingNew}
+              >
+                {isAddingNew ? (
+                  <RefreshCw className="mr-1.5 h-3.5 w-3.5 motion-safe:animate-spin" />
+                ) : (
+                  <Plus className="mr-1.5 h-3.5 w-3.5" />
+                )}
+                Add Variation
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Scripts List */}
@@ -361,11 +376,11 @@ const ShortsScriptCard = ({
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-800/50 border border-slate-700/50">
-              <Film className="h-8 w-8 text-slate-600" />
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5 border border-white/10">
+              <Film className="h-8 w-8 text-muted-foreground" />
             </div>
-            <p className="text-sm text-slate-400 mb-1">No shorts scripts yet</p>
-            <p className="text-xs text-slate-500">
+            <p className="text-sm text-muted-foreground mb-1">No shorts scripts yet</p>
+            <p className="text-xs text-muted-foreground">
               Generate your first script using the button above
             </p>
           </div>

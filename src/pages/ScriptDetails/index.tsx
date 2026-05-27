@@ -5,18 +5,23 @@ import { MarkdownPreview } from "@/components/shared/MarkdownRenderer";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+// SSE streaming via EventSource cannot use baseFetch (no custom headers) —
+// direct service call here is the intentional exception for legacy SSE flow.
 import { scriptService } from "@/service/script";
 import {
+  clearCurrentScript,
   markDone,
   resetState,
-  rootScripts,
+  selectCurrentScript,
+  selectScripts,
 } from "@/utils/feature/scripts/script.slice";
 import {
   editScript,
+  getScriptById,
   retrieveScripts,
 } from "@/utils/feature/scripts/script.thunk";
 import {
-  getTitlesData,
+  selectTitlesData,
   markScriptGenerated,
 } from "@/utils/feature/titles/titles.slice";
 import { htmlToMarkdown } from "@/utils/markdown";
@@ -36,25 +41,42 @@ const ScriptDetails = () => {
   const { hash } = useLocation();
   const navigate = useNavigate();
 
-  const { lists: titleLists = [] } = useAppSelector(getTitlesData) || {};
+  const { lists: titleLists = [] } = useAppSelector(selectTitlesData) || {};
   const {
     isDone,
     data: scriptRecord = [],
     isLoading,
-  } = useAppSelector(rootScripts);
+  } = useAppSelector(selectScripts);
+  const currentScript = useAppSelector(selectCurrentScript);
   const dispatch = useAppDispatch();
   const [script, setScript] = useState("");
   const [title, setTitle] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const divRef = useRef<HTMLDivElement>(null);
+  const eventSourceRef = useRef<EventSource | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const mountedRef = useRef(true);
 
   const titleFromUrl = decodeURIComponent(searchParams.get("title") || "");
 
-  const titleRecord = titleLists?.find((title) => title.id === scriptId);
+  const titleRecord = titleLists?.find((t) => t.id === scriptId);
+
+  // Sync title from Redux record or URL param
   useEffect(() => {
     setTitle(titleRecord?.title || titleFromUrl);
-  }, [titleRecord || titleFromUrl]);
+  }, [titleRecord, titleFromUrl]);
+
+  // Suppress context menu (copy protection)
+  useEffect(() => {
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault();
+    };
+    document.body.addEventListener("contextmenu", handleContextMenu);
+    return () => {
+      document.body.removeEventListener("contextmenu", handleContextMenu);
+    };
+  }, []);
 
   const updateScript = (newScript: string) => {
     setScript((prev) => prev + newScript);
@@ -65,40 +87,71 @@ const ScriptDetails = () => {
   };
 
   useEffect(() => {
-    const handleContextMenu = (e: MouseEvent) => {
-      e.preventDefault();
-    };
-    document.body.addEventListener("contextmenu", handleContextMenu);
-    // edit logic and create a get if record is not present then fetch it TODO:
     if (!hash) {
-      const scriptObject = scriptRecord?.find(
-        (script) => script.id === scriptId
-      );
+      const scriptObject = scriptRecord?.find((s) => s.id === scriptId);
       if (scriptObject) {
         setScript(scriptObject.script);
         setTitle(scriptObject?.title);
       } else {
-        scriptService.getScriptById(scriptId).then(({ data }) => {
-          setScript(data.script);
-        });
+        // C1: dispatch thunk instead of calling service directly
+        dispatch(getScriptById(scriptId));
       }
     } else {
+      // Legacy flow: mark topic as script-generated in titles slice
       dispatch(markScriptGenerated(scriptId));
       dispatch(resetState());
+
       const onDone = () => {
         dispatch(markDone());
-        setTimeout(() => {
+        // C5: store timeout ref so it can be cleared on unmount
+        timeoutRef.current = setTimeout(() => {
+          if (!mountedRef.current) return;
           navigate(`/app/script/${scriptId}`);
           dispatch(retrieveScripts());
         }, SCRIPT_GENERATION_DELAY_MS);
       };
-      scriptService.startStreamingScripts(scriptId, updateScript, onDone);
+
+      // C2: store EventSource in ref for cleanup
+      const startStream = async () => {
+        const evtSource = await scriptService.startStreamingScripts(
+          scriptId,
+          updateScript,
+          onDone,
+          () => {
+            // Legacy page — stream error handled silently
+          }
+        );
+        eventSourceRef.current = evtSource;
+      };
+
+      startStream();
     }
 
     return () => {
-      document.body.removeEventListener("contextmenu", handleContextMenu);
+      // C2 + C5: close EventSource and clear timeout on cleanup
+      eventSourceRef.current?.close();
+      eventSourceRef.current = null;
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [scriptId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scriptId, hash, dispatch, navigate]);
+
+  // Sync script content when getScriptById thunk resolves into Redux state
+  useEffect(() => {
+    if (currentScript && currentScript.id === scriptId) {
+      setScript(currentScript.script);
+      setTitle(currentScript.title);
+    }
+  }, [currentScript, scriptId]);
+
+  // Cleanup currentScript on unmount
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      dispatch(clearCurrentScript());
+    };
+  }, [dispatch]);
 
   const toggleEditMode = () => {
     setIsEditMode((prev) => !prev);
@@ -114,7 +167,6 @@ const ScriptDetails = () => {
         editScript({
           scriptId,
           script: htmlToMarkdown(scriptContent),
-          updatedAt: Date.now(),
         })
       );
     } catch {

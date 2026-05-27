@@ -104,4 +104,6 @@ export interface IUserProfile {
 export interface IUserInitialState {
   data: IUserProfile | null;
   isLoading: boolean;
+  isUpdating: boolean;
+  error: string | null;
 }

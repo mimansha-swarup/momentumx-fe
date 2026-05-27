@@ -3,7 +3,7 @@ import GlassCard from "../shared/glassCard";
 import { IGeneratedContentProps } from "@/types/components/dashboard";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
-import { formatToSimpleDate } from "@/utils/titles";
+import { formatToSimpleDate } from "@/utils/date";
 import EmptyState from "../shared/emptyState";
 import ListShimmer from "../titles/listShimmer";
 import { Sparkles, FileText } from "lucide-react";

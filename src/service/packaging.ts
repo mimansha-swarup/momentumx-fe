@@ -7,10 +7,13 @@ import {
   GenerateShortsResponse,
   SavePackagingResponse,
   GetPackagingResponse,
+  RegenerateItemResponse,
   ITitle,
-  IThumbnailDescription,
   ITimestampedSegment,
 } from "@/types/feature/packaging";
+
+type FeedbackValue = "like" | "dislike" | null;
+type PackagingItem = "title" | "description" | "thumbnail" | "shorts";
 
 const URLS = {
   generateTitle: "/v1/packaging/generate-title",
@@ -19,7 +22,11 @@ const URLS = {
   generateHooks: "/v1/packaging/generate-hooks",
   generateShorts: "/v1/packaging/generate-shorts",
   save: "/v1/packaging/save",
+  list: "/v1/packaging/list",
   get: "/v1/packaging/{{packagingId}}",
+  regenerateItem: "/v1/packaging/{{packagingId}}/regenerate/{{item}}",
+  feedback: "/v1/packaging/{{packagingId}}/feedback",
+  export: "/v1/packaging/{{packagingId}}/export",
 };
 
 class PackagingService {
@@ -30,35 +37,47 @@ class PackagingService {
   }
 
   async generateTitle(
-    script: string
+    script: string,
+    selectedHook?: string
   ): Promise<IBaseFetchResponse<GenerateTitleResponse>> {
-    const response = await baseFetch.post(this.urls.generateTitle, { script });
-    console.log("response", response);
+    const response = await baseFetch.post(this.urls.generateTitle, {
+      script,
+      ...(selectedHook !== undefined && { selectedHook }),
+    });
     return response.data;
   }
 
   async generateDescription(
     script: string,
-    title?: string
+    title: string,
+    selectedHook?: string
   ): Promise<IBaseFetchResponse<GenerateDescriptionResponse>> {
     const response = await baseFetch.post(this.urls.generateDescription, {
       script,
       title,
+      ...(selectedHook !== undefined && { selectedHook }),
     });
     return response.data;
   }
 
   async generateThumbnail(
     script: string,
-    title?: string
+    title: string,
+    selectedHook?: string
   ): Promise<IBaseFetchResponse<GenerateThumbnailResponse>> {
     const response = await baseFetch.post(this.urls.generateThumbnail, {
       script,
       title,
+      ...(selectedHook !== undefined && { selectedHook }),
     });
     return response.data;
   }
 
+  /**
+   * @deprecated Use `hooksService.generateHooks()` for video project flows.
+   * This method calls the legacy stateless endpoint and will be removed
+   * when the packaging page is integrated into the video project pipeline.
+   */
   async generateHooks(
     script: string
   ): Promise<IBaseFetchResponse<GenerateHooksResponse>> {
@@ -68,68 +87,116 @@ class PackagingService {
 
   async generateShorts(
     script: string,
-    title?: string,
-    variant: number = 0,
-    maxDuration: number = 60
+    duration: number = 60
   ): Promise<IBaseFetchResponse<GenerateShortsResponse>> {
     const response = await baseFetch.post(this.urls.generateShorts, {
       script,
-      title,
-      duration: maxDuration,
-      variant,
+      duration,
     });
     return response.data;
   }
 
   async generateTitleDependentContent(
     script: string,
-    variant: number = 0,
-    maxDuration: number = 60
+    duration: number = 60,
+    selectedHook?: string
   ): Promise<{
     title: GenerateTitleResponse;
     description: GenerateDescriptionResponse;
     thumbnail: GenerateThumbnailResponse;
     shorts: GenerateShortsResponse;
   }> {
-    // First, get titles (now returns array of 3)
-    const titleResponse = await this.generateTitle(script);
-    // Use the first title for dependent content generation (extract title string from ITitle object)
-    const titleText = titleResponse?.data?.titles?.[0]?.title;
+    // First, get titles (returns array of 3)
+    const titleResponse = await this.generateTitle(script, selectedHook);
+    // Use the first title for dependent content generation
+    const titleText = titleResponse?.data?.titles?.[0]?.title ?? "";
 
     // Then call description, thumbnail, and shorts in parallel with the title
     const [description, thumbnail, shorts] = await Promise.all([
-      this.generateDescription(script, titleText),
-      this.generateThumbnail(script, titleText),
-      this.generateShorts(script, titleText, variant, maxDuration),
+      this.generateDescription(script, titleText, selectedHook),
+      this.generateThumbnail(script, titleText, selectedHook),
+      this.generateShorts(script, duration),
     ]);
 
     return {
-      title: (titleResponse.data || { titles: [] }) as GenerateTitleResponse,
-      description: (description.data ||
-        {}) as GenerateDescriptionResponse,
-      thumbnail: (thumbnail.data ||
-        { descriptions: [] }) as GenerateThumbnailResponse,
-      shorts: (shorts.data || {}) as GenerateShortsResponse,
+      title: titleResponse.data ?? { titles: [] },
+      description: description.data ?? { description: "" },
+      thumbnail: thumbnail.data ?? { descriptions: [] },
+      shorts: shorts.data ?? { segments: [], totalDuration: "0:00" },
     };
   }
 
   async savePackaging(data: {
+    videoProjectId?: string;
     script: string;
     titles: ITitle[];
     selectedTitleIndex: number;
     description: string;
-    thumbnails: IThumbnailDescription[];
+    thumbnails: string[];
     selectedThumbnailIndex: number;
     hooks: string[];
     shortsScripts: Array<{ id: string; segments: ITimestampedSegment[] }>;
-  }): Promise<SavePackagingResponse> {
+  }): Promise<IBaseFetchResponse<SavePackagingResponse>> {
     const response = await baseFetch.post(this.urls.save, data);
     return response.data;
   }
 
-  async getPackaging(packagingId: string): Promise<GetPackagingResponse> {
+  async getPackaging(
+    packagingId: string
+  ): Promise<IBaseFetchResponse<GetPackagingResponse>> {
     const response = await baseFetch.get(
       this.urls.get.replace("{{packagingId}}", packagingId)
+    );
+    return response.data;
+  }
+
+  async listPackaging(): Promise<IBaseFetchResponse<GetPackagingResponse[]>> {
+    const response = await baseFetch.get(this.urls.list);
+    return response.data;
+  }
+
+  async regenerateItem(
+    packagingId: string,
+    item: PackagingItem,
+    data: {
+      script: string;
+      title?: string;
+      duration?: number;
+      selectedHook?: string;
+    }
+  ): Promise<IBaseFetchResponse<RegenerateItemResponse>> {
+    const response = await baseFetch.post(
+      this.urls.regenerateItem
+        .replace("{{packagingId}}", packagingId)
+        .replace("{{item}}", item),
+      data
+    );
+    return response.data;
+  }
+
+  async submitFeedback(
+    packagingId: string,
+    item: PackagingItem,
+    feedback: FeedbackValue
+  ): Promise<
+    IBaseFetchResponse<{
+      id: string;
+      item: PackagingItem;
+      feedback: FeedbackValue;
+    }>
+  > {
+    const response = await baseFetch.patch(
+      this.urls.feedback.replace("{{packagingId}}", packagingId),
+      { item, feedback }
+    );
+    return response.data;
+  }
+
+  async exportPackaging(
+    packagingId: string
+  ): Promise<IBaseFetchResponse<{ text: string }>> {
+    const response = await baseFetch.get(
+      this.urls.export.replace("{{packagingId}}", packagingId)
     );
     return response.data;
   }

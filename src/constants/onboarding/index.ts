@@ -74,5 +74,6 @@ export const INITIAL_ONBOARDING_STATE = {
 } satisfies DeepNest;
 
 export const ONBOARDING_FORM = "ONBOARDING_FORM";
+export const ONBOARDING_FORM_VERSION = "2";
 export const CURRENT_SECTION = "CURRENT_SECTION";
 export const CURRENT_QUESTION = "CURRENT_QUESTION";

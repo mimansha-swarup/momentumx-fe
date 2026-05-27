@@ -6,10 +6,11 @@ import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import useTitles from "@/hooks/useTitles";
 import {
   resetTitle,
-  rootTitle,
+  selectTitlesRoot,
   updateFilter,
 } from "@/utils/feature/titles/titles.slice";
 import { generateTitles } from "@/utils/feature/titles/titles.thunk";
+import { TitleFilters } from "@/types/feature/title";
 import { LoaderCircle, Plus } from "lucide-react";
 
 const filters = [
@@ -26,7 +27,7 @@ const TitlePage = () => {
   const {
     params: { searchText, filter: filterBy },
     isDone: isTitleFetched,
-  } = useAppSelector(rootTitle);
+  } = useAppSelector(selectTitlesRoot);
   const dispatch = useAppDispatch();
   const [fetchTitles] = useTitles();
 
@@ -36,7 +37,7 @@ const TitlePage = () => {
 
   const onFiltersChange = (value: string) => () => {
     if (filterBy === value) return;
-    dispatch(updateFilter({ filter: value }));
+    dispatch(updateFilter({ filter: value as `${TitleFilters}` }));
     dispatch(resetTitle());
   };
 

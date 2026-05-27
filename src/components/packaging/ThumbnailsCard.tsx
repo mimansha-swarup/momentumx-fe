@@ -1,30 +1,24 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  RefreshCw,
-  Copy,
-  Check,
-  Image,
-  Star,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
-import { toast } from "sonner";
+import { RefreshCw, Copy, Check, Image, Star } from "lucide-react";
+import { toastError, toastSuccess } from "@/utils/toast";
 import GradientSkeleton from "./GradientSkeleton";
-import type { IThumbnailDescription } from "@/types/feature/packaging";
+import { FeedbackButtons } from "@/components/research/FeedbackButtons";
 
 interface ThumbnailsCardProps {
-  descriptions: IThumbnailDescription[];
+  descriptions: string[];
   selectedIndex: number;
   isLoading: boolean;
   error?: string | null;
   onRegenerate: () => void;
   onSelectThumbnail: (index: number) => void;
+  feedback?: "like" | "dislike" | null;
+  onFeedback?: (feedback: "like" | "dislike" | null) => void;
 }
 
 interface ThumbnailItemProps {
-  thumbnail: IThumbnailDescription | null;
+  thumbnail: string | null;
   index: number;
   isSelected: boolean;
   isLoading: boolean;
@@ -39,44 +33,32 @@ const ThumbnailItem = ({
   onSelect,
 }: ThumbnailItemProps) => {
   const [copied, setCopied] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!thumbnail) return;
 
-    const fullText = `Visual Concept: ${thumbnail.visual_concept}
-Composition: ${thumbnail.composition}
-Text Overlay: ${thumbnail.text_overlay}
-Colors: ${thumbnail.colors}
-Facial Expression: ${thumbnail.facial_expression}
-Style References: ${thumbnail.style_references}
-Reasoning: ${thumbnail.reasoning}`;
-
     try {
-      await navigator.clipboard.writeText(fullText);
+      await navigator.clipboard.writeText(thumbnail);
       setCopied(true);
-      toast.success("Thumbnail brief copied to clipboard");
+      toastSuccess("Thumbnail brief copied to clipboard");
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("Failed to copy");
+      toastError("Failed to copy");
     }
   };
 
-  const toggleExpand = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsExpanded(!isExpanded);
-  };
-
   return (
-    <div
+    <button
+      type="button"
       onClick={onSelect}
       className={cn(
-        "group relative rounded-xl p-4 cursor-pointer",
+        "group relative w-full text-left rounded-xl p-4",
         "border transition-all duration-300",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
         isSelected
           ? "bg-emerald-500/10 border-emerald-500/50 shadow-lg shadow-emerald-500/10"
-          : "bg-slate-800/30 border-slate-700/50 hover:bg-slate-800/50 hover:border-slate-600/50"
+          : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20"
       )}
     >
       {/* Selection indicator and actions */}
@@ -84,7 +66,9 @@ Reasoning: ${thumbnail.reasoning}`;
         {isSelected && (
           <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30">
             <Star className="h-3 w-3 text-emerald-400 fill-emerald-400" />
-            <span className="text-xs font-medium text-emerald-400">Selected</span>
+            <span className="text-xs font-medium text-emerald-400">
+              Selected
+            </span>
           </div>
         )}
         {!isLoading && thumbnail && (
@@ -92,7 +76,8 @@ Reasoning: ${thumbnail.reasoning}`;
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 text-slate-500 hover:text-slate-200"
+              aria-label="Copy thumbnail brief"
+              className="h-6 w-6 text-muted-foreground hover:text-foreground"
               onClick={handleCopy}
             >
               {copied ? (
@@ -107,10 +92,12 @@ Reasoning: ${thumbnail.reasoning}`;
 
       {/* Variation label */}
       <div className="mb-3 flex items-center gap-2">
-        <span className={cn(
-          "text-xs font-medium uppercase tracking-wider",
-          isSelected ? "text-emerald-400" : "text-slate-500"
-        )}>
+        <span
+          className={cn(
+            "text-xs font-medium uppercase tracking-wider",
+            isSelected ? "text-emerald-400" : "text-muted-foreground"
+          )}
+        >
           Variation {index + 1}
         </span>
       </div>
@@ -119,104 +106,18 @@ Reasoning: ${thumbnail.reasoning}`;
       {isLoading ? (
         <GradientSkeleton lines={4} />
       ) : thumbnail ? (
-        <div className="space-y-3">
-          {/* Visual Concept - Always visible */}
-          <div>
-            <span className="text-xs font-medium text-emerald-400 uppercase tracking-wider">
-              Visual Concept
-            </span>
-            <p className={cn(
-              "mt-1 text-sm font-medium leading-relaxed",
-              isSelected ? "text-slate-100" : "text-slate-200"
-            )}>
-              {thumbnail.visual_concept}
-            </p>
-          </div>
-
-          {/* Text Overlay */}
-          <div>
-            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-              Text Overlay
-            </span>
-            <p className="mt-1 text-sm text-slate-300 font-semibold">
-              "{thumbnail.text_overlay}"
-            </p>
-          </div>
-
-          {/* Expandable details */}
-          {isExpanded && (
-            <div className="space-y-3 pt-2 border-t border-slate-700/50">
-              <div>
-                <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Composition
-                </span>
-                <p className="mt-1 text-sm text-slate-400 leading-relaxed">
-                  {thumbnail.composition}
-                </p>
-              </div>
-
-              <div>
-                <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Colors
-                </span>
-                <p className="mt-1 text-sm text-slate-400 leading-relaxed">
-                  {thumbnail.colors}
-                </p>
-              </div>
-
-              <div>
-                <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Facial Expression
-                </span>
-                <p className="mt-1 text-sm text-slate-400 leading-relaxed">
-                  {thumbnail.facial_expression}
-                </p>
-              </div>
-
-              <div>
-                <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Style References
-                </span>
-                <p className="mt-1 text-sm text-slate-400 leading-relaxed">
-                  {thumbnail.style_references}
-                </p>
-              </div>
-
-              <div>
-                <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Reasoning
-                </span>
-                <p className="mt-1 text-sm text-slate-400 italic leading-relaxed">
-                  {thumbnail.reasoning}
-                </p>
-              </div>
-            </div>
+        <p
+          className={cn(
+            "text-sm leading-relaxed",
+            isSelected ? "text-foreground" : "text-foreground/80"
           )}
-
-          {/* Expand/Collapse button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full mt-2 text-slate-400 hover:text-slate-200 hover:bg-slate-700/50"
-            onClick={toggleExpand}
-          >
-            {isExpanded ? (
-              <>
-                <ChevronUp className="mr-1 h-3 w-3" />
-                Show Less
-              </>
-            ) : (
-              <>
-                <ChevronDown className="mr-1 h-3 w-3" />
-                Show Details
-              </>
-            )}
-          </Button>
-        </div>
+        >
+          {thumbnail}
+        </p>
       ) : (
-        <p className="text-sm italic text-slate-500">Not generated yet</p>
+        <p className="text-sm italic text-muted-foreground">Not generated yet</p>
       )}
-    </div>
+    </button>
   );
 };
 
@@ -227,9 +128,11 @@ const ThumbnailsCard = ({
   error,
   onRegenerate,
   onSelectThumbnail,
+  feedback,
+  onFeedback,
 }: ThumbnailsCardProps) => {
   // Show 3 placeholders when loading or when no descriptions yet
-  const displayDescriptions: (IThumbnailDescription | null)[] =
+  const displayDescriptions: (string | null)[] =
     descriptions.length > 0 ? descriptions : [null, null, null];
 
   return (
@@ -237,7 +140,7 @@ const ThumbnailsCard = ({
       className={cn(
         "glass-card",
         "transition-all duration-300",
-        "hover:border-slate-600/50"
+        "hover:border-white/20"
       )}
     >
       {/* Gradient overlay */}
@@ -251,31 +154,41 @@ const ThumbnailsCard = ({
               <Image className="h-4 w-4 text-emerald-400" />
             </div>
             <div>
-              <h3 className="font-semibold tracking-tight text-slate-100">
+              <h3 className="font-semibold tracking-tight text-foreground">
                 Thumbnail Briefs
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 Choose from 3 creative directions
               </p>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className={cn(
-              "text-slate-400 hover:text-slate-100 hover:bg-slate-800/50",
-              isLoading && "[&_svg]:animate-spin"
+          <div className="flex items-center gap-2">
+            {onFeedback && (
+              <FeedbackButtons
+                topicId="thumbnail"
+                feedback={feedback ?? null}
+                onFeedback={(_id, fb) => onFeedback(fb)}
+              />
             )}
-            onClick={onRegenerate}
-            disabled={isLoading}
-          >
-            <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
-            Regenerate
-          </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              aria-label="Regenerate thumbnails"
+              className={cn(
+                "text-muted-foreground hover:text-foreground hover:bg-white/5",
+                isLoading && "[&_svg]:motion-safe:animate-spin"
+              )}
+              onClick={onRegenerate}
+              disabled={isLoading}
+            >
+              <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+              Regenerate
+            </Button>
+          </div>
         </div>
 
         {error && (
-          <div className="mb-4 rounded-lg bg-red-500/10 border border-red-500/30 p-3 text-sm text-red-400">
+          <div className="mb-4 rounded-lg bg-destructive/10 border border-destructive/30 p-3 text-sm text-destructive">
             {error}
           </div>
         )}

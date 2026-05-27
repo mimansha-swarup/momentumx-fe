@@ -1,14 +1,20 @@
 import LoginForm from "@/components/login/loginForm";
 import { Separator } from "@/components/ui/separator";
-import { useAuthCredential } from "@/hooks/useAuth";
+import { useAppSelector } from "@/hooks/useRedux";
+import { currentUser } from "@/utils/feature/user/user.slice";
 import { Navigate, useLocation } from "react-router-dom";
 
+interface LocationState {
+  from?: { pathname?: string };
+}
+
 const Login = () => {
-  const { user } = useAuthCredential();
-  const { state } = useLocation();
+  const user = useAppSelector(currentUser);
+  const location = useLocation();
+  const state = location.state as LocationState | null;
 
   if (user)
-    return <Navigate to={state?.form?.pathname || "/app/dashboard"} replace />;
+    return <Navigate to={state?.from?.pathname || "/app/dashboard"} replace />;
   return (
     <section className="w-screen h-screen">
       <div className="flex p-0">

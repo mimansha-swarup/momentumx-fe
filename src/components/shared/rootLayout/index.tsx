@@ -1,9 +1,9 @@
 import { memo, ReactNode } from "react";
-import SideDrawer from "../sideDrawer";
+import SideDrawer from "@/components/shared/sideDrawer";
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="relative flex w-full min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 overflow-hidden">
+    <div className="relative flex w-full min-h-screen bg-background overflow-hidden">
       {/* Ambient background effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="ambient-orb-primary -top-40 -right-40 w-96 h-96" />
