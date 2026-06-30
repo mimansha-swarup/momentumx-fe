@@ -187,7 +187,7 @@ const ResearchPage = () => {
         return;
       }
       setCreatingForTopicId(topicId);
-      const result = await dispatch(createProject(topicId));
+      const result = await dispatch(createProject({ topicId }));
       if (createProject.fulfilled.match(result) && result.payload) {
         navigate(`/app/project/${result.payload.id}`);
       } else if (createProject.rejected.match(result)) {

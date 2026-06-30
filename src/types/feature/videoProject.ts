@@ -66,9 +66,9 @@ export interface IStepTransitionResponse {
 }
 
 // API Request/Response Types
-export interface CreateProjectRequest {
-  topicId: string;
-}
+// Create a project from an existing topic candidate (`topicId`) OR from a
+// user-supplied idea (`title`) — exactly one, enforced server-side.
+export type CreateProjectRequest = { topicId: string } | { title: string };
 
 export interface ListProjectsParams {
   status?: OverallStatus;
