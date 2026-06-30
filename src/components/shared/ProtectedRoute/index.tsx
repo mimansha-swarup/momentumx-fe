@@ -1,5 +1,4 @@
 import { Outlet, Navigate, useLocation } from "react-router-dom";
-import { isUserLoggedIn } from "@/utils";
 import RootLoader from "@/components/shared/Loader";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { currentUser, userLoading } from "@/utils/feature/user/user.slice";
@@ -17,8 +16,6 @@ const ProtectedLayout = () => {
   const user = useAppSelector(currentUser);
   const loading = useAppSelector(userLoading);
   const location = useLocation();
-
-  const isLoggedIn = isUserLoggedIn();
 
   const titles = useAppSelector(selectTitlesData);
   const scripts = useAppSelector(selectScriptsData);
@@ -52,11 +49,20 @@ const ProtectedLayout = () => {
     };
   }, []);
 
-  if (loading) {
+  // Only block the whole subtree during the INITIAL auth resolution (no user yet).
+  // A background refetch of an already-loaded user must not unmount children —
+  // otherwise a child that dispatches getUser on mount (e.g. Dashboard) loops:
+  // pending → loading → unmount → fulfilled → remount → dispatch → pending …
+  if (loading && !user) {
     return <RootLoader />;
-  } else if (user && !user?.isOnboardingCompleted && location.pathname !== "/app/onboarding") {
+  } else if (
+    !HIDE_OLD_FLOW &&
+    user &&
+    !user?.isOnboardingCompleted &&
+    location.pathname !== "/app/onboarding"
+  ) {
     return <Navigate to="/app/onboarding" />;
-  } else if (!isLoggedIn) {
+  } else if (!user) {
     return <Navigate to={`/login`} replace state={{ from: location }} />;
   }
 
