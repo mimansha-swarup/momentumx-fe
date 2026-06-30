@@ -6,6 +6,7 @@ import {
   ListProjectsResponse,
   IVideoProjectListItem,
   ResourceType,
+  CreateProjectRequest,
 } from "@/types/feature/videoProject";
 
 const URLS = {
@@ -20,9 +21,9 @@ class VideoProjectService {
   private urls = URLS;
 
   async createProject(
-    topicId: string
+    payload: CreateProjectRequest
   ): Promise<IBaseFetchResponse<IVideoProject>> {
-    const response = await baseFetch.post(this.urls.projects, { topicId });
+    const response = await baseFetch.post(this.urls.projects, payload);
     return response.data;
   }
 
@@ -44,11 +45,11 @@ class VideoProjectService {
 
   async updateWorkingTitle(
     projectId: string,
-    workingTitle: string
+    title: string
   ): Promise<IBaseFetchResponse<Partial<IVideoProjectListItem>>> {
     const response = await baseFetch.patch(
       this.urls.project.replace("{projectId}", projectId),
-      { workingTitle }
+      { title }
     );
     return response.data;
   }

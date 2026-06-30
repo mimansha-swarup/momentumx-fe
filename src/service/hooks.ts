@@ -31,12 +31,12 @@ class HooksService {
 
   async selectHook(
     hooksId: string,
-    hookIndex: number,
-    videoProjectId: string
+    hookIndex: number
   ): Promise<IBaseFetchResponse<SelectHookResponse>> {
+    // The owning project is resolved server-side from the stored hooks batch.
     const response = await baseFetch.post(
       this.urls.select.replace("{hooksId}", hooksId),
-      { hookIndex, videoProjectId }
+      { hookIndex }
     );
     return response.data;
   }

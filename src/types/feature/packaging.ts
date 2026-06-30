@@ -51,20 +51,12 @@ export interface IDescriptionOutput {
   error: string | null;
 }
 
-export interface IShortsScript {
-  id: string;
+export interface IShortsOutput {
   segments: ITimestampedSegment[];
   totalDuration?: string;
   isLoading: boolean;
   error: string | null;
 }
-
-export interface IShortsOutput {
-  scripts: IShortsScript[];
-  isAddingNew: boolean;
-}
-
-export const MAX_SHORTS_SCRIPTS = 5;
 
 export interface IPackagingState {
   // Input
@@ -153,10 +145,10 @@ export interface SavePackagingRequest {
   titles: ITitle[];
   selectedTitleIndex: number;
   description: string;
-  thumbnails: string[];
+  thumbnail: string[];
   selectedThumbnailIndex: number;
   hooks: string[];
-  shortsScripts: Array<{ id: string; segments: ITimestampedSegment[] }>;
+  shorts: { segments: ITimestampedSegment[]; totalDuration?: string };
 }
 
 export interface SavePackagingResponse {
@@ -169,10 +161,10 @@ export interface GetPackagingResponse {
   titles: ITitle[];
   selectedTitleIndex: number;
   description: string;
-  thumbnails: string[];
+  thumbnail: string[];
   selectedThumbnailIndex: number;
   hooks: string[];
-  shortsScripts: Array<{ id: string; segments: ITimestampedSegment[] }>;
+  shorts: { segments: ITimestampedSegment[]; totalDuration?: string };
   createdAt: string;
   isStale: boolean;
   staleReason: "script_regenerated" | "hooks_regenerated" | null;

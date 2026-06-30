@@ -5,6 +5,7 @@ import {
   ListProjectsParams,
   ResourceType,
   StepName,
+  CreateProjectRequest,
 } from "@/types/feature/videoProject";
 
 const getErrorMessage = (error: unknown): string =>
@@ -12,9 +13,9 @@ const getErrorMessage = (error: unknown): string =>
 
 export const createProject = createAsyncThunk(
   "videoProject/create",
-  async (topicId: string, thunkAPI) => {
+  async (payload: CreateProjectRequest, thunkAPI) => {
     try {
-      const response = await videoProjectService.createProject(topicId);
+      const response = await videoProjectService.createProject(payload);
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
@@ -56,13 +57,13 @@ export const getProject = createAsyncThunk(
 export const updateWorkingTitle = createAsyncThunk(
   "videoProject/updateTitle",
   async (
-    { projectId, workingTitle }: { projectId: string; workingTitle: string },
+    { projectId, title }: { projectId: string; title: string },
     thunkAPI
   ) => {
     try {
       const response = await videoProjectService.updateWorkingTitle(
         projectId,
-        workingTitle
+        title
       );
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;

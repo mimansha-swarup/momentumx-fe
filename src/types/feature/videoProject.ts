@@ -26,14 +26,15 @@ export interface IPipeline {
 
 export interface IVideoProject {
   id: string;
-  workingTitle: string;
-  /**
-   * The ID of the topic this project was created from.
-   * The backend uses this as the script's deterministic ID — `scriptId === topicId`
-   * until a script is explicitly saved, at which point `scriptId` is set separately.
-   * Use `topicId` when calling script endpoints (stream, fetch, edit, export).
-   */
+  createdBy: string;
+  title: string;
+  /** The ID of the topic this project was created from. */
   topicId: string;
+  /**
+   * The generated script's id — a UUID distinct from `topicId`, set once a
+   * script is generated. Use this (not `topicId`) for script fetch/edit/export/
+   * regenerate/feedback. Script streaming is keyed by the project id instead.
+   */
   scriptId: string | null;
   hooksId: string | null;
   selectedHookIndex: number | null;
@@ -43,15 +44,15 @@ export interface IVideoProject {
   pipeline: IPipeline;
   isDeleted: boolean;
   createdAt: string;
-  lastUpdatedAt: string;
+  updatedAt: string;
 }
 
 export interface IVideoProjectListItem {
   id: string;
-  workingTitle: string;
+  title: string;
   currentStep: StepName;
   overallStatus: OverallStatus;
-  lastUpdatedAt: string;
+  updatedAt: string;
   createdAt: string;
   thumbnailHint: string | null;
 }
@@ -60,14 +61,14 @@ export interface IStepTransitionResponse {
   id: string;
   currentStep: StepName;
   pipeline: Partial<Record<StepName, IPipelineStep>>;
-  lastUpdatedAt: string;
+  updatedAt: string;
   overallStatus?: OverallStatus;
 }
 
 // API Request/Response Types
-export interface CreateProjectRequest {
-  topicId: string;
-}
+// Create a project from an existing topic candidate (`topicId`) OR from a
+// user-supplied idea (`title`) — exactly one, enforced server-side.
+export type CreateProjectRequest = { topicId: string } | { title: string };
 
 export interface ListProjectsParams {
   status?: OverallStatus;
@@ -82,7 +83,7 @@ export interface ListProjectsResponse {
 }
 
 export interface UpdateWorkingTitleRequest {
-  workingTitle: string;
+  title: string;
 }
 
 export interface LinkResourceRequest {

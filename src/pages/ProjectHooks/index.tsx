@@ -78,11 +78,11 @@ const ProjectHooksPage = () => {
 
   // Effect 2 — Load script if not already loaded (needed for generate/regenerate)
   useEffect(() => {
-    const scriptId = project?.topicId;
+    const scriptId = project?.scriptId;
     if (scriptId && !currentScript) {
       dispatch(getScriptById(scriptId));
     }
-  }, [project?.topicId, currentScript, dispatch]);
+  }, [project?.scriptId, currentScript, dispatch]);
 
   // Effect 3 — Cleanup on unmount (do NOT clear batch — cache it per 6f)
   useEffect(() => {
@@ -106,9 +106,7 @@ const ProjectHooksPage = () => {
 
   const handleSelect = async (hookIndex: number) => {
     if (!hooksId || !projectId || isSelecting) return;
-    const result = await dispatch(
-      selectHook({ hooksId, hookIndex, videoProjectId: projectId })
-    );
+    const result = await dispatch(selectHook({ hooksId, hookIndex }));
     if (selectHook.fulfilled.match(result)) {
       await dispatch(getProject(projectId));
       navigate(`/app/project/${projectId}/packaging`);

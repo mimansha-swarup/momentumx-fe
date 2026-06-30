@@ -87,34 +87,15 @@ export const generateShorts = createAsyncThunk(
   }
 );
 
-// Add a new shorts script (up to 5 total)
-export const addNewShortsScript = createAsyncThunk(
-  "packaging/addNewShortsScript",
+// Regenerate the single shorts script
+export const regenerateShortsScript = createAsyncThunk(
+  "packaging/regenerateShortsScript",
   async (_, thunkAPI) => {
     try {
       const state = thunkAPI.getState() as RootState;
       const { script } = state.packaging;
       const response = await packagingService.generateShorts(script);
       return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(getErrorMessage(error));
-    }
-  }
-);
-
-// Regenerate a specific shorts script by ID
-export const regenerateShortsScript = createAsyncThunk(
-  "packaging/regenerateShortsScript",
-  async (scriptId: string, thunkAPI) => {
-    try {
-      const state = thunkAPI.getState() as RootState;
-      const { script } = state.packaging;
-      const response = await packagingService.generateShorts(script);
-      return {
-        id: scriptId,
-        segments: response.data?.segments,
-        totalDuration: response.data?.totalDuration,
-      };
     } catch (error) {
       return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
@@ -152,14 +133,14 @@ export const generateAllPackaging = createAsyncThunk(
 export const generateAllPackagingForProject = createAsyncThunk(
   "packaging/generateAllForProject",
   async (
-    { script, selectedHook }: { script: string; selectedHook?: string },
+    { script, videoProjectId }: { script: string; videoProjectId?: string },
     thunkAPI
   ) => {
     try {
       const result = await packagingService.generateTitleDependentContent(
         script,
         60,
-        selectedHook
+        videoProjectId
       );
       return {
         title: result.title,
@@ -187,13 +168,13 @@ export const savePackaging = createAsyncThunk(
         titles: titles.titles,
         selectedTitleIndex: titles.selectedIndex,
         description: description.content,
-        thumbnails: thumbnails.descriptions,
+        thumbnail: thumbnails.descriptions,
         selectedThumbnailIndex: thumbnails.selectedIndex,
         hooks: hooks.hooks,
-        shortsScripts: shortsScript.scripts.map((s) => ({
-          id: s.id,
-          segments: s.segments,
-        })),
+        shorts: {
+          segments: shortsScript.segments,
+          totalDuration: shortsScript.totalDuration,
+        },
       });
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
@@ -235,17 +216,18 @@ export const regenerateItem = createAsyncThunk<
     script: string;
     title?: string;
     duration?: number;
-    selectedHook?: string;
   }
 >(
   "packaging/regenerateItem",
   async (arg, thunkAPI) => {
     try {
-      const { packagingId, item, script, title, duration, selectedHook } = arg;
+      const { packagingId, item, script, title, duration } = arg;
+      // The hook is resolved server-side from the videoProjectId stored on the
+      // packaging document — nothing hook-related is sent from the client.
       const response = await packagingService.regenerateItem(
         packagingId,
         item,
-        { script, title, duration, selectedHook }
+        { script, title, duration }
       );
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       if (!response.data) {

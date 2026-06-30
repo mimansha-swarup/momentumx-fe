@@ -25,7 +25,6 @@ import {
   selectDescription,
   selectThumbnails,
   selectShortsScripts,
-  selectCanAddMoreShorts,
   selectIsSaving,
   selectIsGeneratingAll,
   selectCurrentPackaging,
@@ -39,7 +38,6 @@ import {
   updateTitleVariation,
   updateDescription,
   setSelectedThumbnail,
-  deleteShortsScript,
   resetPackaging,
   clearErrors,
   setScript,
@@ -51,7 +49,6 @@ import {
   getPackaging,
   regenerateItem,
   exportPackaging,
-  addNewShortsScript,
   regenerateShortsScript,
   generateTitle,
   generateDescription,
@@ -60,10 +57,6 @@ import {
 } from "@/utils/feature/packaging/packaging.thunk";
 import { selectCurrentScript } from "@/utils/feature/scripts/script.slice";
 import { getScriptById } from "@/utils/feature/scripts/script.thunk";
-import {
-  selectHooksBatch,
-  selectSelectedHookIndex,
-} from "@/utils/feature/hooks/hooks.slice";
 import {
   TitlesCard,
   OutputCard,
@@ -89,7 +82,6 @@ const ProjectPackagingPage = () => {
   const description = useAppSelector(selectDescription);
   const thumbnails = useAppSelector(selectThumbnails);
   const shortsScript = useAppSelector(selectShortsScripts);
-  const canAddMoreShorts = useAppSelector(selectCanAddMoreShorts);
   const isSaving = useAppSelector(selectIsSaving);
   const isGeneratingAll = useAppSelector(selectIsGeneratingAll);
   const currentPackaging = useAppSelector(selectCurrentPackaging);
@@ -99,25 +91,20 @@ const ProjectPackagingPage = () => {
   const error = useAppSelector(selectPackagingError);
   const hasContent = useAppSelector(selectHasContent);
   const currentScript = useAppSelector(selectCurrentScript);
-  const hooksBatch = useAppSelector(selectHooksBatch);
-  const selectedHookIndex = useAppSelector(selectSelectedHookIndex);
   const itemFeedback = useAppSelector(selectItemFeedback);
 
   const projectId = project?.id ?? "";
   const packagingId = currentPackaging?.id ?? project?.packagingId ?? "";
   const scriptText = currentScript?.script ?? "";
   const selectedTitle = titles.titles[titles.selectedIndex]?.title ?? "";
-  const hookIndex = selectedHookIndex ?? project?.selectedHookIndex;
-  const selectedHookText =
-    hookIndex != null ? (hooksBatch?.hooks?.[hookIndex] ?? "") : "";
 
   // Effect 1 — Load script if not cached
   useEffect(() => {
-    const scriptId = project?.topicId;
+    const scriptId = project?.scriptId;
     if (scriptId && !currentScript) {
       dispatch(getScriptById(scriptId));
     }
-  }, [project?.topicId, currentScript, dispatch]);
+  }, [project?.scriptId, currentScript, dispatch]);
 
   // Effect 2 — Load existing packaging if available
   useEffect(() => {
@@ -166,7 +153,7 @@ const ProjectPackagingPage = () => {
     await dispatch(
       generateAllPackagingForProject({
         script: scriptText,
-        selectedHook: selectedHookText || undefined,
+        videoProjectId: projectId,
       })
     );
     if (mountedRef.current) {
@@ -190,7 +177,6 @@ const ProjectPackagingPage = () => {
         item,
         script: scriptText,
         title: item !== "title" ? selectedTitle : undefined,
-        selectedHook: selectedHookText || undefined,
       })
     );
     if (regenerateItem.fulfilled.match(result)) {
@@ -232,7 +218,6 @@ const ProjectPackagingPage = () => {
           item,
           script: scriptText,
           title: item !== "title" ? selectedTitle : undefined,
-          selectedHook: selectedHookText || undefined,
         })
       );
       if (regenerateItem.rejected.match(result)) break;
@@ -360,7 +345,7 @@ const ProjectPackagingPage = () => {
       {/* Completion celebration */}
       {project.overallStatus === "completed" && (
         <CompletionCelebration
-          projectTitle={project.workingTitle}
+          projectTitle={project.title}
           onExport={handleExport}
           onBackToProjects={() => navigate("/app/dashboard")}
           isExporting={isExporting}
@@ -532,14 +517,12 @@ const ProjectPackagingPage = () => {
             />
           )}
           <ShortsScriptCard
-            scripts={shortsScript.scripts}
-            isAddingNew={shortsScript.isAddingNew}
-            canAddMore={canAddMoreShorts}
-            onAddNew={() => dispatch(addNewShortsScript())}
-            onRegenerate={(scriptId) =>
-              dispatch(regenerateShortsScript(scriptId))
+            shortsScript={shortsScript}
+            onRegenerate={
+              packagingId
+                ? () => handleRegenerateItem("shorts")
+                : () => dispatch(regenerateShortsScript())
             }
-            onDelete={(scriptId) => dispatch(deleteShortsScript(scriptId))}
             feedback={packagingId ? (itemFeedback.shorts ?? null) : undefined}
             onFeedback={packagingId ? (fb) => handleFeedback("shorts", fb) : undefined}
           />

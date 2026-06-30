@@ -1,19 +1,16 @@
-import { useEffect } from "react";
 import { DashboardCard, Greetings, ProjectList } from "@/components/dashboard";
 import { DASHBOARD_CARD } from "@/constants/dashboard";
 import Header from "@/components/shared/header";
-import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { useAppSelector } from "@/hooks/useRedux";
 import { currentUser } from "@/utils/feature/user/user.slice";
-import { getUser } from "@/utils/feature/user/user.thunk";
 
 const Dashboard = () => {
-  const dispatch = useAppDispatch();
+  // The user/profile is loaded once by the Firebase auth listener (useAuth).
+  // Do NOT refetch it here: getUser's pending flips user.isLoading, which the
+  // route guard (ProtectedLayout) reacts to — refetching on mount creates a
+  // mount → pending → guard-loader → unmount → settle → remount loop.
   const { stats = { topics: 0, scripts: 0, credits: 0 } } =
     useAppSelector(currentUser) ?? {};
-
-  useEffect(() => {
-    dispatch(getUser());
-  }, [dispatch]);
 
   return (
     <div className="md:w-[90%] mx-auto pb-20">

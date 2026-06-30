@@ -27,6 +27,7 @@ export const useAuthenticate = () => {
           );
         } else dispatch(getUser());
       } else {
+        localStorage.removeItem(LOGGED_IN);
         dispatch(setUser(null));
       }
     });

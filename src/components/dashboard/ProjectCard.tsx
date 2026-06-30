@@ -45,7 +45,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) =
   const navigate = useNavigate();
 
   const statusBadge = getStatusBadgeProps(project.overallStatus);
-  const relativeTime = formatRelativeTime(project.lastUpdatedAt);
+  const relativeTime = formatRelativeTime(project.updatedAt);
 
   return (
     <GlassCard className="hover-scale-sm p-5">
@@ -53,7 +53,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) =
         <div className="flex-between gap-3">
           <div className="flex-1 min-w-0">
             <h3 className="text-title text-base line-clamp-1">
-              {project.workingTitle}
+              {project.title}
             </h3>
             {project.thumbnailHint && (
               <p className="text-caption line-clamp-1 mt-0.5">
@@ -63,13 +63,13 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onDelete }) =
           </div>
           <button
             type="button"
-            aria-label={`Delete project ${project.workingTitle}`}
+            aria-label={`Delete project ${project.title}`}
             className={cn(
               "shrink-0 rounded-lg p-1.5 text-muted-foreground transition-colors duration-200",
               "hover:text-destructive hover:bg-destructive/10",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive",
             )}
-            onClick={() => onDelete(project.id, project.workingTitle)}
+            onClick={() => onDelete(project.id, project.title)}
           >
             <Trash2 className="size-4" />
           </button>

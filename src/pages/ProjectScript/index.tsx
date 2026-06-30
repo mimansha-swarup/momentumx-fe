@@ -62,12 +62,12 @@ const ProjectScriptPage = () => {
 
   const [isEditMode, setIsEditMode] = useState(false);
 
-  const scriptId = project?.topicId ?? "";
+  const scriptId = project?.scriptId ?? "";
   const hasScript = !!project?.scriptId;
   const projectId = project?.id ?? "";
 
   const { streamContent, isStreaming, streamError, startStreaming, scrollSentinelRef } =
-    useScriptStream({ scriptId, projectId });
+    useScriptStream({ projectId });
 
   // Effect 1 — Load existing script when one is available
   useEffect(() => {
