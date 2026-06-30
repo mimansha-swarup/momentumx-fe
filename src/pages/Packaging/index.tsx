@@ -11,7 +11,6 @@ import {
 } from "@/components/packaging";
 import {
   selectPackaging,
-  selectCanAddMoreShorts,
   selectHasContent,
   setScript,
   updateTitleVariation,
@@ -20,7 +19,6 @@ import {
   setSelectedThumbnail,
   updateHook,
   deleteHook,
-  deleteShortsScript,
   resetPackaging,
 } from "@/utils/feature/packaging/packaging.slice";
 import {
@@ -28,7 +26,6 @@ import {
   generateDescription,
   generateThumbnail,
   generateHooks,
-  addNewShortsScript,
   regenerateShortsScript,
   generateAllPackaging,
   savePackaging,
@@ -58,18 +55,14 @@ const PackagingPage = () => {
     isSaving,
     isGeneratingAll,
   } = useAppSelector(selectPackaging);
-  const canAddMoreShorts = useAppSelector(selectCanAddMoreShorts);
   const hasContent = useAppSelector(selectHasContent);
-
-  const isAnyShortsLoading = shortsScript.scripts.some((s) => s.isLoading);
 
   const isAnyLoading =
     titles.isLoading ||
     description.isLoading ||
     thumbnails.isLoading ||
     hooks.isLoading ||
-    isAnyShortsLoading ||
-    shortsScript.isAddingNew;
+    shortsScript.isLoading;
 
   const handleGenerateAll = () => {
     if (!script.trim()) {
@@ -95,21 +88,12 @@ const PackagingPage = () => {
     toastInfo("All content has been cleared");
   };
 
-  const handleAddNewShorts = () => {
+  const handleRegenerateShorts = () => {
     if (!script.trim()) {
       toastError("Please enter a podcast script first");
       return;
     }
-    dispatch(addNewShortsScript());
-  };
-
-  const handleRegenerateShorts = (scriptId: string) => {
-    dispatch(regenerateShortsScript(scriptId));
-  };
-
-  const handleDeleteShorts = (scriptId: string) => {
-    dispatch(deleteShortsScript(scriptId));
-    toastInfo("Script variation removed");
+    dispatch(regenerateShortsScript());
   };
 
   return (
@@ -251,14 +235,10 @@ const PackagingPage = () => {
             onDeleteHook={(index) => dispatch(deleteHook(index))}
           />
 
-          {/* Shorts Scripts - Multiple variations */}
+          {/* Shorts Script */}
           <ShortsScriptCard
-            scripts={shortsScript.scripts}
-            isAddingNew={shortsScript.isAddingNew}
-            canAddMore={canAddMoreShorts}
-            onAddNew={handleAddNewShorts}
+            shortsScript={shortsScript}
             onRegenerate={handleRegenerateShorts}
-            onDelete={handleDeleteShorts}
           />
         </section>
 

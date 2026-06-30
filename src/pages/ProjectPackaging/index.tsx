@@ -25,7 +25,6 @@ import {
   selectDescription,
   selectThumbnails,
   selectShortsScripts,
-  selectCanAddMoreShorts,
   selectIsSaving,
   selectIsGeneratingAll,
   selectCurrentPackaging,
@@ -39,7 +38,6 @@ import {
   updateTitleVariation,
   updateDescription,
   setSelectedThumbnail,
-  deleteShortsScript,
   resetPackaging,
   clearErrors,
   setScript,
@@ -51,7 +49,6 @@ import {
   getPackaging,
   regenerateItem,
   exportPackaging,
-  addNewShortsScript,
   regenerateShortsScript,
   generateTitle,
   generateDescription,
@@ -85,7 +82,6 @@ const ProjectPackagingPage = () => {
   const description = useAppSelector(selectDescription);
   const thumbnails = useAppSelector(selectThumbnails);
   const shortsScript = useAppSelector(selectShortsScripts);
-  const canAddMoreShorts = useAppSelector(selectCanAddMoreShorts);
   const isSaving = useAppSelector(selectIsSaving);
   const isGeneratingAll = useAppSelector(selectIsGeneratingAll);
   const currentPackaging = useAppSelector(selectCurrentPackaging);
@@ -521,14 +517,12 @@ const ProjectPackagingPage = () => {
             />
           )}
           <ShortsScriptCard
-            scripts={shortsScript.scripts}
-            isAddingNew={shortsScript.isAddingNew}
-            canAddMore={canAddMoreShorts}
-            onAddNew={() => dispatch(addNewShortsScript())}
-            onRegenerate={(scriptId) =>
-              dispatch(regenerateShortsScript(scriptId))
+            shortsScript={shortsScript}
+            onRegenerate={
+              packagingId
+                ? () => handleRegenerateItem("shorts")
+                : () => dispatch(regenerateShortsScript())
             }
-            onDelete={(scriptId) => dispatch(deleteShortsScript(scriptId))}
             feedback={packagingId ? (itemFeedback.shorts ?? null) : undefined}
             onFeedback={packagingId ? (fb) => handleFeedback("shorts", fb) : undefined}
           />

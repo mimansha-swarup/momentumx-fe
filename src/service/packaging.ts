@@ -134,10 +134,10 @@ class PackagingService {
     titles: ITitle[];
     selectedTitleIndex: number;
     description: string;
-    thumbnails: string[];
+    thumbnail: string[];
     selectedThumbnailIndex: number;
     hooks: string[];
-    shortsScripts: Array<{ id: string; segments: ITimestampedSegment[] }>;
+    shorts: { segments: ITimestampedSegment[]; totalDuration?: string };
   }): Promise<IBaseFetchResponse<SavePackagingResponse>> {
     const response = await baseFetch.post(this.urls.save, data);
     return response.data;
