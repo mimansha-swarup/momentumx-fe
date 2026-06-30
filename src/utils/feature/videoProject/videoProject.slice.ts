@@ -52,10 +52,10 @@ const videoProjectSlice = createSlice({
         if (action.payload) {
           state.projects.unshift({
             id: action.payload.id,
-            workingTitle: action.payload.workingTitle,
+            title: action.payload.title,
             currentStep: action.payload.currentStep,
             overallStatus: action.payload.overallStatus,
-            lastUpdatedAt: action.payload.lastUpdatedAt,
+            updatedAt: action.payload.updatedAt,
             createdAt: action.payload.createdAt,
             thumbnailHint: null,
           });
@@ -113,13 +113,13 @@ const videoProjectSlice = createSlice({
       .addCase(updateWorkingTitle.fulfilled, (state, action) => {
         state.isUpdating = false;
         const { projectId } = action.meta.arg;
-        const newTitle = action.payload?.workingTitle ?? action.meta.arg.workingTitle;
+        const newTitle = action.payload?.title ?? action.meta.arg.title;
         const project = state.projects.find((p) => p.id === projectId);
         if (project) {
-          project.workingTitle = newTitle;
+          project.title = newTitle;
         }
         if (state.currentProject?.id === projectId) {
-          state.currentProject.workingTitle = newTitle;
+          state.currentProject.title = newTitle;
         }
       })
       .addCase(updateWorkingTitle.rejected, (state, action) => {
@@ -155,7 +155,7 @@ const videoProjectSlice = createSlice({
         state.isStepTransitioning = false;
         if (state.currentProject && action.payload) {
           state.currentProject.currentStep = action.payload.currentStep;
-          state.currentProject.lastUpdatedAt = action.payload.lastUpdatedAt;
+          state.currentProject.updatedAt = action.payload.updatedAt;
           if (action.payload.overallStatus) {
             state.currentProject.overallStatus = action.payload.overallStatus;
           }
@@ -181,7 +181,7 @@ const videoProjectSlice = createSlice({
         state.isStepTransitioning = false;
         if (state.currentProject && action.payload) {
           state.currentProject.currentStep = action.payload.currentStep;
-          state.currentProject.lastUpdatedAt = action.payload.lastUpdatedAt;
+          state.currentProject.updatedAt = action.payload.updatedAt;
           if (action.payload.overallStatus) {
             state.currentProject.overallStatus = action.payload.overallStatus;
           }
@@ -226,11 +226,11 @@ const videoProjectSlice = createSlice({
           if (payload.overallStatus !== undefined) {
             state.currentProject.overallStatus = payload.overallStatus;
           }
-          if (payload.workingTitle !== undefined) {
-            state.currentProject.workingTitle = payload.workingTitle;
+          if (payload.title !== undefined) {
+            state.currentProject.title = payload.title;
           }
-          if (payload.lastUpdatedAt !== undefined) {
-            state.currentProject.lastUpdatedAt = payload.lastUpdatedAt;
+          if (payload.updatedAt !== undefined) {
+            state.currentProject.updatedAt = payload.updatedAt;
           }
           // Deep merge pipeline steps if present
           if (payload.pipeline) {

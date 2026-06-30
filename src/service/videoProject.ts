@@ -44,11 +44,11 @@ class VideoProjectService {
 
   async updateWorkingTitle(
     projectId: string,
-    workingTitle: string
+    title: string
   ): Promise<IBaseFetchResponse<Partial<IVideoProjectListItem>>> {
     const response = await baseFetch.patch(
       this.urls.project.replace("{projectId}", projectId),
-      { workingTitle }
+      { title }
     );
     return response.data;
   }

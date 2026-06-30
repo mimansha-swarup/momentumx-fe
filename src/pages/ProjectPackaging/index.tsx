@@ -360,7 +360,7 @@ const ProjectPackagingPage = () => {
       {/* Completion celebration */}
       {project.overallStatus === "completed" && (
         <CompletionCelebration
-          projectTitle={project.workingTitle}
+          projectTitle={project.title}
           onExport={handleExport}
           onBackToProjects={() => navigate("/app/dashboard")}
           isExporting={isExporting}

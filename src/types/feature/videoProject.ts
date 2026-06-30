@@ -26,7 +26,8 @@ export interface IPipeline {
 
 export interface IVideoProject {
   id: string;
-  workingTitle: string;
+  createdBy: string;
+  title: string;
   /**
    * The ID of the topic this project was created from.
    * The backend uses this as the script's deterministic ID — `scriptId === topicId`
@@ -43,15 +44,15 @@ export interface IVideoProject {
   pipeline: IPipeline;
   isDeleted: boolean;
   createdAt: string;
-  lastUpdatedAt: string;
+  updatedAt: string;
 }
 
 export interface IVideoProjectListItem {
   id: string;
-  workingTitle: string;
+  title: string;
   currentStep: StepName;
   overallStatus: OverallStatus;
-  lastUpdatedAt: string;
+  updatedAt: string;
   createdAt: string;
   thumbnailHint: string | null;
 }
@@ -60,7 +61,7 @@ export interface IStepTransitionResponse {
   id: string;
   currentStep: StepName;
   pipeline: Partial<Record<StepName, IPipelineStep>>;
-  lastUpdatedAt: string;
+  updatedAt: string;
   overallStatus?: OverallStatus;
 }
 
@@ -82,7 +83,7 @@ export interface ListProjectsResponse {
 }
 
 export interface UpdateWorkingTitleRequest {
-  workingTitle: string;
+  title: string;
 }
 
 export interface LinkResourceRequest {

@@ -60,23 +60,23 @@ export const ProjectHeader: React.FC = () => {
   const statusBadge = getStatusBadgeProps(currentProject.overallStatus);
 
   function handleTitleClick() {
-    setEditValue(currentProject.workingTitle);
+    setEditValue(currentProject.title);
     setIsEditing(true);
   }
 
   async function handleTitleSave() {
     const trimmed = editValue.trim();
-    if (!trimmed || trimmed === currentProject.workingTitle) {
+    if (!trimmed || trimmed === currentProject.title) {
       setIsEditing(false);
       return;
     }
     try {
       await dispatch(
-        updateWorkingTitle({ projectId: currentProject.id, workingTitle: trimmed })
+        updateWorkingTitle({ projectId: currentProject.id, title: trimmed })
       ).unwrap();
       setIsEditing(false);
     } catch {
-      setEditValue(currentProject.workingTitle);
+      setEditValue(currentProject.title);
       toastError("Failed to update title");
       setIsEditing(false);
     }
@@ -110,7 +110,7 @@ export const ProjectHeader: React.FC = () => {
       <div className="flex items-center gap-2 min-w-0 flex-1">
         {isEditing ? (
           <>
-            <h1 className="sr-only">{editValue || currentProject.workingTitle}</h1>
+            <h1 className="sr-only">{editValue || currentProject.title}</h1>
             <input
               ref={inputRef}
               type="text"
@@ -134,11 +134,11 @@ export const ProjectHeader: React.FC = () => {
         ) : (
           <>
             <h1 className="text-foreground font-semibold text-lg leading-tight truncate min-w-0">
-              {project.workingTitle}
+              {project.title}
             </h1>
             <button
               type="button"
-              aria-label={`Edit working title: ${project.workingTitle}`}
+              aria-label={`Edit working title: ${project.title}`}
               onClick={handleTitleClick}
               className={cn(
                 "shrink-0 text-muted-foreground opacity-0 hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-200",

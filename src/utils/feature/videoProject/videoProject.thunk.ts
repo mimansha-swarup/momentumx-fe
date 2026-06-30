@@ -56,13 +56,13 @@ export const getProject = createAsyncThunk(
 export const updateWorkingTitle = createAsyncThunk(
   "videoProject/updateTitle",
   async (
-    { projectId, workingTitle }: { projectId: string; workingTitle: string },
+    { projectId, title }: { projectId: string; title: string },
     thunkAPI
   ) => {
     try {
       const response = await videoProjectService.updateWorkingTitle(
         projectId,
-        workingTitle
+        title
       );
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
