@@ -31,16 +31,11 @@ export const selectHook = createAsyncThunk(
     {
       hooksId,
       hookIndex,
-      videoProjectId,
-    }: { hooksId: string; hookIndex: number; videoProjectId: string },
+    }: { hooksId: string; hookIndex: number },
     thunkAPI
   ) => {
     try {
-      const response = await hooksService.selectHook(
-        hooksId,
-        hookIndex,
-        videoProjectId
-      );
+      const response = await hooksService.selectHook(hooksId, hookIndex);
       handleToast({ message: response.message ?? '', warning: response.warning ?? '' });
       return response.data;
     } catch (error) {

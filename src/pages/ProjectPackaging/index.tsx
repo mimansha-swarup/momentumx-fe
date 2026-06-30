@@ -61,10 +61,6 @@ import {
 import { selectCurrentScript } from "@/utils/feature/scripts/script.slice";
 import { getScriptById } from "@/utils/feature/scripts/script.thunk";
 import {
-  selectHooksBatch,
-  selectSelectedHookIndex,
-} from "@/utils/feature/hooks/hooks.slice";
-import {
   TitlesCard,
   OutputCard,
   ThumbnailsCard,
@@ -99,17 +95,12 @@ const ProjectPackagingPage = () => {
   const error = useAppSelector(selectPackagingError);
   const hasContent = useAppSelector(selectHasContent);
   const currentScript = useAppSelector(selectCurrentScript);
-  const hooksBatch = useAppSelector(selectHooksBatch);
-  const selectedHookIndex = useAppSelector(selectSelectedHookIndex);
   const itemFeedback = useAppSelector(selectItemFeedback);
 
   const projectId = project?.id ?? "";
   const packagingId = currentPackaging?.id ?? project?.packagingId ?? "";
   const scriptText = currentScript?.script ?? "";
   const selectedTitle = titles.titles[titles.selectedIndex]?.title ?? "";
-  const hookIndex = selectedHookIndex ?? project?.selectedHookIndex;
-  const selectedHookText =
-    hookIndex != null ? (hooksBatch?.hooks?.[hookIndex] ?? "") : "";
 
   // Effect 1 — Load script if not cached
   useEffect(() => {
@@ -166,7 +157,7 @@ const ProjectPackagingPage = () => {
     await dispatch(
       generateAllPackagingForProject({
         script: scriptText,
-        selectedHook: selectedHookText || undefined,
+        videoProjectId: projectId,
       })
     );
     if (mountedRef.current) {
@@ -190,7 +181,6 @@ const ProjectPackagingPage = () => {
         item,
         script: scriptText,
         title: item !== "title" ? selectedTitle : undefined,
-        selectedHook: selectedHookText || undefined,
       })
     );
     if (regenerateItem.fulfilled.match(result)) {
@@ -232,7 +222,6 @@ const ProjectPackagingPage = () => {
           item,
           script: scriptText,
           title: item !== "title" ? selectedTitle : undefined,
-          selectedHook: selectedHookText || undefined,
         })
       );
       if (regenerateItem.rejected.match(result)) break;

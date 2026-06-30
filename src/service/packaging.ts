@@ -36,13 +36,15 @@ class PackagingService {
     this.urls = URLS;
   }
 
+  // The selected hook is resolved server-side from the project's stored
+  // selection — pass `videoProjectId` (optional) instead of hook text.
   async generateTitle(
     script: string,
-    selectedHook?: string
+    videoProjectId?: string
   ): Promise<IBaseFetchResponse<GenerateTitleResponse>> {
     const response = await baseFetch.post(this.urls.generateTitle, {
       script,
-      ...(selectedHook !== undefined && { selectedHook }),
+      ...(videoProjectId !== undefined && { videoProjectId }),
     });
     return response.data;
   }
@@ -50,12 +52,12 @@ class PackagingService {
   async generateDescription(
     script: string,
     title: string,
-    selectedHook?: string
+    videoProjectId?: string
   ): Promise<IBaseFetchResponse<GenerateDescriptionResponse>> {
     const response = await baseFetch.post(this.urls.generateDescription, {
       script,
       title,
-      ...(selectedHook !== undefined && { selectedHook }),
+      ...(videoProjectId !== undefined && { videoProjectId }),
     });
     return response.data;
   }
@@ -63,12 +65,12 @@ class PackagingService {
   async generateThumbnail(
     script: string,
     title: string,
-    selectedHook?: string
+    videoProjectId?: string
   ): Promise<IBaseFetchResponse<GenerateThumbnailResponse>> {
     const response = await baseFetch.post(this.urls.generateThumbnail, {
       script,
       title,
-      ...(selectedHook !== undefined && { selectedHook }),
+      ...(videoProjectId !== undefined && { videoProjectId }),
     });
     return response.data;
   }
@@ -99,7 +101,7 @@ class PackagingService {
   async generateTitleDependentContent(
     script: string,
     duration: number = 60,
-    selectedHook?: string
+    videoProjectId?: string
   ): Promise<{
     title: GenerateTitleResponse;
     description: GenerateDescriptionResponse;
@@ -107,14 +109,14 @@ class PackagingService {
     shorts: GenerateShortsResponse;
   }> {
     // First, get titles (returns array of 3)
-    const titleResponse = await this.generateTitle(script, selectedHook);
+    const titleResponse = await this.generateTitle(script, videoProjectId);
     // Use the first title for dependent content generation
     const titleText = titleResponse?.data?.titles?.[0]?.title ?? "";
 
     // Then call description, thumbnail, and shorts in parallel with the title
     const [description, thumbnail, shorts] = await Promise.all([
-      this.generateDescription(script, titleText, selectedHook),
-      this.generateThumbnail(script, titleText, selectedHook),
+      this.generateDescription(script, titleText, videoProjectId),
+      this.generateThumbnail(script, titleText, videoProjectId),
       this.generateShorts(script, duration),
     ]);
 
@@ -162,7 +164,6 @@ class PackagingService {
       script: string;
       title?: string;
       duration?: number;
-      selectedHook?: string;
     }
   ): Promise<IBaseFetchResponse<RegenerateItemResponse>> {
     const response = await baseFetch.post(

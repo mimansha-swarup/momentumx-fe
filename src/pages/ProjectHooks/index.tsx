@@ -106,9 +106,7 @@ const ProjectHooksPage = () => {
 
   const handleSelect = async (hookIndex: number) => {
     if (!hooksId || !projectId || isSelecting) return;
-    const result = await dispatch(
-      selectHook({ hooksId, hookIndex, videoProjectId: projectId })
-    );
+    const result = await dispatch(selectHook({ hooksId, hookIndex }));
     if (selectHook.fulfilled.match(result)) {
       await dispatch(getProject(projectId));
       navigate(`/app/project/${projectId}/packaging`);

@@ -152,14 +152,14 @@ export const generateAllPackaging = createAsyncThunk(
 export const generateAllPackagingForProject = createAsyncThunk(
   "packaging/generateAllForProject",
   async (
-    { script, selectedHook }: { script: string; selectedHook?: string },
+    { script, videoProjectId }: { script: string; videoProjectId?: string },
     thunkAPI
   ) => {
     try {
       const result = await packagingService.generateTitleDependentContent(
         script,
         60,
-        selectedHook
+        videoProjectId
       );
       return {
         title: result.title,
@@ -235,17 +235,18 @@ export const regenerateItem = createAsyncThunk<
     script: string;
     title?: string;
     duration?: number;
-    selectedHook?: string;
   }
 >(
   "packaging/regenerateItem",
   async (arg, thunkAPI) => {
     try {
-      const { packagingId, item, script, title, duration, selectedHook } = arg;
+      const { packagingId, item, script, title, duration } = arg;
+      // The hook is resolved server-side from the videoProjectId stored on the
+      // packaging document — nothing hook-related is sent from the client.
       const response = await packagingService.regenerateItem(
         packagingId,
         item,
-        { script, title, duration, selectedHook }
+        { script, title, duration }
       );
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       if (!response.data) {
