@@ -28,13 +28,13 @@ export interface IVideoProject {
   id: string;
   createdBy: string;
   title: string;
-  /**
-   * The ID of the topic this project was created from.
-   * The backend uses this as the script's deterministic ID — `scriptId === topicId`
-   * until a script is explicitly saved, at which point `scriptId` is set separately.
-   * Use `topicId` when calling script endpoints (stream, fetch, edit, export).
-   */
+  /** The ID of the topic this project was created from. */
   topicId: string;
+  /**
+   * The generated script's id — a UUID distinct from `topicId`, set once a
+   * script is generated. Use this (not `topicId`) for script fetch/edit/export/
+   * regenerate/feedback. Script streaming is keyed by the project id instead.
+   */
   scriptId: string | null;
   hooksId: string | null;
   selectedHookIndex: number | null;

@@ -6,7 +6,7 @@ type FeedbackValue = "like" | "dislike" | null;
 
 const URLS = {
   scripts: "/v1/scripts",
-  streamScript: "/v1/scripts/stream/{scriptId}",
+  streamScript: "/v1/scripts/stream/{projectId}",
   scriptById: "/v1/scripts/{scriptId}",
   editScript: "/v1/scripts/edit/{scriptId}",
   feedback: "/v1/scripts/{scriptId}/feedback",
@@ -21,9 +21,11 @@ class ScriptService {
 
   // SSE via EventSource cannot send custom headers, so the Firebase token
   // is passed as a query parameter. This is the only endpoint that does this.
+  // Script generation is project-scoped: pass the video-project id; the server
+  // resolves the topic and links the generated script back to the project.
   startStreamingScripts = async (
-    id: string,
-    setter: (prev: string) => void,
+    projectId: string,
+    setter: (chunk: string) => void,
     onDone: () => void,
     onError: () => void
   ) => {
@@ -32,17 +34,24 @@ class ScriptService {
       throw new Error("Authentication token unavailable");
     }
 
-    const url = this.urls.streamScript.replace("{scriptId}", id);
+    const url = this.urls.streamScript.replace("{projectId}", projectId);
     const evtSource = new EventSource(
       getApiDomain(true) + url + `?token=${token}`
     );
 
     let consecutiveErrors = 0;
     evtSource.onmessage = (e) => {
+      // The stream terminates with a raw (non-JSON) sentinel frame.
+      if (e.data === "[DONE]") {
+        onDone();
+        evtSource.close();
+        return;
+      }
       try {
-        const script = JSON.parse(e.data);
+        // Each data frame is a JSON-encoded string chunk.
+        const chunk = JSON.parse(e.data) as string;
         consecutiveErrors = 0;
-        setter(script);
+        setter(chunk);
       } catch {
         consecutiveErrors++;
         if (consecutiveErrors >= 10) {
@@ -51,11 +60,6 @@ class ScriptService {
         }
       }
     };
-
-    evtSource.addEventListener("done", () => {
-      onDone();
-      evtSource.close();
-    });
 
     evtSource.onerror = () => {
       evtSource.close();

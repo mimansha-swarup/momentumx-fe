@@ -104,11 +104,11 @@ const ProjectPackagingPage = () => {
 
   // Effect 1 — Load script if not cached
   useEffect(() => {
-    const scriptId = project?.topicId;
+    const scriptId = project?.scriptId;
     if (scriptId && !currentScript) {
       dispatch(getScriptById(scriptId));
     }
-  }, [project?.topicId, currentScript, dispatch]);
+  }, [project?.scriptId, currentScript, dispatch]);
 
   // Effect 2 — Load existing packaging if available
   useEffect(() => {

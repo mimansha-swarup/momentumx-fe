@@ -3,16 +3,12 @@ import { useAppDispatch } from "@/hooks/useRedux";
 import { scriptService } from "@/service/script";
 import { markDone, resetState } from "@/utils/feature/scripts/script.slice";
 import {
-  getScriptById,
-} from "@/utils/feature/scripts/script.thunk";
-import {
   getProject,
   startStep,
 } from "@/utils/feature/videoProject/videoProject.thunk";
 import { SCRIPT_GENERATION_DELAY_MS } from "@/constants/app";
 
 interface UseScriptStreamOptions {
-  scriptId: string;
   projectId: string;
 }
 
@@ -33,7 +29,6 @@ interface UseScriptStreamReturn {
  * Token is fetched manually via auth.currentUser?.getIdToken() inside the service.
  */
 export const useScriptStream = ({
-  scriptId,
   projectId,
 }: UseScriptStreamOptions): UseScriptStreamReturn => {
   const dispatch = useAppDispatch();
@@ -49,7 +44,7 @@ export const useScriptStream = ({
   const mountedRef = useRef(true);
 
   const startStreaming = useCallback(() => {
-    if (!scriptId || !projectId) return;
+    if (!projectId) return;
 
     // Guard against duplicate streams
     if (isStreamingRef.current) return;
@@ -88,11 +83,11 @@ export const useScriptStream = ({
         if (!mountedRef.current) return;
         dispatch(markDone());
         // Backend auto-started, auto-linked, auto-completed the script step.
-        // Re-fetch project to get updated pipeline state, then load the script.
+        // Re-fetch the project to pick up the newly-set scriptId; the page then
+        // loads the script once project.scriptId is available.
         timeoutRef.current = setTimeout(() => {
           if (!mountedRef.current) return;
           dispatch(getProject(projectId));
-          dispatch(getScriptById(scriptId));
           setIsStreaming(false);
           isStreamingRef.current = false;
         }, SCRIPT_GENERATION_DELAY_MS);
@@ -100,7 +95,7 @@ export const useScriptStream = ({
 
       try {
         const evtSource = await scriptService.startStreamingScripts(
-          scriptId,
+          projectId,
           onChunk,
           onDone,
           onError
@@ -112,7 +107,7 @@ export const useScriptStream = ({
     };
 
     initStream();
-  }, [scriptId, projectId, dispatch]);
+  }, [projectId, dispatch]);
 
   // Cleanup on unmount
   useEffect(() => {
