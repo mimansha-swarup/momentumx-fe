@@ -7,6 +7,7 @@ import packagingReducer from "@/utils/feature/packaging/packaging.slice";
 import videoProjectReducer from "@/utils/feature/videoProject/videoProject.slice";
 import hooksReducer from "@/utils/feature/hooks/hooks.slice";
 import researchReducer from "@/utils/feature/research/research.slice";
+import titleGeneratorReducer from "@/utils/feature/titleGenerator/titleGenerator.slice";
 
 const middlewares: Middleware[] = [];
 
@@ -23,6 +24,7 @@ export const store = configureStore({
     videoProject: videoProjectReducer,
     hooks: hooksReducer,
     research: researchReducer,
+    titleGenerator: titleGeneratorReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(middlewares),

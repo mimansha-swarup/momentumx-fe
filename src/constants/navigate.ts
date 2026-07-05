@@ -1,4 +1,4 @@
-import { Home, Lightbulb, FileText, Settings, Search } from "lucide-react";
+import { Home, Lightbulb, FileText, Settings, Search, Sparkles } from "lucide-react";
 import { HIDE_OLD_FLOW } from "./root";
 
 export const urlMapping = HIDE_OLD_FLOW
@@ -15,6 +15,13 @@ export const urlMapping = HIDE_OLD_FLOW
         label: "Research",
         icon: Search,
         route: "/app/research",
+        subRoutes: [],
+      },
+      {
+        name: "title-generator",
+        label: "Title Generator",
+        icon: Sparkles,
+        route: "/app/title-generator",
         subRoutes: [],
       },
     ]

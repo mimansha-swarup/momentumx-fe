@@ -21,6 +21,7 @@ const TitlePage = lazy(() => import("@/pages/Titles"));
 const ProjectScriptPage = lazy(() => import("@/pages/ProjectScript"));
 const ProjectHooksPage = lazy(() => import("@/pages/ProjectHooks"));
 const ProjectPackagingPage = lazy(() => import("@/pages/ProjectPackaging"));
+const TitleGeneratorPage = lazy(() => import("@/pages/TitleGenerator"));
 
 export const localRouter = createBrowserRouter([
   { path: "/login", element: <Suspense fallback={<RootLoader />}><Login /></Suspense> },
@@ -51,6 +52,14 @@ export const localRouter = createBrowserRouter([
             element: (
               <Suspense fallback={<RootLoader />}>
                 <ResearchPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: "title-generator",
+            element: (
+              <Suspense fallback={<RootLoader />}>
+                <TitleGeneratorPage />
               </Suspense>
             ),
           },
