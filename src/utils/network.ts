@@ -6,8 +6,9 @@ export const getApiDomain = (isLongResponse = false) => {
   if (isLongResponse) return "https://momentumx-be.onrender.com";
   switch (env) {
     case "dev":
-    default: // in future add prod in default
       return "https://momentumx-be.vercel.app";
+    default: // in future add prod in default
+      return "https://momentumx-be.onrender.com";
   }
 };
 
