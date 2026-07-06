@@ -5,8 +5,8 @@ export const getApiDomain = (isLongResponse = false) => {
   if (env === "local") return "http://localhost:3000";
   if (isLongResponse) return "https://momentumx-be.onrender.com";
   switch (env) {
+    // return "https://momentumx-be.vercel.app";
     case "dev":
-      return "https://momentumx-be.vercel.app";
     default: // in future add prod in default
       return "https://momentumx-be.onrender.com";
   }
