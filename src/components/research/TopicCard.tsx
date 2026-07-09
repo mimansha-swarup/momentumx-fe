@@ -1,4 +1,4 @@
-import { ArrowRight, FileText, Link2, Loader2, RotateCcw } from 'lucide-react';
+import { ArrowRight, FileText, Link2, Loader2, RotateCcw, Sparkles, TrendingUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import GlassCard from '@/components/shared/glassCard';
@@ -35,9 +35,24 @@ export const TopicCard: React.FC<TopicCardProps> = ({
 
   return (
     <GlassCard className="hover-scale-sm p-5">
-      <p className="text-title text-sm line-clamp-3">{topic.title}</p>
+      <p className="text-title text-sm font-medium line-clamp-2">{topic.title}</p>
+
+      {topic.concept && (
+        <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground line-clamp-3">
+          {topic.concept}
+        </p>
+      )}
 
       <div className="mt-3 flex flex-row flex-wrap gap-2">
+        {topic.ideaType && (
+          <Badge
+            variant="secondary"
+            className={topic.ideaType === 'short' ? 'text-fuchsia-400' : 'text-sky-400'}
+          >
+            <Sparkles className="h-3 w-3" />
+            {topic.ideaType === 'short' ? 'Short' : 'Long-form'}
+          </Badge>
+        )}
         {topic.isScriptGenerated && (
           <Badge variant="secondary" className="text-emerald-400">
             <FileText className="h-3 w-3" />
@@ -51,6 +66,13 @@ export const TopicCard: React.FC<TopicCardProps> = ({
           </Badge>
         )}
       </div>
+
+      {topic.evidence && (
+        <p className="mt-2 flex items-start gap-1.5 text-[11px] leading-snug text-muted-foreground/80">
+          <TrendingUp className="mt-0.5 h-3 w-3 shrink-0 text-emerald-400/80" />
+          <span className="line-clamp-2">{topic.evidence}</span>
+        </p>
+      )}
 
       <div className="mt-3 flex flex-row items-center justify-between gap-2">
         <div className="flex flex-row items-center gap-1">
