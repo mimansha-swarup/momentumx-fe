@@ -1,5 +1,6 @@
 import axios from "axios";
-import { getAuth } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
+import { LOGGED_IN } from "@/constants/root";
 export const getApiDomain = (isLongResponse = false) => {
   const env = import.meta.env.VITE_ENV || "production";
   if (env === "local") return "http://localhost:3000";
@@ -35,6 +36,25 @@ baseFetch.interceptors.request.use(
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+// Auth-failure handling (backend P0A): the API now returns 401 exclusively for
+// authentication failures (invalid/expired session Firebase couldn't refresh),
+// while 403 is reserved for ownership failures — which must NOT log the user
+// out. On a 401 we sign out; onAuthStateChanged then clears the user and
+// ProtectedRoute redirects to /login. The error is still rejected so callers'
+// own error handling runs unchanged.
+baseFetch.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error?.response?.status === 401) {
+      localStorage.removeItem(LOGGED_IN);
+      // Fire-and-forget so a signOut hiccup can neither delay nor mask the
+      // caller's original error, which we always re-reject below.
+      void signOut(getAuth()).catch(() => {});
+    }
+    return Promise.reject(error);
+  }
 );
 
 export { baseFetch };
