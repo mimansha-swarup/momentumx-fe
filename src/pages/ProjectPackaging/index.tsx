@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Package,
@@ -72,6 +72,29 @@ import { Skeleton } from "@/components/ui/skeleton";
 import GlassCard from "@/components/shared/glassCard";
 import { PACKAGING_LIMITS, PackagingItemName } from "@/types/feature/packaging";
 
+// Full-panel loading placeholder — same skeleton for the "loading existing"
+// and "generating" phases, differing only by its status label.
+const PackagingSkeletonState = ({ label }: { label: string }) => (
+  <div className="space-y-4" role="status" aria-label={label}>
+    <div className="flex items-center gap-2 text-primary">
+      <Loader2 className="size-4 motion-safe:animate-spin" aria-hidden="true" />
+      <span className="text-sm font-medium">{label}...</span>
+    </div>
+    <div className="space-y-4">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <GlassCard key={i}>
+          <div className="flex flex-col gap-3 p-2">
+            <Skeleton className="w-2/5 h-3 bg-accent-foreground/25" />
+            <Skeleton className="w-full h-3 bg-accent-foreground/25" />
+            <Skeleton className="w-4/5 h-3 bg-accent-foreground/25" />
+            <Skeleton className="w-3/5 h-3 bg-accent-foreground/25" />
+          </div>
+        </GlassCard>
+      ))}
+    </div>
+  </div>
+);
+
 const ProjectPackagingPage = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -127,15 +150,6 @@ const ProjectPackagingPage = () => {
     }
   }, [scriptText, dispatch]);
 
-  // Mounted ref for abort on unmount
-  const mountedRef = useRef(true);
-  useEffect(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
-
   // Effect 5 — Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -156,9 +170,7 @@ const ProjectPackagingPage = () => {
         videoProjectId: projectId,
       })
     );
-    if (mountedRef.current) {
-      dispatch(getProject(projectId));
-    }
+    dispatch(getProject(projectId));
   };
 
   const handleSave = async () => {
@@ -211,7 +223,6 @@ const ProjectPackagingPage = () => {
       .map(([item]) => item);
 
     for (const item of staleItems) {
-      if (!mountedRef.current) return;
       const result = await dispatch(
         regenerateItem({
           packagingId,
@@ -222,7 +233,6 @@ const ProjectPackagingPage = () => {
       );
       if (regenerateItem.rejected.match(result)) break;
     }
-    if (!mountedRef.current) return;
     dispatch(getPackaging(packagingId));
     dispatch(getProject(projectId));
   };
@@ -237,29 +247,7 @@ const ProjectPackagingPage = () => {
 
   // Loading state — fetching existing packaging
   if (isDetailLoading && !hasContent) {
-    return (
-      <div className="space-y-4" role="status" aria-label="Loading packaging">
-        <div className="flex items-center gap-2 text-primary">
-          <Loader2
-            className="size-4 motion-safe:animate-spin"
-            aria-hidden="true"
-          />
-          <span className="text-sm font-medium">Loading packaging...</span>
-        </div>
-        <div className="space-y-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <GlassCard key={i}>
-              <div className="flex flex-col gap-3 p-2">
-                <Skeleton className="w-2/5 h-3 bg-accent-foreground/25" />
-                <Skeleton className="w-full h-3 bg-accent-foreground/25" />
-                <Skeleton className="w-4/5 h-3 bg-accent-foreground/25" />
-                <Skeleton className="w-3/5 h-3 bg-accent-foreground/25" />
-              </div>
-            </GlassCard>
-          ))}
-        </div>
-      </div>
-    );
+    return <PackagingSkeletonState label="Loading packaging" />;
   }
 
   // Error state — load-phase errors only
@@ -314,29 +302,7 @@ const ProjectPackagingPage = () => {
 
   // Generating state
   if (isGeneratingAll && !hasContent) {
-    return (
-      <div className="space-y-4" role="status" aria-label="Generating packaging">
-        <div className="flex items-center gap-2 text-primary">
-          <Loader2
-            className="size-4 motion-safe:animate-spin"
-            aria-hidden="true"
-          />
-          <span className="text-sm font-medium">Generating packaging...</span>
-        </div>
-        <div className="space-y-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <GlassCard key={i}>
-              <div className="flex flex-col gap-3 p-2">
-                <Skeleton className="w-2/5 h-3 bg-accent-foreground/25" />
-                <Skeleton className="w-full h-3 bg-accent-foreground/25" />
-                <Skeleton className="w-4/5 h-3 bg-accent-foreground/25" />
-                <Skeleton className="w-3/5 h-3 bg-accent-foreground/25" />
-              </div>
-            </GlassCard>
-          ))}
-        </div>
-      </div>
-    );
+    return <PackagingSkeletonState label="Generating packaging" />;
   }
 
   // Content state

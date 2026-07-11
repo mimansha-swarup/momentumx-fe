@@ -1,6 +1,6 @@
 import { createSlice, createSelector } from "@reduxjs/toolkit";
 import { RootState } from "@/utils/store";
-import { IVideoProjectState, IPipelineStep, StepName, StepStatus } from "@/types/feature/videoProject";
+import { IVideoProjectState, IPipelineStep, IStepTransitionResponse, StepName, StepStatus } from "@/types/feature/videoProject";
 import {
   createProject,
   listProjects,
@@ -30,6 +30,26 @@ const initialState: IVideoProjectState = {
   isLinkingResource: false,
 };
 
+// startStep and completeStep return the same transition payload and mutate
+// currentProject identically — one helper serves both fulfilled handlers.
+const applyStepTransition = (
+  state: IVideoProjectState,
+  payload?: IStepTransitionResponse
+) => {
+  state.isStepTransitioning = false;
+  if (!state.currentProject || !payload) return;
+  state.currentProject.currentStep = payload.currentStep;
+  state.currentProject.updatedAt = payload.updatedAt;
+  if (payload.overallStatus) {
+    state.currentProject.overallStatus = payload.overallStatus;
+  }
+  for (const [stepName, stepData] of Object.entries(payload.pipeline)) {
+    if (stepData) {
+      state.currentProject.pipeline[stepName as StepName] = stepData;
+    }
+  }
+};
+
 const videoProjectSlice = createSlice({
   name: "videoProject",
   initialState,
@@ -38,7 +58,6 @@ const videoProjectSlice = createSlice({
       state.currentProject = null;
       state.projectError = null;
     },
-    clearProjects: () => initialState,
   },
   extraReducers: (builder) => {
     builder
@@ -147,52 +166,22 @@ const videoProjectSlice = createSlice({
         state.projectError = action.payload as string;
       })
 
-      // Start Step — deep merge: only update the returned pipeline step(s)
+      // Start/Complete Step — deep merge only the returned pipeline step(s)
       .addCase(startStep.pending, (state) => {
         state.isStepTransitioning = true;
       })
       .addCase(startStep.fulfilled, (state, action) => {
-        state.isStepTransitioning = false;
-        if (state.currentProject && action.payload) {
-          state.currentProject.currentStep = action.payload.currentStep;
-          state.currentProject.updatedAt = action.payload.updatedAt;
-          if (action.payload.overallStatus) {
-            state.currentProject.overallStatus = action.payload.overallStatus;
-          }
-          for (const [stepName, stepData] of Object.entries(
-            action.payload.pipeline
-          )) {
-            if (stepData) {
-              state.currentProject.pipeline[stepName as StepName] = stepData;
-            }
-          }
-        }
+        applyStepTransition(state, action.payload);
       })
       .addCase(startStep.rejected, (state, action) => {
         state.isStepTransitioning = false;
         state.projectError = action.payload as string;
       })
-
-      // Complete Step — deep merge: only update the returned pipeline step(s)
       .addCase(completeStep.pending, (state) => {
         state.isStepTransitioning = true;
       })
       .addCase(completeStep.fulfilled, (state, action) => {
-        state.isStepTransitioning = false;
-        if (state.currentProject && action.payload) {
-          state.currentProject.currentStep = action.payload.currentStep;
-          state.currentProject.updatedAt = action.payload.updatedAt;
-          if (action.payload.overallStatus) {
-            state.currentProject.overallStatus = action.payload.overallStatus;
-          }
-          for (const [stepName, stepData] of Object.entries(
-            action.payload.pipeline
-          )) {
-            if (stepData) {
-              state.currentProject.pipeline[stepName as StepName] = stepData;
-            }
-          }
-        }
+        applyStepTransition(state, action.payload);
       })
       .addCase(completeStep.rejected, (state, action) => {
         state.isStepTransitioning = false;
@@ -206,35 +195,13 @@ const videoProjectSlice = createSlice({
       .addCase(linkResource.fulfilled, (state, action) => {
         state.isLinkingResource = false;
         if (state.currentProject && action.payload) {
-          const payload = action.payload;
-          // Explicitly assign each known top-level field from Partial<IVideoProject>
-          if (payload.scriptId !== undefined) {
-            state.currentProject.scriptId = payload.scriptId;
-          }
-          if (payload.hooksId !== undefined) {
-            state.currentProject.hooksId = payload.hooksId;
-          }
-          if (payload.packagingId !== undefined) {
-            state.currentProject.packagingId = payload.packagingId;
-          }
-          if (payload.selectedHookIndex !== undefined) {
-            state.currentProject.selectedHookIndex = payload.selectedHookIndex;
-          }
-          if (payload.currentStep !== undefined) {
-            state.currentProject.currentStep = payload.currentStep;
-          }
-          if (payload.overallStatus !== undefined) {
-            state.currentProject.overallStatus = payload.overallStatus;
-          }
-          if (payload.title !== undefined) {
-            state.currentProject.title = payload.title;
-          }
-          if (payload.updatedAt !== undefined) {
-            state.currentProject.updatedAt = payload.updatedAt;
-          }
-          // Deep merge pipeline steps if present
-          if (payload.pipeline) {
-            for (const [stepName, stepData] of Object.entries(payload.pipeline)) {
+          // Shallow-merge every returned top-level field (JSON payload never
+          // carries explicit undefined, so this matches the old per-field guards),
+          // then deep-merge pipeline steps separately.
+          const { pipeline, ...rest } = action.payload;
+          Object.assign(state.currentProject, rest);
+          if (pipeline) {
+            for (const [stepName, stepData] of Object.entries(pipeline)) {
               if (stepData) {
                 state.currentProject.pipeline[stepName as StepName] = stepData as IPipelineStep;
               }
@@ -249,8 +216,7 @@ const videoProjectSlice = createSlice({
   },
 });
 
-export const { clearCurrentProject, clearProjects } =
-  videoProjectSlice.actions;
+export const { clearCurrentProject } = videoProjectSlice.actions;
 
 // Selectors
 export const selectProjects = (state: RootState) =>

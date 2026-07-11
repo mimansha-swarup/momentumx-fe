@@ -10,7 +10,7 @@ import {
   submitTopicFeedback,
 } from "./titles.thunk";
 import { IGeneratedTopic } from "@/types/components/dashboard";
-import { ITitleData, ITitleParams, ITitleState, TitleFilters } from "@/types/feature/title";
+import { ITitleParams, ITitleState, TitleFilters } from "@/types/feature/title";
 
 const initialState: ITitleState = {
   data: null,
@@ -33,19 +33,6 @@ const titlesSlice = createSlice({
   reducers: {
     resetState: (state) => {
       state.isDone = false;
-    },
-    addTitle: (state, action: PayloadAction<{ meta?: ITitleData['meta']; list?: IGeneratedTopic[] }>) => {
-      state.data = {
-        ...state.data,
-        meta: {
-          nextCursor: action.payload?.meta?.nextCursor ?? null,
-          hasNextPage: action.payload?.meta?.hasNextPage ?? false,
-        },
-        lists: [
-          ...(state?.data?.lists ?? []),
-          ...(action?.payload?.list ?? []),
-        ],
-      };
     },
     resetTitle: (state) => {
       state.data = null;
@@ -216,7 +203,6 @@ const titlesSlice = createSlice({
 
 export const {
   resetState,
-  addTitle,
   markDone,
   resetTitle,
   updateFilter,

@@ -10,7 +10,7 @@ import {
   Type,
   Star,
 } from "lucide-react";
-import { toastError, toastSuccess } from "@/utils/toast";
+import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import GradientSkeleton from "./GradientSkeleton";
 import { PACKAGING_LIMITS, type ITitle } from "@/types/feature/packaging";
 import { FeedbackButtons } from "@/components/research/FeedbackButtons";
@@ -48,7 +48,7 @@ const TitleItem = ({
   onSelect,
   onEdit,
 }: TitleItemProps) => {
-  const [copied, setCopied] = useState(false);
+  const [copied, copy] = useCopyToClipboard("Title copied to clipboard");
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(title);
 
@@ -59,16 +59,9 @@ const TitleItem = ({
   // both the pill text and its tier colour so they can never disagree.
   const ctrScore = typeof score === "number" ? Math.round(score) : null;
 
-  const handleCopy = async (e: React.MouseEvent) => {
+  const handleCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
-    try {
-      await navigator.clipboard.writeText(title);
-      setCopied(true);
-      toastSuccess("Title copied to clipboard");
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toastError("Failed to copy");
-    }
+    copy(title);
   };
 
   const handleSave = () => {

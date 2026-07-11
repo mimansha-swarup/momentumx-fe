@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Copy, Check, Pencil, X } from "lucide-react";
-import { toastError, toastSuccess } from "@/utils/toast";
+import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import GradientSkeleton from "./GradientSkeleton";
 import { FeedbackButtons } from "@/components/research/FeedbackButtons";
 
@@ -72,7 +72,7 @@ const OutputCard = ({
 }: OutputCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(content);
-  const [copied, setCopied] = useState(false);
+  const [copied, copy] = useCopyToClipboard();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const accent = accentStyles[accentColor];
@@ -92,16 +92,7 @@ const OutputCard = ({
     }
   }, [isEditing]);
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(content);
-      setCopied(true);
-      toastSuccess("Copied to clipboard");
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toastError("Failed to copy");
-    }
-  };
+  const handleCopy = () => copy(content);
 
   const handleSaveEdit = () => {
     if (onEdit && editValue !== content) {

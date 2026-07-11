@@ -16,12 +16,7 @@ const initialState: IResearchState = {
 const researchSlice = createSlice({
   name: "research",
   initialState,
-  reducers: {
-    clearResearch: () => initialState,
-    clearKeywords: (state) => {
-      state.keywords = initialState.keywords;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       // Trending
@@ -67,8 +62,6 @@ const researchSlice = createSlice({
       });
   },
 });
-
-export const { clearResearch, clearKeywords } = researchSlice.actions;
 
 export const selectTrending = (state: RootState) => state.research.trending;
 export const selectCompetitors = (state: RootState) =>

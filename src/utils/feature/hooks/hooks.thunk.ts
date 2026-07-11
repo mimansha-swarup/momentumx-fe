@@ -3,8 +3,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { FeedbackValue } from "@/types/feature/hooks";
 import { handleToast } from "@/utils/toast";
 
-const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : "An unexpected error occurred";
+import { getErrorMessage } from "@/utils/error";
 
 export const generateHooks = createAsyncThunk(
   "hooks/generate",

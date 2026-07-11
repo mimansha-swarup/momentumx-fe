@@ -3,8 +3,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { handleToast } from "@/utils/toast";
 import { IGeneratedScript } from "@/types/feature/script";
 
-const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : "An unexpected error occurred";
+import { getErrorMessage } from "@/utils/error";
 
 export const retrieveScripts = createAsyncThunk<
   IGeneratedScript[] | undefined,

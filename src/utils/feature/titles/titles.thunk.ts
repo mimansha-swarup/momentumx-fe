@@ -2,8 +2,7 @@ import { titleService, TopicsListParams } from "@/service/titles";
 import { handleToast } from "@/utils/toast";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : "An unexpected error occurred";
+import { getErrorMessage } from "@/utils/error";
 
 type RetrieveTitlesParams = TopicsListParams & { isFresh?: boolean };
 

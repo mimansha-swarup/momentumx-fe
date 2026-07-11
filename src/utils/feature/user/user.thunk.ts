@@ -4,8 +4,7 @@ import { IUserProfile } from "@/types/feature/user";
 import { handleToast } from "@/utils/toast";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : "An unexpected error occurred";
+import { getErrorMessage } from "@/utils/error";
 
 export const getUser = createAsyncThunk<
   IUserProfile | undefined,

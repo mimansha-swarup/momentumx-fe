@@ -10,7 +10,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { toastError, toastSuccess } from "@/utils/toast";
+import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import GradientSkeleton from "./GradientSkeleton";
 import { IShortsOutput } from "@/types/feature/packaging";
 import { FeedbackButtons } from "@/components/research/FeedbackButtons";
@@ -55,23 +55,16 @@ const ShortsScriptCard = ({
   feedback,
   onFeedback,
 }: ShortsScriptCardProps) => {
-  const [copied, setCopied] = useState(false);
+  const [copied, copy] = useCopyToClipboard("Script copied to clipboard");
   const [isExpanded, setIsExpanded] = useState(true);
 
   const { segments, totalDuration, isLoading, error } = shortsScript;
 
-  const handleCopyAll = async () => {
-    try {
-      const fullScript = segments
-        .map((seg) => `[${seg.startTime} - ${seg.endTime}]\n${seg.content}`)
-        .join("\n\n");
-      await navigator.clipboard.writeText(fullScript);
-      setCopied(true);
-      toastSuccess("Script copied to clipboard");
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toastError("Failed to copy");
-    }
+  const handleCopyAll = () => {
+    const fullScript = segments
+      .map((seg) => `[${seg.startTime} - ${seg.endTime}]\n${seg.content}`)
+      .join("\n\n");
+    copy(fullScript);
   };
 
   const displayDuration = totalDuration ?? (segments.length > 0 ? segments[segments.length - 1].endTime : "0:00");

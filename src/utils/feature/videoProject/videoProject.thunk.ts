@@ -8,8 +8,7 @@ import {
   CreateProjectRequest,
 } from "@/types/feature/videoProject";
 
-const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : "An unexpected error occurred";
+import { getErrorMessage } from "@/utils/error";
 
 export const createProject = createAsyncThunk(
   "videoProject/create",

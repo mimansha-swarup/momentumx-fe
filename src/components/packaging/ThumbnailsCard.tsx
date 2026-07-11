@@ -1,8 +1,7 @@
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Copy, Check, Image, Star } from "lucide-react";
-import { toastError, toastSuccess } from "@/utils/toast";
+import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import GradientSkeleton from "./GradientSkeleton";
 import { FeedbackButtons } from "@/components/research/FeedbackButtons";
 
@@ -32,20 +31,12 @@ const ThumbnailItem = ({
   isLoading,
   onSelect,
 }: ThumbnailItemProps) => {
-  const [copied, setCopied] = useState(false);
+  const [copied, copy] = useCopyToClipboard("Thumbnail brief copied to clipboard");
 
-  const handleCopy = async (e: React.MouseEvent) => {
+  const handleCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!thumbnail) return;
-
-    try {
-      await navigator.clipboard.writeText(thumbnail);
-      setCopied(true);
-      toastSuccess("Thumbnail brief copied to clipboard");
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toastError("Failed to copy");
-    }
+    copy(thumbnail);
   };
 
   return (

@@ -2,8 +2,7 @@ import { researchService } from "@/service/research";
 import { handleToast } from "@/utils/toast";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : "An unexpected error occurred";
+import { getErrorMessage } from "@/utils/error";
 
 export const fetchTrending = createAsyncThunk(
   "research/fetchTrending",

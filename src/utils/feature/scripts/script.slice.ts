@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "@/utils/store";
 import {
   editScript,
@@ -8,7 +8,7 @@ import {
   retrieveScripts,
   submitScriptFeedback,
 } from "./script.thunk";
-import { IGeneratedScript, IScriptState } from "@/types/feature/script";
+import { IScriptState } from "@/types/feature/script";
 
 const initialState: IScriptState = {
   data: null,
@@ -31,10 +31,6 @@ const scriptsSlice = createSlice({
       state.isDone = false;
       state.error = null;
     },
-    addScript: (state, action: PayloadAction<IGeneratedScript>) => {
-      state.data = [action.payload, ...(state.data ?? [])];
-    },
-
     markDone: (state) => {
       state.isDone = true;
       state.isLoading = false;
@@ -171,7 +167,7 @@ const scriptsSlice = createSlice({
   },
 });
 
-export const { resetState, addScript, markDone, clearCurrentScript, clearError } =
+export const { resetState, markDone, clearCurrentScript, clearError } =
   scriptsSlice.actions;
 
 // Selectors — consistent select* naming
