@@ -22,6 +22,10 @@ export interface ITimestampedSegment {
 export interface ITitle {
   title: string;
   characterCount: number;
+  // Research-grounded scoring (backend phase 2C) — optional; legacy packaging
+  // docs have unscored titles.
+  score?: number; // 1–10 CTR potential vs live competition
+  reason?: string; // one-line rationale for the score
 }
 
 // Multi-variant output types

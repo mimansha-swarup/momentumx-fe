@@ -32,6 +32,8 @@ interface TitleItemProps {
   index: number;
   isSelected: boolean;
   isLoading: boolean;
+  score?: number;
+  reason?: string;
   onSelect: () => void;
   onEdit: (value: string) => void;
 }
@@ -41,6 +43,8 @@ const TitleItem = ({
   index,
   isSelected,
   isLoading,
+  score,
+  reason,
   onSelect,
   onEdit,
 }: TitleItemProps) => {
@@ -51,6 +55,9 @@ const TitleItem = ({
   const charCount = title?.length || 0;
   const isOverLimit = charCount > PACKAGING_LIMITS.title;
   const isNearLimit = charCount > PACKAGING_LIMITS.title * 0.9;
+  // Score is a 1–10 NUMBER (may arrive as a decimal); round once and use for
+  // both the pill text and its tier colour so they can never disagree.
+  const ctrScore = typeof score === "number" ? Math.round(score) : null;
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -195,7 +202,23 @@ const TitleItem = ({
           )}>
             {title}
           </p>
-          <div className="mt-2 flex justify-end">
+          <div className="mt-2 flex items-center justify-between gap-2">
+            {ctrScore !== null ? (
+              <span
+                className={cn(
+                  "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium",
+                  ctrScore >= 8
+                    ? "bg-emerald-500/15 text-emerald-400"
+                    : ctrScore >= 5
+                      ? "bg-amber-500/15 text-amber-400"
+                      : "bg-white/10 text-muted-foreground"
+                )}
+              >
+                CTR {ctrScore}/10
+              </span>
+            ) : (
+              <span />
+            )}
             <span
               className={cn(
                 "text-xs tabular-nums",
@@ -209,6 +232,11 @@ const TitleItem = ({
               {charCount}/{PACKAGING_LIMITS.title}
             </span>
           </div>
+          {reason && (
+            <p className="mt-1.5 text-[11px] leading-snug text-muted-foreground/80 line-clamp-2">
+              {reason}
+            </p>
+          )}
         </>
       ) : (
         <p className="text-sm italic text-muted-foreground">Not generated yet</p>
@@ -300,6 +328,8 @@ const TitlesCard = ({
               index={index}
               isSelected={selectedIndex === index && titles.length > 0}
               isLoading={isLoading}
+              score={titleObj?.score}
+              reason={titleObj?.reason}
               onSelect={() => onSelectTitle(index)}
               onEdit={(value) => onEditTitle(index, value)}
             />
