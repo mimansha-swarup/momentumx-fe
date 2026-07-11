@@ -9,10 +9,7 @@ import {
   generateTitle,
   generateDescription,
   generateThumbnail,
-  generateHooks,
-  generateShorts,
   regenerateShortsScript,
-  generateAllPackaging,
   generateAllPackagingForProject,
   savePackaging,
   listPackaging,
@@ -95,21 +92,6 @@ const packagingSlice = createSlice({
     setSelectedThumbnail: (state, action: PayloadAction<number>) => {
       state.thumbnails.selectedIndex = action.payload;
     },
-    // Hook actions (hooks are simple strings)
-    updateHook: (
-      state,
-      action: PayloadAction<{ index: number; value: string }>
-    ) => {
-      const { index, value } = action.payload;
-      if (state.hooks.hooks[index] !== undefined) {
-        state.hooks.hooks[index] = value;
-      }
-    },
-    deleteHook: (state, action: PayloadAction<number>) => {
-      state.hooks.hooks = state.hooks.hooks.filter(
-        (_, index) => index !== action.payload
-      );
-    },
     hydrateFromResponse: (state, action: PayloadAction<GetPackagingResponse>) => {
       const data = action.payload;
       state.packagingId = data.id;
@@ -188,37 +170,6 @@ const packagingSlice = createSlice({
         state.thumbnails.error = (action.payload as string) ?? "Unknown error";
       })
 
-      // Generate Hooks (multiple paragraphs)
-      .addCase(generateHooks.pending, (state) => {
-        state.hooks.isLoading = true;
-        state.hooks.error = null;
-      })
-      .addCase(generateHooks.fulfilled, (state, action) => {
-        state.hooks.isLoading = false;
-        state.hooks.hooks = action.payload?.hooks || [];
-      })
-      .addCase(generateHooks.rejected, (state, action) => {
-        state.hooks.isLoading = false;
-        state.hooks.error = (action.payload as string) ?? "Unknown error";
-      })
-
-      // Generate Shorts (single)
-      .addCase(generateShorts.pending, (state) => {
-        state.shortsScript.segments = [];
-        state.shortsScript.totalDuration = undefined;
-        state.shortsScript.isLoading = true;
-        state.shortsScript.error = null;
-      })
-      .addCase(generateShorts.fulfilled, (state, action) => {
-        state.shortsScript.isLoading = false;
-        state.shortsScript.segments = action.payload?.segments ?? [];
-        state.shortsScript.totalDuration = action.payload?.totalDuration;
-      })
-      .addCase(generateShorts.rejected, (state, action) => {
-        state.shortsScript.isLoading = false;
-        state.shortsScript.error = (action.payload as string) ?? "Unknown error";
-      })
-
       // Regenerate single shorts script
       .addCase(regenerateShortsScript.pending, (state) => {
         state.shortsScript.isLoading = true;
@@ -232,55 +183,6 @@ const packagingSlice = createSlice({
       .addCase(regenerateShortsScript.rejected, (state, action) => {
         state.shortsScript.isLoading = false;
         state.shortsScript.error = (action.payload as string) ?? "Unknown error";
-      })
-
-      // Generate All
-      .addCase(generateAllPackaging.pending, (state) => {
-        state.isGeneratingAll = true;
-        state.titles.isLoading = true;
-        state.titles.error = null;
-        state.description.isLoading = true;
-        state.description.error = null;
-        state.thumbnails.isLoading = true;
-        state.thumbnails.error = null;
-        state.hooks.isLoading = true;
-        state.hooks.error = null;
-        state.shortsScript.segments = [];
-        state.shortsScript.totalDuration = undefined;
-        state.shortsScript.isLoading = true;
-        state.shortsScript.error = null;
-      })
-      .addCase(generateAllPackaging.fulfilled, (state, action) => {
-        state.isGeneratingAll = false;
-        // Update titles
-        state.titles.isLoading = false;
-        state.titles.titles = action.payload.title.titles || [];
-        state.titles.selectedIndex = 0;
-        // Update description
-        state.description.isLoading = false;
-        state.description.content =
-          action.payload.description.description || "";
-        // Update thumbnails (plain strings)
-        state.thumbnails.isLoading = false;
-        state.thumbnails.descriptions =
-          action.payload.thumbnail.descriptions || [];
-        state.thumbnails.selectedIndex = 0;
-        // Update hooks
-        state.hooks.isLoading = false;
-        state.hooks.hooks = action.payload.hooks?.hooks || [];
-        // Update shorts (single object)
-        state.shortsScript.isLoading = false;
-        state.shortsScript.segments = action.payload.shorts.segments || [];
-        state.shortsScript.totalDuration = action.payload.shorts.totalDuration;
-      })
-      .addCase(generateAllPackaging.rejected, (state, action) => {
-        state.isGeneratingAll = false;
-        state.titles.isLoading = false;
-        state.description.isLoading = false;
-        state.thumbnails.isLoading = false;
-        state.hooks.isLoading = false;
-        state.shortsScript.isLoading = false;
-        state.error = (action.payload as string) ?? "Unknown error";
       })
 
       // Generate All (Pipeline — no hooks)
@@ -446,8 +348,6 @@ export const {
   setSelectedTitle,
   updateDescription,
   setSelectedThumbnail,
-  updateHook,
-  deleteHook,
   hydrateFromResponse,
   resetPackaging,
   clearErrors,
@@ -461,7 +361,6 @@ export const selectDescription = (state: RootState) =>
   state.packaging.description;
 export const selectThumbnails = (state: RootState) =>
   state.packaging.thumbnails;
-export const selectHooks = (state: RootState) => state.packaging.hooks;
 export const selectShortsScripts = (state: RootState) =>
   state.packaging.shortsScript;
 export const selectIsSaving = (state: RootState) => state.packaging.isSaving;

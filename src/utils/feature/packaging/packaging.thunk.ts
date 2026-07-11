@@ -4,8 +4,7 @@ import { RootState } from "@/utils/store";
 import { handleToast } from "@/utils/toast";
 import { RegenerateItemResponse } from "@/types/feature/packaging";
 
-const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : "An unexpected error occurred";
+import { getErrorMessage } from "@/utils/error";
 
 export const generateTitle = createAsyncThunk(
   "packaging/generateTitle",
@@ -57,36 +56,6 @@ export const generateThumbnail = createAsyncThunk(
   }
 );
 
-/** @deprecated Uses legacy stateless hooks endpoint. Migrate to hooks.thunk.ts when videoProjectId is available. */
-export const generateHooks = createAsyncThunk(
-  "packaging/generateHooks",
-  async (_, thunkAPI) => {
-    try {
-      const state = thunkAPI.getState() as RootState;
-      const { script } = state.packaging;
-      const response = await packagingService.generateHooks(script);
-      return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(getErrorMessage(error));
-    }
-  }
-);
-
-// Generate first shorts script (used in generateAll)
-export const generateShorts = createAsyncThunk(
-  "packaging/generateShorts",
-  async (_, thunkAPI) => {
-    try {
-      const state = thunkAPI.getState() as RootState;
-      const { script } = state.packaging;
-      const response = await packagingService.generateShorts(script);
-      return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(getErrorMessage(error));
-    }
-  }
-);
-
 // Regenerate the single shorts script
 export const regenerateShortsScript = createAsyncThunk(
   "packaging/regenerateShortsScript",
@@ -96,34 +65,6 @@ export const regenerateShortsScript = createAsyncThunk(
       const { script } = state.packaging;
       const response = await packagingService.generateShorts(script);
       return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(getErrorMessage(error));
-    }
-  }
-);
-
-/** @deprecated Uses legacy stateless hooks endpoint via packagingService.generateHooks(). Migrate to hooks.thunk.ts when videoProjectId is available. */
-export const generateAllPackaging = createAsyncThunk(
-  "packaging/generateAll",
-  async (_, thunkAPI) => {
-    try {
-      const state = thunkAPI.getState() as RootState;
-      const { script } = state.packaging;
-
-      // Call generateTitleDependentContent (title first, then description, thumbnail, shorts in parallel)
-      // and generateHooks in parallel
-      const [titleDependentContent, hooksResponse] = await Promise.all([
-        packagingService.generateTitleDependentContent(script),
-        packagingService.generateHooks(script),
-      ]);
-
-      return {
-        title: titleDependentContent.title,
-        description: titleDependentContent.description,
-        thumbnail: titleDependentContent.thumbnail,
-        shorts: titleDependentContent.shorts,
-        hooks: hooksResponse.data,
-      };
     } catch (error) {
       return thunkAPI.rejectWithValue(getErrorMessage(error));
     }

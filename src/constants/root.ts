@@ -6,8 +6,6 @@ export const IS_NEW_USER = "isNewUser";
 
 export const LOGGED_IN = "loggedin";
 
-export const HIDE_OLD_FLOW = true;
-
 export const GRADIENT_BUTTON_CSS = cn(
   "relative overflow-hidden px-6 py-2.5",
   "bg-gradient-to-r from-violet-600 to-blue-600",

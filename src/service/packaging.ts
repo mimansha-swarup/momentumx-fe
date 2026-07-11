@@ -3,7 +3,6 @@ import {
   GenerateTitleResponse,
   GenerateDescriptionResponse,
   GenerateThumbnailResponse,
-  GenerateHooksResponse,
   GenerateShortsResponse,
   SavePackagingResponse,
   GetPackagingResponse,
@@ -19,7 +18,6 @@ const URLS = {
   generateTitle: "/v1/packaging/generate-title",
   generateDescription: "/v1/packaging/generate-description",
   generateThumbnail: "/v1/packaging/generate-thumbnail",
-  generateHooks: "/v1/packaging/generate-hooks",
   generateShorts: "/v1/packaging/generate-shorts",
   save: "/v1/packaging/save",
   list: "/v1/packaging/list",
@@ -72,18 +70,6 @@ class PackagingService {
       title,
       ...(videoProjectId !== undefined && { videoProjectId }),
     });
-    return response.data;
-  }
-
-  /**
-   * @deprecated Use `hooksService.generateHooks()` for video project flows.
-   * This method calls the legacy stateless endpoint and will be removed
-   * when the packaging page is integrated into the video project pipeline.
-   */
-  async generateHooks(
-    script: string
-  ): Promise<IBaseFetchResponse<GenerateHooksResponse>> {
-    const response = await baseFetch.post(this.urls.generateHooks, { script });
     return response.data;
   }
 
