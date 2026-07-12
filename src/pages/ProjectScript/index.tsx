@@ -7,7 +7,9 @@ import {
   Loader2,
   Play,
   AlertCircle,
+  ArrowRight,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import {
   selectCurrentProject,
@@ -61,6 +63,7 @@ const ProjectScriptPage = () => {
   const scriptId = project?.scriptId ?? "";
   const hasScript = !!project?.scriptId;
   const projectId = project?.id ?? "";
+  const navigate = useNavigate();
 
   const { streamContent, isStreaming, streamError, startStreaming, scrollSentinelRef } =
     useScriptStream({ projectId });
@@ -281,6 +284,16 @@ const ProjectScriptPage = () => {
               <RefreshCw className="size-4 mr-1.5" aria-hidden="true" />
             )}
             Regenerate
+          </Button>
+
+          {/* Simple next-step CTA — keeps the pipeline functional (Script → Hooks) */}
+          <Button
+            size="sm"
+            className="btn-primary-glow"
+            onClick={() => navigate(`/app/project/${projectId}/hooks`)}
+          >
+            Continue to Hooks
+            <ArrowRight className="size-4 ml-1.5" aria-hidden="true" />
           </Button>
         </div>
       </div>

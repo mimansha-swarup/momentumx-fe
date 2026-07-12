@@ -7,6 +7,7 @@ import {
   Download,
   AlertCircle,
   Play,
+  ArrowRight,
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import {
@@ -320,12 +321,22 @@ const ProjectHooksPage = () => {
         selectingIndex={selectingIndex}
       />
 
-      {/* Selection status */}
+      {/* Selection status + simple next-step CTA (keeps the flow functional on
+          revisit — the first select auto-advances, this covers returning users) */}
       {selectedIndex != null && (
-        <p className="text-sm text-muted-foreground" aria-live="polite">
-          Hook {selectedIndex + 1} is selected. Select a different hook or
-          proceed to packaging.
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground" aria-live="polite">
+            Hook {selectedIndex + 1} is selected. Pick another, or continue.
+          </p>
+          <Button
+            size="sm"
+            className="btn-primary-glow"
+            onClick={() => navigate(`/app/project/${projectId}/packaging`)}
+          >
+            Continue to Packaging
+            <ArrowRight className="size-4 ml-1.5" aria-hidden="true" />
+          </Button>
+        </div>
       )}
     </div>
   );
