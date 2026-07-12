@@ -354,7 +354,6 @@ export const {
 } = packagingSlice.actions;
 
 // Selectors
-export const selectPackaging = (state: RootState) => state.packaging;
 export const selectScript = (state: RootState) => state.packaging.script;
 export const selectTitles = (state: RootState) => state.packaging.titles;
 export const selectDescription = (state: RootState) =>

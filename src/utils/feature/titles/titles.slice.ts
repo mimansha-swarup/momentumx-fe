@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createSelector, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/utils/store";
 import {
   editTitles,
@@ -210,7 +210,6 @@ export const {
   markScriptGenerated,
 } = titlesSlice.actions;
 
-export const selectTitlesRoot = (state: RootState) => state.titles;
 export const selectTitlesData = (state: RootState) => state.titles.data;
 export const selectTitlesLoading = (state: RootState) => state.titles.isLoading;
 export const selectTitlesDone = (state: RootState) => state.titles.isDone;
@@ -221,8 +220,13 @@ export const selectTitlesIsSubmittingFeedback = (state: RootState) => state.titl
 export const selectTitlesExportText = (state: RootState) => state.titles.exportText;
 export const selectTitlesError = (state: RootState) => state.titles.error;
 
-export const selectActiveTopics = (state: RootState): IGeneratedTopic[] =>
-  state.titles.data?.lists.filter((t) => !t.archived) ?? [];
+// Memoized: a plain `.filter()` selector returns a new array every call and
+// would re-render its consumer on every dispatch app-wide.
+export const selectActiveTopics = createSelector(
+  selectTitlesData,
+  (data): IGeneratedTopic[] =>
+    data?.lists.filter((t) => !t.archived) ?? []
+);
 
 export const selectHasLinkedProjects = (state: RootState): boolean =>
   (state.titles.data?.lists ?? []).some((t) => !t.archived && t.videoProjectId !== null);

@@ -13,7 +13,7 @@ interface HookCardProps {
   feedback: FeedbackValue;
   onSelect: (index: number) => void;
   onFeedback: (index: number, feedback: FeedbackValue) => void;
-  isSelecting: boolean;
+  selectingIndex: number | null;
   isSubmittingFeedback: boolean;
 }
 
@@ -24,13 +24,18 @@ export const HookCard: React.FC<HookCardProps> = ({
   feedback,
   onSelect,
   onFeedback,
-  isSelecting,
+  selectingIndex,
   isSubmittingFeedback,
 }) => {
   // Adapter: FeedbackButtons passes (topicId, fb) but we key by hookIndex
   const handleFeedback = (_topicId: string, fb: FeedbackValue) => {
     onFeedback(hookIndex, fb);
   };
+
+  // A selection is in flight somewhere (disable all) vs THIS card is the one
+  // being selected (spinner only here).
+  const isSelecting = selectingIndex !== null;
+  const isThisSelecting = selectingIndex === hookIndex;
 
   return (
     <GlassCard
@@ -74,7 +79,7 @@ export const HookCard: React.FC<HookCardProps> = ({
               aria-label={`Select hook ${hookIndex + 1}`}
               className="gap-1.5"
             >
-              {isSelecting && <Loader2 className="h-4 w-4 motion-safe:animate-spin" aria-hidden="true" />}
+              {isThisSelecting && <Loader2 className="h-4 w-4 motion-safe:animate-spin" aria-hidden="true" />}
               Select
             </Button>
           )}

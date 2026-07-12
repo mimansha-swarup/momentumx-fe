@@ -144,6 +144,7 @@ const TitleItem = ({
           <input
             type="text"
             value={editValue}
+            aria-label="Edit title"
             onChange={(e) => setEditValue(e.target.value)}
             className={cn(
               "w-full rounded-lg border bg-white/5 px-3 py-2",

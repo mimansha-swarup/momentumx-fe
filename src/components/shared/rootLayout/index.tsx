@@ -1,4 +1,4 @@
-import { memo, ReactNode } from "react";
+import { ReactNode } from "react";
 import SideDrawer from "@/components/shared/sideDrawer";
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
@@ -19,4 +19,4 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export default memo(RootLayout);
+export default RootLayout;

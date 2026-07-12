@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Anchor,
@@ -60,6 +60,9 @@ const ProjectHooksPage = () => {
   const isExporting = useAppSelector(selectIsExporting);
   const isSubmittingFeedback = useAppSelector(selectIsSubmittingFeedback);
   const isSelecting = useAppSelector(selectIsSelecting);
+  // Which hook the user is selecting — drives a per-card spinner (the slice's
+  // isSelecting is a single global flag, so it can't tell the cards apart).
+  const [selectingIndex, setSelectingIndex] = useState<number | null>(null);
   const currentScript = useAppSelector(selectCurrentScript);
 
   const projectId = project?.id ?? "";
@@ -106,11 +109,14 @@ const ProjectHooksPage = () => {
 
   const handleSelect = async (hookIndex: number) => {
     if (!hooksId || !projectId || isSelecting) return;
+    setSelectingIndex(hookIndex);
     const result = await dispatch(selectHook({ hooksId, hookIndex }));
     if (selectHook.fulfilled.match(result)) {
       await dispatch(getProject(projectId));
       navigate(`/app/project/${projectId}/packaging`);
+      return; // navigating away — leave the spinner until unmount
     }
+    setSelectingIndex(null); // failed — re-enable the cards
   };
 
   const handleRegenerate = async () => {
@@ -325,7 +331,7 @@ const ProjectHooksPage = () => {
         onFeedback={(index, feedback) =>
           handleFeedback(String(index), feedback)
         }
-        isSelecting={isSelecting}
+        selectingIndex={selectingIndex}
         isSubmittingFeedback={isSubmittingFeedback}
       />
 

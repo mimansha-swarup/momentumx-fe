@@ -171,7 +171,6 @@ export const { resetState, markDone, clearCurrentScript, clearError } =
   scriptsSlice.actions;
 
 // Selectors — consistent select* naming
-export const selectScripts = (state: RootState) => state.scripts;
 export const selectScriptsData = (state: RootState) => state.scripts.data;
 export const selectScriptsLoading = (state: RootState) => state.scripts.isLoading;
 export const selectScriptsDone = (state: RootState) => state.scripts.isDone;

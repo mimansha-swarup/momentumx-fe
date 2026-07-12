@@ -9,7 +9,7 @@ interface HooksListProps {
   hookFeedback: Record<string, FeedbackValue>;
   onSelect: (index: number) => void;
   onFeedback: (index: number, feedback: FeedbackValue) => void;
-  isSelecting: boolean;
+  selectingIndex: number | null;
   isSubmittingFeedback: boolean;
 }
 
@@ -20,7 +20,7 @@ export const HooksList: React.FC<HooksListProps> = ({
   hookFeedback,
   onSelect,
   onFeedback,
-  isSelecting,
+  selectingIndex,
   isSubmittingFeedback,
 }) => {
   return (
@@ -34,7 +34,7 @@ export const HooksList: React.FC<HooksListProps> = ({
           feedback={hookFeedback[String(index)] ?? null}
           onSelect={onSelect}
           onFeedback={onFeedback}
-          isSelecting={isSelecting}
+          selectingIndex={selectingIndex}
           isSubmittingFeedback={isSubmittingFeedback}
         />
       ))}

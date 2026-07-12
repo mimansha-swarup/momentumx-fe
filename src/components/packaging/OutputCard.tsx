@@ -219,6 +219,7 @@ const OutputCard = ({
               <textarea
                 ref={textareaRef}
                 value={editValue}
+                aria-label={`Edit ${title}`}
                 onChange={(e) => setEditValue(e.target.value)}
                 onKeyDown={handleKeyDown}
                 className={cn(
