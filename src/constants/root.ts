@@ -2,8 +2,6 @@ import { cn } from "@/lib/utils";
 
 export const brandName = "Ideofy";
 
-export const IS_NEW_USER = "isNewUser";
-
 export const LOGGED_IN = "loggedin";
 
 export const GRADIENT_BUTTON_CSS = cn(

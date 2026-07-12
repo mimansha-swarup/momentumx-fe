@@ -40,7 +40,7 @@ const SideDrawer = () => {
       matchPath({ path: subRoute, end: false }, pathname),
     );
   };
-  const extractedUserName = extractYouTubeHandle(user?.assets?.youtube_url || "");
+  const extractedUserName = extractYouTubeHandle(user?.userName || "");
 
   return (
     <Sidebar className="border-r border-sidebar-border bg-background">

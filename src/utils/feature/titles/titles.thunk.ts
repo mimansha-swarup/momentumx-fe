@@ -1,4 +1,4 @@
-import { titleService, TopicsListParams } from "@/service/titles";
+import { titleService, TopicsListParams, IIdeaContextOverride } from "@/service/titles";
 import { handleToast } from "@/utils/toast";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
@@ -20,9 +20,9 @@ export const retrieveTitles = createAsyncThunk(
 );
 export const generateTitles = createAsyncThunk(
   "titles/generateTitles",
-  async (_, thunkAPI) => {
+  async (context: IIdeaContextOverride | undefined, thunkAPI) => {
     try {
-      const response = await titleService.generateTitles();
+      const response = await titleService.generateTitles(context);
       handleToast({ message: response?.message ?? "", warning: response?.warning ?? "" });
       return { data: response?.data };
     } catch (error) {

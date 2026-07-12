@@ -126,7 +126,7 @@ export const ProjectList: React.FC = () => {
           </div>
           <h3 className="text-title text-lg mb-2">No projects yet</h3>
           <p className="text-label mb-6 max-w-sm">
-            Start by researching a topic and creating your first video project.
+            Start with an idea and create your first video project.
           </p>
           <Button
             className="btn-primary-glow"

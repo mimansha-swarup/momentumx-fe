@@ -1,65 +1,49 @@
-import { IOnboardingPayload } from "@/types/components/onboarding";
 import { baseFetch, IBaseFetchResponse } from "@/utils/network";
+import {
+  IUserProfile,
+  IProfileInput,
+  IPrefillResponse,
+} from "@/types/feature/user";
 
 const URLS = {
-  SAVE_FORM: "/v1/user/onboarding",
-  PROFILE: "/v1/user/profile",
+  profile: "/v1/user/profile",
+  onboarding: "/v1/user/onboarding",
+  prefill: "/v1/user/onboarding/prefill",
+  refreshContext: "/v1/user/refresh-context",
 };
 
-interface IOnboardingApiPayload {
-  userName: string;
-  brandName: string;
-  niche: string;
-  purpose: string;
-  targetAudience: string;
-  competitors: string[];
-  description: string;
-  website?: string;
-}
-
 class OnboardingService {
-  private urls;
-  constructor() {
-    this.urls = URLS;
-  }
-
-  private transformPayload(payload: IOnboardingPayload): IOnboardingApiPayload {
-    const niche =
-      payload.business?.type === "other"
-        ? payload.business?.type_other || ""
-        : payload.business?.type || "";
-
-    const website = payload.cta?.primary_url || undefined;
-
-    return {
-      userName: payload.assets?.youtube_url || "",
-      brandName: payload.business?.offering || "",
-      niche: niche || "",
-      purpose: payload.business?.primary_goal || "",
-      targetAudience: payload.avatar?.definition || "",
-      competitors:
-        payload.positioning?.competitors
-          ?.map((c) => c.channel)
-          .filter(Boolean) || [],
-      description: payload.positioning?.one_liner || "",
-      ...(website ? { website } : {}),
-    };
-  }
-
-  async getUserRecord(): Promise<IBaseFetchResponse<unknown>> {
-    const response = await baseFetch.get(this.urls.PROFILE);
+  async getUserRecord(): Promise<IBaseFetchResponse<IUserProfile>> {
+    const response = await baseFetch.get(URLS.profile);
     return response.data;
   }
 
-  async saveOnboardingData(payload: IOnboardingPayload): Promise<IBaseFetchResponse<unknown>> {
-    const transformed = this.transformPayload(payload);
-    const response = await baseFetch.patch(this.urls.SAVE_FORM, transformed);
+  // Infer {niche, targetAudience, brandName} from a channel URL (not persisted).
+  async prefill(
+    channelUrl: string
+  ): Promise<IBaseFetchResponse<IPrefillResponse>> {
+    const response = await baseFetch.post(URLS.prefill, { channelUrl });
     return response.data;
   }
 
-  async updateProfile(payload: IOnboardingPayload): Promise<IBaseFetchResponse<unknown>> {
-    const transformed = this.transformPayload(payload);
-    const response = await baseFetch.patch(this.urls.PROFILE, transformed);
+  // Complete brand setup — required minimum is channel URL OR niche+targetAudience.
+  async completeOnboarding(
+    payload: IProfileInput
+  ): Promise<IBaseFetchResponse<{ payload: IUserProfile }>> {
+    const response = await baseFetch.patch(URLS.onboarding, payload);
+    return response.data;
+  }
+
+  async updateProfile(
+    payload: IProfileInput
+  ): Promise<IBaseFetchResponse<{ payload: IUserProfile }>> {
+    const response = await baseFetch.patch(URLS.profile, payload);
+    return response.data;
+  }
+
+  // Re-pull channel/website enrichment from the stored inputs (no body).
+  async refreshContext(): Promise<IBaseFetchResponse<IUserProfile>> {
+    const response = await baseFetch.post(URLS.refreshContext);
     return response.data;
   }
 }

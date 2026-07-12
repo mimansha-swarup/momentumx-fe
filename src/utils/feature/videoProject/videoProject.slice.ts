@@ -17,6 +17,7 @@ const initialState: IVideoProjectState = {
   hasMore: false,
   nextCursor: null,
   isLoading: false,
+  hasLoaded: false,
   error: null,
 
   currentProject: null,
@@ -92,6 +93,7 @@ const videoProjectSlice = createSlice({
       })
       .addCase(listProjects.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.hasLoaded = true;
         if (action.payload?.data) {
           const hasCursor = !!action.payload.params?.cursor;
           if (hasCursor) {
@@ -108,6 +110,7 @@ const videoProjectSlice = createSlice({
       })
       .addCase(listProjects.rejected, (state, action) => {
         state.isLoading = false;
+        state.hasLoaded = true;
         state.error = action.payload as string;
       })
 
@@ -223,6 +226,8 @@ export const selectProjects = (state: RootState) =>
   state.videoProject.projects;
 export const selectProjectsLoading = (state: RootState) =>
   state.videoProject.isLoading;
+export const selectProjectsLoaded = (state: RootState) =>
+  state.videoProject.hasLoaded;
 export const selectHasMoreProjects = (state: RootState) =>
   state.videoProject.hasMore;
 export const selectNextCursor = (state: RootState) =>

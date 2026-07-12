@@ -18,7 +18,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { TopicGrid, TrendingTab, CompetitorsTab, KeywordsTab } from "@/components/research";
+import { TopicGrid, TrendingTab, CompetitorsTab, KeywordsTab, FirstRunIdea, EnrichNudge } from "@/components/research";
+import { selectIsOnboarded } from "@/utils/feature/user/user.slice";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import {
   selectActiveTopics,
@@ -70,6 +71,7 @@ const ResearchPage = () => {
   const exportText = useAppSelector(selectTitlesExportText);
   const error = useAppSelector(selectTitlesError);
   const hasLinkedProjects = useAppSelector(selectHasLinkedProjects);
+  const isOnboarded = useAppSelector(selectIsOnboarded);
   const cursor = useAppSelector(selectTopicsCursor);
   const isCreatingProject = useAppSelector(selectIsCreating);
   const trending = useAppSelector(selectTrending);
@@ -96,7 +98,7 @@ const ResearchPage = () => {
     if (exportText) {
       navigator.clipboard
         .writeText(exportText)
-        .then(() => toastSuccess("Topics copied to clipboard"))
+        .then(() => toastSuccess("Ideas copied to clipboard"))
         .catch(() => toastError("Failed to copy to clipboard"))
         .finally(() => dispatch(clearExportText()));
     }
@@ -207,12 +209,19 @@ const ResearchPage = () => {
     );
   }, [dispatch, cursor, isLoading]);
 
-  const showEmptyState = !isLoading && !isRegenerating && !error && !hasTopics;
-  const showGrid = hasTopics || isLoading || isRegenerating;
+  // Value-first (§5.1): a contextless user gets the first-run entry (URL → instant
+  // ideas), NOT the bare "Generate" empty state — a no-context generate 500s.
+  const showFirstRun = !isOnboarded && !hasTopics && !isRegenerating;
+  const showEmptyState =
+    isOnboarded && !isLoading && !isRegenerating && !error && !hasTopics;
+  const showGrid = hasTopics || (isOnboarded && (isLoading || isRegenerating));
 
   return (
     <div className="md:w-[90%] mx-auto pb-20">
-      <Header title="Research" />
+      <Header title="Idea" />
+
+      {/* Progressive enrichment — self-hides unless onboarded-but-incomplete */}
+      <EnrichNudge />
 
       {/* Page actions */}
       {hasTopics && (
@@ -261,8 +270,8 @@ const ResearchPage = () => {
         </div>
       )}
 
-      {/* Error banner */}
-      {error && (
+      {/* Error banner (the first-run card renders its own errors) */}
+      {error && !showFirstRun && (
         <div
           role="alert"
           className="rounded-xl border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive mb-6 flex items-center justify-between gap-4"
@@ -278,23 +287,26 @@ const ResearchPage = () => {
         </div>
       )}
 
+      {/* First-run: contextless user → instant ideas from their channel URL */}
+      {showFirstRun && <FirstRunIdea />}
+
       {/* Empty state */}
       {showEmptyState && (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <div className="icon-container mb-4">
             <Lightbulb className="size-6" />
           </div>
-          <h2 className="text-title text-xl mb-2">No topics yet</h2>
+          <h2 className="text-title text-xl mb-2">No ideas yet</h2>
           <p className="text-label max-w-md mb-6">
-            Generate topic ideas for your next video. We&apos;ll analyze trends
-            and suggest topics tailored to your niche.
+            Generate ideas for your next video. We&apos;ll analyze trends
+            and suggest concepts tailored to your niche.
           </p>
           <Button
             className="btn-primary-glow"
             onClick={handleGenerate}
             disabled={isLoading}
           >
-            <Sparkles className="size-4" /> Generate Topics
+            <Sparkles className="size-4" /> Generate Ideas
           </Button>
         </div>
       )}

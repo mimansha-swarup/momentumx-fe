@@ -10,7 +10,7 @@ export const urlMapping = [
   },
   {
     name: "research",
-    label: "Research",
+    label: "Idea",
     icon: Search,
     route: "/app/research",
     subRoutes: [],

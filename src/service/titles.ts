@@ -24,6 +24,16 @@ export interface TopicsListResponse {
   lists: IGeneratedTopic[];
 }
 
+// Instant-first-idea (§5.1): a transient, not-yet-persisted channel context the
+// client passes to generation so a contextless user sees ideas immediately.
+// Every field optional; merged over the stored user record server-side.
+export interface IIdeaContextOverride {
+  niche?: string;
+  targetAudience?: string;
+  brandName?: string;
+  topTitles?: string[];
+}
+
 const URLS = {
   titles: "/v1/topics",
   generate: "/v1/topics/generate",
@@ -37,8 +47,13 @@ const URLS = {
 class TitleService {
   private urls = URLS;
 
-  generateTitles = async (): Promise<IBaseFetchResponse<TopicsListResponse['lists']>> => {
-    const response = await baseFetch.post(this.urls.generate);
+  generateTitles = async (
+    context?: IIdeaContextOverride
+  ): Promise<IBaseFetchResponse<TopicsListResponse['lists']>> => {
+    const response = await baseFetch.post(
+      this.urls.generate,
+      context ? { context } : undefined
+    );
     return response.data;
   };
 

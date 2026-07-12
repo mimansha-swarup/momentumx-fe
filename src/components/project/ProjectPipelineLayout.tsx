@@ -10,6 +10,7 @@ import {
   selectIsDeleting,
   clearCurrentProject,
 } from "@/utils/feature/videoProject/videoProject.slice";
+import { selectIsOnboarded } from "@/utils/feature/user/user.slice";
 import { Button } from "@/components/ui/button";
 import { ProjectHeader } from "./ProjectHeader";
 import { PipelineTracker } from "./PipelineTracker";
@@ -29,13 +30,14 @@ export const ProjectPipelineLayout: React.FC = () => {
   const isLoading = useAppSelector(selectProjectLoading);
   const error = useAppSelector(selectProjectError);
   const isDeleting = useAppSelector(selectIsDeleting);
+  const isOnboarded = useAppSelector(selectIsOnboarded);
 
   const loadedProjectId = project?.id ?? null;
   const wasDeletingRef = useRef(false);
   const fetchedForIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!projectId) return;
+    if (!projectId || !isOnboarded) return;
     if (fetchedForIdRef.current === projectId) return;
     if (loadedProjectId === projectId) {
       fetchedForIdRef.current = projectId;
@@ -44,7 +46,7 @@ export const ProjectPipelineLayout: React.FC = () => {
     fetchedForIdRef.current = projectId;
     dispatch(clearCurrentProject());
     dispatch(getProject(projectId));
-  }, [dispatch, projectId, loadedProjectId]);
+  }, [dispatch, projectId, loadedProjectId, isOnboarded]);
 
   // Redirect to dashboard after deletion
   useEffect(() => {
@@ -58,6 +60,14 @@ export const ProjectPipelineLayout: React.FC = () => {
 
   if (!projectId) {
     return <Navigate to="/app/dashboard" replace />;
+  }
+
+  // Soft context minimum (product doc §5.1): the gate lives HERE — at pipeline
+  // entry — not before first value. A below-minimum user (rare: they reached a
+  // project without setup) is routed to the Idea door to get their first ideas +
+  // channel context, not to a bare form.
+  if (!isOnboarded) {
+    return <Navigate to="/app/research" replace />;
   }
 
   if (isLoading && (!project || loadedProjectId !== projectId)) {

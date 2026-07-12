@@ -11,7 +11,7 @@ const Greetings = () => {
           <span className="gradient-text">Welcome back!</span>
         </h2>
         <p className="text-label">
-          Research topics and create your next video project
+          Turn an idea into your next video project
         </p>
       </div>
 

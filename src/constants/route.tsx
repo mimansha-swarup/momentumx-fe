@@ -2,12 +2,13 @@ import { lazy, Suspense } from "react";
 import ProtectedLayout from "@/components/shared/ProtectedRoute";
 import Landing from "@/pages/Landing";
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import RootLoader from "@/components/shared/Loader";
+import { PageLoader } from "@/components/shared/Loader";
 import { ProjectPipelineLayout, ProjectDetailRedirect } from "@/components/project";
 
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const Login = lazy(() => import("@/pages/Login"));
 const ResearchPage = lazy(() => import("@/pages/Research"));
+const Settings = lazy(() => import("@/pages/Settings"));
 
 // Pipeline step pages (lazy-loaded)
 const ProjectScriptPage = lazy(() => import("@/pages/ProjectScript"));
@@ -15,7 +16,7 @@ const ProjectHooksPage = lazy(() => import("@/pages/ProjectHooks"));
 const ProjectPackagingPage = lazy(() => import("@/pages/ProjectPackaging"));
 
 export const localRouter = createBrowserRouter([
-  { path: "/login", element: <Suspense fallback={<RootLoader />}><Login /></Suspense> },
+  { path: "/login", element: <Suspense fallback={<PageLoader />}><Login /></Suspense> },
   { path: "/", element: <Landing /> },
   {
     path: "/app",
@@ -24,15 +25,23 @@ export const localRouter = createBrowserRouter([
       {
         path: "dashboard",
         element: (
-          <Suspense fallback={<RootLoader />}>
+          <Suspense fallback={<PageLoader />}>
             <Dashboard />
+          </Suspense>
+        ),
+      },
+      {
+        path: "settings",
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <Settings />
           </Suspense>
         ),
       },
       {
         path: "research",
         element: (
-          <Suspense fallback={<RootLoader />}>
+          <Suspense fallback={<PageLoader />}>
             <ResearchPage />
           </Suspense>
         ),
@@ -60,7 +69,7 @@ export const localRouter = createBrowserRouter([
           {
             path: "script",
             element: (
-              <Suspense fallback={<RootLoader />}>
+              <Suspense fallback={<PageLoader />}>
                 <ProjectScriptPage />
               </Suspense>
             ),
@@ -68,7 +77,7 @@ export const localRouter = createBrowserRouter([
           {
             path: "hooks",
             element: (
-              <Suspense fallback={<RootLoader />}>
+              <Suspense fallback={<PageLoader />}>
                 <ProjectHooksPage />
               </Suspense>
             ),
@@ -76,7 +85,7 @@ export const localRouter = createBrowserRouter([
           {
             path: "packaging",
             element: (
-              <Suspense fallback={<RootLoader />}>
+              <Suspense fallback={<PageLoader />}>
                 <ProjectPackagingPage />
               </Suspense>
             ),

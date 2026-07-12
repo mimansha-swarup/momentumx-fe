@@ -1,6 +1,7 @@
 import {
   LogOut,
   Settings2,
+  SlidersHorizontal,
 } from "lucide-react";
 
 import {
@@ -9,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { googleLogOut } from "@/utils/firebase/login";
 import { useNavigate } from "react-router-dom";
 
@@ -17,9 +19,20 @@ export function DrawerMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Settings2 className="ml-auto size-4 cursor-pointer" />
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Account menu"
+          className="ml-auto size-7"
+        >
+          <Settings2 className="size-4" />
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-30">
+        <DropdownMenuItem onClick={() => navigate("/app/settings")}>
+          <SlidersHorizontal />
+          <span>Settings</span>
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={() => googleLogOut(navigate)}>
           <LogOut />
           <span>Log out</span>

@@ -1,22 +1,16 @@
 import {
   browserLocalPersistence,
-  getAdditionalUserInfo,
   setPersistence,
   signInWithPopup,
   signOut,
 } from "firebase/auth";
 import { auth, provider } from "./config";
-import { IS_NEW_USER, LOGGED_IN } from "@/constants/root";
+import { LOGGED_IN } from "@/constants/root";
 import { NavigateFunction } from "react-router-dom";
 
 export const googleLogin = async () => {
   const result = await signInWithPopup(auth, provider);
-  const userInfo = getAdditionalUserInfo(result);
-  const user = result.user;
-  if (userInfo?.isNewUser) {
-    localStorage.setItem(IS_NEW_USER, "true");
-  }
-  return user;
+  return result.user;
 };
 
 export const persistLogin = async () => {

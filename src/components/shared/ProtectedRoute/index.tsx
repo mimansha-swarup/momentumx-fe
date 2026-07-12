@@ -37,6 +37,9 @@ const ProtectedLayout = () => {
     return <Navigate to={`/login`} replace state={{ from: location }} />;
   }
 
+  // Value-first (product doc §5.1): NO gate before first value. Below-minimum
+  // users roam the dashboard + Idea door freely. The soft context minimum is
+  // enforced only on entering the pipeline (ProjectPipelineLayout).
   return (
     <RootLayout>
       <Outlet />

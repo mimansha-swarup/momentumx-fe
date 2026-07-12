@@ -5,3 +5,5 @@ export { TopicGrid } from "./TopicGrid";
 export { TrendingTab } from "./TrendingTab";
 export { CompetitorsTab } from "./CompetitorsTab";
 export { KeywordsTab } from "./KeywordsTab";
+export { FirstRunIdea } from "./FirstRunIdea";
+export { EnrichNudge } from "./EnrichNudge";

@@ -96,6 +96,7 @@ export interface IVideoProjectState {
   hasMore: boolean;
   nextCursor: string | null;
   isLoading: boolean;
+  hasLoaded: boolean; // true after the first listProjects resolves — drives adaptive landing
   error: string | null;
 
   currentProject: IVideoProject | null;
