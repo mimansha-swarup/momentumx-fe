@@ -301,6 +301,13 @@ const TitlesCard = ({
           </div>
         )}
 
+        {/* Continuity hint (§7.3): the chosen title becomes the project's name */}
+        {titles.length > 0 && (
+          <p className="mb-3 text-xs text-muted-foreground">
+            The title you select becomes your project&apos;s name.
+          </p>
+        )}
+
         {/* Title variations */}
         <div className="space-y-3">
           {displayTitles.map((titleObj, index) => (

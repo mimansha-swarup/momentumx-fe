@@ -50,15 +50,6 @@ const titlesSlice = createSlice({
     clearExportText: (state) => {
       state.exportText = null;
     },
-    markScriptGenerated: (state, action: PayloadAction<string>) => {
-      if (state.data?.lists) {
-        state.data.lists = state.data?.lists?.map((title) =>
-          title.id === action.payload
-            ? { ...title, isScriptGenerated: true }
-            : title
-        );
-      }
-    },
   },
   extraReducers: (builder) => {
     // Add reducers for additional action types here, and handle loading state as needed
@@ -97,10 +88,10 @@ const titlesSlice = createSlice({
         state.isLoading = false;
         state.data = {
           ...state.data,
-          meta: {
-            nextCursor: null,
-            hasNextPage: state.data?.meta?.hasNextPage ?? false,
-          },
+          // Preserve the pagination cursor — generating prepends new ideas at the
+          // top and doesn't invalidate the boundary for loading OLDER ones.
+          // (Nulling nextCursor while keeping hasNextPage left a dead "Load More".)
+          meta: state.data?.meta ?? { nextCursor: null, hasNextPage: false },
           lists: [
             ...(action.payload?.data ?? []),
             ...(state.data?.lists ?? []),
@@ -187,7 +178,6 @@ export const {
   resetTitle,
   updateFilter,
   clearExportText,
-  markScriptGenerated,
 } = titlesSlice.actions;
 
 export const selectTitlesData = (state: RootState) => state.titles.data;

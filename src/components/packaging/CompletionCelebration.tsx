@@ -50,7 +50,7 @@ export const CompletionCelebration: React.FC<CompletionCelebrationProps> = ({
             className="text-muted-foreground hover:text-foreground hover:bg-white/5"
           >
             <ArrowLeft className="mr-1.5 h-4 w-4" aria-hidden="true" />
-            Back to Projects
+            Back to Dashboard
           </Button>
           <Button
             variant="outline"

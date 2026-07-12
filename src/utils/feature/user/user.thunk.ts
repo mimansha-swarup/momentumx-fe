@@ -59,8 +59,13 @@ export const completeOnboarding = createAsyncThunk<
       message: response.message ?? "",
       warning: response.warning ?? "",
     });
-    // Refetch the canonical profile (fresh completeness + enriched fields).
+    // Onboarding now fast-saves the minimum (no inline enrichment), so the gate
+    // clears immediately after this refetch.
     await thunkAPI.dispatch(getUser());
+    // Enrichment (channel titles/description, etc.) runs in the background as a
+    // separate request — keeps onboarding fast without a post-response job the
+    // serverless backend can't guarantee. Best-effort; not awaited.
+    thunkAPI.dispatch(refreshContext());
   } catch (error) {
     return thunkAPI.rejectWithValue(getErrorMessage(error));
   }
