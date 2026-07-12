@@ -1,13 +1,10 @@
 // Hooks Feature Types
 
-export type FeedbackValue = "like" | "dislike" | null;
-
 export interface IHooksBatch {
   id: string;
   videoProjectId: string;
   createdBy: string;
   hooks: string[];
-  hookFeedback: Record<string, FeedbackValue>;
   createdAt: string;
 }
 
@@ -30,17 +27,6 @@ export interface SelectHookResponse {
 
 export interface RegenerateHooksRequest {
   script: string;
-}
-
-export interface HookFeedbackRequest {
-  hookIndex: number;
-  feedback: FeedbackValue;
-}
-
-export interface HookFeedbackResponse {
-  id: string;
-  hookIndex: number;
-  feedback: FeedbackValue;
 }
 
 export interface ExportHooksResponse {

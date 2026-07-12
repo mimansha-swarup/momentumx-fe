@@ -16,7 +16,6 @@ export interface IGeneratedIdea {
   archived: boolean;
   batchId: string;
   videoProjectId: string | null;
-  userFeedback: "like" | "dislike" | null;
 }
 export interface IGeneratedContentProps {
   heading: string;

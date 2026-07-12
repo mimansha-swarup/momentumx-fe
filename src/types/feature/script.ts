@@ -5,7 +5,6 @@ export interface IGeneratedScript {
   createdAt: string;
   updatedAt?: string;
   createdBy: string;
-  userFeedback?: "like" | "dislike" | null;
 }
 
 export interface IScriptState {

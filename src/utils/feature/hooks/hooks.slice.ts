@@ -72,7 +72,6 @@ const hooksSlice = createSlice({
         state.isRegenerating = false;
         if (action.payload && state.batch) {
           state.batch.hooks = action.payload.hooks ?? state.batch.hooks;
-          state.batch.hookFeedback = {};
           state.selectedHookIndex = null;
         }
       })

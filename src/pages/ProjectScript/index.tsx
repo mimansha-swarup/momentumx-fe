@@ -139,6 +139,30 @@ const ProjectScriptPage = () => {
     );
   }
 
+  // Post-stream transition: streaming just ended but the persisted script hasn't
+  // loaded yet (getProject → getScriptById in flight). Keep showing the streamed
+  // content so the page never flashes the empty/blank state in that window.
+  if (!isStreaming && streamContent && !currentScript) {
+    return (
+      <div className="space-y-4">
+        <div
+          role="status"
+          aria-live="polite"
+          className="flex items-center gap-2 text-primary"
+        >
+          <Loader2
+            className="size-4 motion-safe:animate-spin"
+            aria-hidden="true"
+          />
+          <span className="text-sm font-medium">Finalizing script…</span>
+        </div>
+        <GlassCard>
+          <MarkdownPreview content={streamContent} />
+        </GlassCard>
+      </div>
+    );
+  }
+
   // Empty state — no script generated yet
   if (!hasScript && !isStreaming && scriptStepStatus !== "in_progress") {
     return (
