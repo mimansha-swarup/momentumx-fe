@@ -2,14 +2,13 @@ import { createSlice, createSelector, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/utils/store";
 import {
   editTitles,
-  exportTopics,
+  exportIdeas,
   generateTitles,
-  regenerateAllTopics,
-  regenerateOneTopic,
+  regenerateAllIdeas,
+  regenerateOneIdea,
   retrieveTitles,
-  submitTopicFeedback,
 } from "./titles.thunk";
-import { IGeneratedTopic } from "@/types/components/dashboard";
+import { IGeneratedIdea } from "@/types/components/dashboard";
 import { ITitleParams, ITitleState, TitleFilters } from "@/types/feature/title";
 
 const initialState: ITitleState = {
@@ -23,7 +22,6 @@ const initialState: ITitleState = {
   isEditing: false,
   isRegenerating: false,
   isExporting: false,
-  isSubmittingFeedback: false,
   exportText: null,
   error: null,
 };
@@ -134,67 +132,49 @@ const titlesSlice = createSlice({
         state.error = (action.payload as string) ?? "Unknown error";
       })
 
-      .addCase(regenerateAllTopics.pending, (state) => {
+      .addCase(regenerateAllIdeas.pending, (state) => {
         state.isRegenerating = true;
         state.error = null;
       })
-      .addCase(regenerateAllTopics.fulfilled, (state) => {
+      .addCase(regenerateAllIdeas.fulfilled, (state) => {
         state.isRegenerating = false;
         // The new batch will be fetched via retrieveTitles after regeneration.
         // Clear existing list so the next fetch replaces rather than appends.
         state.data = null;
       })
-      .addCase(regenerateAllTopics.rejected, (state, action) => {
+      .addCase(regenerateAllIdeas.rejected, (state, action) => {
         state.isRegenerating = false;
         state.error = (action.payload as string) ?? "Unknown error";
       })
 
-      .addCase(regenerateOneTopic.pending, (state) => {
+      .addCase(regenerateOneIdea.pending, (state) => {
         state.isRegenerating = true;
         state.error = null;
       })
-      .addCase(regenerateOneTopic.fulfilled, (state, action) => {
+      .addCase(regenerateOneIdea.fulfilled, (state, action) => {
         state.isRegenerating = false;
         if (!state.data?.lists || !action.payload) return;
         state.data = {
           ...state.data,
-          lists: state.data.lists.map((topic) =>
-            topic.id === action.payload!.id ? { ...topic, ...action.payload } : topic
+          lists: state.data.lists.map((idea) =>
+            idea.id === action.payload!.id ? { ...idea, ...action.payload } : idea
           ),
         };
       })
-      .addCase(regenerateOneTopic.rejected, (state, action) => {
+      .addCase(regenerateOneIdea.rejected, (state, action) => {
         state.isRegenerating = false;
         state.error = (action.payload as string) ?? "Unknown error";
       })
 
-      .addCase(submitTopicFeedback.pending, (state) => {
-        state.isSubmittingFeedback = true;
-        state.error = null;
-      })
-      .addCase(submitTopicFeedback.fulfilled, (state, action) => {
-        state.isSubmittingFeedback = false;
-        if (state.data?.lists && action.payload) {
-          const topic = state.data.lists.find((t) => t.id === action.payload!.id);
-          if (topic) {
-            topic.userFeedback = action.payload.userFeedback;
-          }
-        }
-      })
-      .addCase(submitTopicFeedback.rejected, (state, action) => {
-        state.isSubmittingFeedback = false;
-        state.error = (action.payload as string) ?? "Unknown error";
-      })
-
-      .addCase(exportTopics.pending, (state) => {
+      .addCase(exportIdeas.pending, (state) => {
         state.isExporting = true;
         state.error = null;
       })
-      .addCase(exportTopics.fulfilled, (state, action) => {
+      .addCase(exportIdeas.fulfilled, (state, action) => {
         state.isExporting = false;
         state.exportText = action.payload?.text ?? null;
       })
-      .addCase(exportTopics.rejected, (state, action) => {
+      .addCase(exportIdeas.rejected, (state, action) => {
         state.isExporting = false;
         state.error = (action.payload as string) ?? "Unknown error";
       })
@@ -216,22 +196,21 @@ export const selectTitlesDone = (state: RootState) => state.titles.isDone;
 export const selectTitlesIsEditing = (state: RootState) => state.titles.isEditing;
 export const selectTitlesIsRegenerating = (state: RootState) => state.titles.isRegenerating;
 export const selectTitlesIsExporting = (state: RootState) => state.titles.isExporting;
-export const selectTitlesIsSubmittingFeedback = (state: RootState) => state.titles.isSubmittingFeedback;
 export const selectTitlesExportText = (state: RootState) => state.titles.exportText;
 export const selectTitlesError = (state: RootState) => state.titles.error;
 
 // Memoized: a plain `.filter()` selector returns a new array every call and
 // would re-render its consumer on every dispatch app-wide.
-export const selectActiveTopics = createSelector(
+export const selectActiveIdeas = createSelector(
   selectTitlesData,
-  (data): IGeneratedTopic[] =>
+  (data): IGeneratedIdea[] =>
     data?.lists.filter((t) => !t.archived) ?? []
 );
 
 export const selectHasLinkedProjects = (state: RootState): boolean =>
   (state.titles.data?.lists ?? []).some((t) => !t.archived && t.videoProjectId !== null);
 
-export const selectTopicsCursor = (state: RootState) =>
+export const selectIdeasCursor = (state: RootState) =>
   state.titles.data?.meta ?? null;
 
 export default titlesSlice.reducer;

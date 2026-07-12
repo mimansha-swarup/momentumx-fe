@@ -25,7 +25,6 @@ import {
   selectSelectedHookIndex,
   selectHooksError,
   selectIsExporting,
-  selectIsSubmittingFeedback,
   selectIsSelecting,
   clearError,
   hydrateSelectedIndex,
@@ -34,7 +33,6 @@ import {
   generateHooks,
   selectHook,
   regenerateHooks,
-  submitHookFeedback,
   exportHooks,
 } from "@/utils/feature/hooks/hooks.thunk";
 import { selectCurrentScript } from "@/utils/feature/scripts/script.slice";
@@ -44,7 +42,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import GlassCard from "@/components/shared/glassCard";
 import { StaleStepBanner } from "@/components/project";
 import { HooksList } from "@/components/hooks";
-import type { FeedbackValue } from "@/types/feature/hooks";
 
 const ProjectHooksPage = () => {
   const dispatch = useAppDispatch();
@@ -58,7 +55,6 @@ const ProjectHooksPage = () => {
   const selectedIndex = useAppSelector(selectSelectedHookIndex);
   const error = useAppSelector(selectHooksError);
   const isExporting = useAppSelector(selectIsExporting);
-  const isSubmittingFeedback = useAppSelector(selectIsSubmittingFeedback);
   const isSelecting = useAppSelector(selectIsSelecting);
   // Which hook the user is selecting — drives a per-card spinner (the slice's
   // isSelecting is a single global flag, so it can't tell the cards apart).
@@ -134,12 +130,6 @@ const ProjectHooksPage = () => {
     if (completeStep.fulfilled.match(result)) {
       dispatch(getProject(projectId));
     }
-  };
-
-  const handleFeedback = (_id: string, feedback: FeedbackValue) => {
-    const hookIndex = parseInt(_id, 10);
-    if (!hooksId || isNaN(hookIndex)) return;
-    dispatch(submitHookFeedback({ hooksId, hookIndex, feedback }));
   };
 
   const handleExport = () => {
@@ -326,13 +316,8 @@ const ProjectHooksPage = () => {
         hooks={batch?.hooks ?? []}
         batchId={batch?.id ?? ""}
         selectedHookIndex={selectedIndex}
-        hookFeedback={batch?.hookFeedback ?? {}}
         onSelect={handleSelect}
-        onFeedback={(index, feedback) =>
-          handleFeedback(String(index), feedback)
-        }
         selectingIndex={selectingIndex}
-        isSubmittingFeedback={isSubmittingFeedback}
       />
 
       {/* Selection status */}

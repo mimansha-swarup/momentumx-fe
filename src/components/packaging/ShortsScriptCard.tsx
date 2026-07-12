@@ -13,13 +13,10 @@ import {
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import GradientSkeleton from "./GradientSkeleton";
 import { IShortsOutput } from "@/types/feature/packaging";
-import { FeedbackButtons } from "@/components/research/FeedbackButtons";
 
 interface ShortsScriptCardProps {
   shortsScript: IShortsOutput;
   onRegenerate: () => void;
-  feedback?: "like" | "dislike" | null;
-  onFeedback?: (feedback: "like" | "dislike" | null) => void;
 }
 
 const segmentStyles = {
@@ -52,8 +49,6 @@ const segmentStyles = {
 const ShortsScriptCard = ({
   shortsScript,
   onRegenerate,
-  feedback,
-  onFeedback,
 }: ShortsScriptCardProps) => {
   const [copied, copy] = useCopyToClipboard("Script copied to clipboard");
   const [isExpanded, setIsExpanded] = useState(true);
@@ -101,13 +96,6 @@ const ShortsScriptCard = ({
           </div>
 
           <div className="flex items-center gap-2">
-            {onFeedback && (
-              <FeedbackButtons
-                topicId="shorts"
-                feedback={feedback ?? null}
-                onFeedback={(_id, fb) => onFeedback(fb)}
-              />
-            )}
             {!isLoading && segments.length > 0 && (
               <>
                 <Button

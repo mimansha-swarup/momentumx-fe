@@ -2,16 +2,13 @@ import { baseFetch, IBaseFetchResponse } from "@/utils/network";
 import {
   IHooksBatch,
   SelectHookResponse,
-  HookFeedbackResponse,
   ExportHooksResponse,
-  FeedbackValue,
 } from "@/types/feature/hooks";
 
 const URLS = {
   generate: "/v1/hooks/generate",
   select: "/v1/hooks/{hooksId}/select",
   regenerate: "/v1/hooks/{hooksId}/regenerate",
-  feedback: "/v1/hooks/{hooksId}/feedback",
   export: "/v1/hooks/{hooksId}/export",
 };
 
@@ -48,18 +45,6 @@ class HooksService {
     const response = await baseFetch.post(
       this.urls.regenerate.replace("{hooksId}", hooksId),
       { script }
-    );
-    return response.data;
-  }
-
-  async submitFeedback(
-    hooksId: string,
-    hookIndex: number,
-    feedback: FeedbackValue
-  ): Promise<IBaseFetchResponse<HookFeedbackResponse>> {
-    const response = await baseFetch.patch(
-      this.urls.feedback.replace("{hooksId}", hooksId),
-      { hookIndex, feedback }
     );
     return response.data;
   }

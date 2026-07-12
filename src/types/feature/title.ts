@@ -1,4 +1,4 @@
-import { IGeneratedTopic } from "@/types/components/dashboard";
+import { IGeneratedIdea } from "@/types/components/dashboard";
 
 export interface ITitleData {
   meta: {
@@ -8,7 +8,7 @@ export interface ITitleData {
     } | null;
     hasNextPage: boolean;
   };
-  lists: IGeneratedTopic[];
+  lists: IGeneratedIdea[];
 }
 export const enum TitleFilters {
   ALL = "all",
@@ -28,7 +28,6 @@ export interface ITitleState {
   isEditing: boolean;
   isRegenerating: boolean;
   isExporting: boolean;
-  isSubmittingFeedback: boolean;
   exportText: string | null;
   error: string | null;
 }

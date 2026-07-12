@@ -1,7 +1,6 @@
-export { FeedbackButtons } from "./FeedbackButtons";
-export { TopicCard } from "./TopicCard";
-export { TopicCardSkeleton } from "./TopicCardSkeleton";
-export { TopicGrid } from "./TopicGrid";
+export { IdeaCard } from "./IdeaCard";
+export { IdeaCardSkeleton } from "./IdeaCardSkeleton";
+export { IdeaGrid } from "./IdeaGrid";
 export { TrendingTab } from "./TrendingTab";
 export { CompetitorsTab } from "./CompetitorsTab";
 export { KeywordsTab } from "./KeywordsTab";

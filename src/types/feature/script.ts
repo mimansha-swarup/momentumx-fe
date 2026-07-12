@@ -15,7 +15,6 @@ export interface IScriptState {
   isLoading: boolean;
   isDone: boolean;
   error: string | null;
-  isSubmittingFeedback: boolean;
   isExporting: boolean;
   exportResult: { title: string; text: string } | null;
   isRegenerating: boolean;

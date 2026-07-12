@@ -18,13 +18,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { TopicGrid, TrendingTab, CompetitorsTab, KeywordsTab, FirstRunIdea, EnrichNudge } from "@/components/research";
+import { IdeaGrid, TrendingTab, CompetitorsTab, KeywordsTab, FirstRunIdea, EnrichNudge } from "@/components/research";
 import { selectIsOnboarded } from "@/utils/feature/user/user.slice";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import {
-  selectActiveTopics,
+  selectActiveIdeas,
   selectHasLinkedProjects,
-  selectTopicsCursor,
+  selectIdeasCursor,
   selectTitlesLoading,
   selectTitlesIsRegenerating,
   selectTitlesIsExporting,
@@ -45,10 +45,9 @@ import {
 import {
   retrieveTitles,
   generateTitles,
-  regenerateAllTopics,
-  regenerateOneTopic,
-  submitTopicFeedback,
-  exportTopics,
+  regenerateAllIdeas,
+  regenerateOneIdea,
+  exportIdeas,
 } from "@/utils/feature/titles/titles.thunk";
 import { createProject } from "@/utils/feature/videoProject/videoProject.thunk";
 import { selectIsCreating } from "@/utils/feature/videoProject/videoProject.slice";
@@ -57,14 +56,14 @@ import { cn } from "@/lib/utils";
 
 type ConfirmDialog =
   | { type: "regenerateAll" }
-  | { type: "regenerateOne"; topicId: string }
+  | { type: "regenerateOne"; ideaId: string }
   | null;
 
 const ResearchPage = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const topics = useAppSelector(selectActiveTopics);
+  const ideas = useAppSelector(selectActiveIdeas);
   const isLoading = useAppSelector(selectTitlesLoading);
   const isRegenerating = useAppSelector(selectTitlesIsRegenerating);
   const isExporting = useAppSelector(selectTitlesIsExporting);
@@ -72,22 +71,22 @@ const ResearchPage = () => {
   const error = useAppSelector(selectTitlesError);
   const hasLinkedProjects = useAppSelector(selectHasLinkedProjects);
   const isOnboarded = useAppSelector(selectIsOnboarded);
-  const cursor = useAppSelector(selectTopicsCursor);
+  const cursor = useAppSelector(selectIdeasCursor);
   const isCreatingProject = useAppSelector(selectIsCreating);
   const trending = useAppSelector(selectTrending);
   const competitors = useAppSelector(selectCompetitors);
   const keywords = useAppSelector(selectKeywords);
 
   const [activeIntelTab, setActiveIntelTab] = useState<"trending" | "competitors" | "keywords">("trending");
-  const [regeneratingTopicId, setRegeneratingTopicId] = useState<string | null>(
+  const [regeneratingIdeaId, setRegeneratingIdeaId] = useState<string | null>(
     null
   );
-  const [creatingForTopicId, setCreatingForTopicId] = useState<string | null>(
+  const [creatingForIdeaId, setCreatingForIdeaId] = useState<string | null>(
     null
   );
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialog>(null);
 
-  const hasTopics = topics.length > 0;
+  const hasIdeas = ideas.length > 0;
 
   useEffect(() => {
     dispatch(retrieveTitles({ isFresh: true }));
@@ -106,44 +105,44 @@ const ResearchPage = () => {
 
   // Clear local regenerating state when global flag resets
   useEffect(() => {
-    if (!isRegenerating && regeneratingTopicId) {
-      setRegeneratingTopicId(null);
+    if (!isRegenerating && regeneratingIdeaId) {
+      setRegeneratingIdeaId(null);
     }
-  }, [isRegenerating, regeneratingTopicId]);
+  }, [isRegenerating, regeneratingIdeaId]);
 
   // Clear local creating state when global flag resets
   useEffect(() => {
-    if (!isCreatingProject && creatingForTopicId) {
-      setCreatingForTopicId(null);
+    if (!isCreatingProject && creatingForIdeaId) {
+      setCreatingForIdeaId(null);
     }
-  }, [isCreatingProject, creatingForTopicId]);
+  }, [isCreatingProject, creatingForIdeaId]);
 
   // Fetch research data when a tab becomes active (only if not already loaded or errored)
   useEffect(() => {
-    if (!hasTopics) return;
+    if (!hasIdeas) return;
     if (activeIntelTab === "trending" && !trending.videos.length && !trending.isLoading && !trending.error) {
       dispatch(fetchTrending());
     } else if (activeIntelTab === "competitors" && !competitors.channels.length && !competitors.isLoading && !competitors.error) {
       dispatch(fetchCompetitors());
     }
     // Keywords are fetched on-demand via search, not on tab activation
-  }, [activeIntelTab, hasTopics, trending, competitors, dispatch]);
+  }, [activeIntelTab, hasIdeas, trending, competitors, dispatch]);
 
   const handleGenerate = useCallback(() => {
     dispatch(generateTitles());
   }, [dispatch]);
 
   const handleExport = useCallback(() => {
-    dispatch(exportTopics());
+    dispatch(exportIdeas());
   }, [dispatch]);
 
   const handleRegenerate = useCallback(
-    (topicId: string, hasProject: boolean) => {
+    (ideaId: string, hasProject: boolean) => {
       if (hasProject) {
-        setConfirmDialog({ type: "regenerateOne", topicId });
+        setConfirmDialog({ type: "regenerateOne", ideaId });
       } else {
-        setRegeneratingTopicId(topicId);
-        dispatch(regenerateOneTopic(topicId));
+        setRegeneratingIdeaId(ideaId);
+        dispatch(regenerateOneIdea(ideaId));
       }
     },
     [dispatch]
@@ -151,8 +150,8 @@ const ResearchPage = () => {
 
   const handleRegenerateOneConfirm = useCallback(() => {
     if (confirmDialog?.type !== "regenerateOne") return;
-    setRegeneratingTopicId(confirmDialog.topicId);
-    dispatch(regenerateOneTopic(confirmDialog.topicId));
+    setRegeneratingIdeaId(confirmDialog.ideaId);
+    dispatch(regenerateOneIdea(confirmDialog.ideaId));
     setConfirmDialog(null);
   }, [dispatch, confirmDialog]);
 
@@ -161,35 +160,28 @@ const ResearchPage = () => {
       setConfirmDialog({ type: "regenerateAll" });
       return;
     }
-    const result = await dispatch(regenerateAllTopics());
-    if (regenerateAllTopics.fulfilled.match(result)) {
+    const result = await dispatch(regenerateAllIdeas());
+    if (regenerateAllIdeas.fulfilled.match(result)) {
       dispatch(retrieveTitles({ isFresh: true }));
     }
   }, [dispatch, hasLinkedProjects]);
 
   const handleRegenerateAllConfirm = useCallback(async () => {
     setConfirmDialog(null);
-    const result = await dispatch(regenerateAllTopics());
-    if (regenerateAllTopics.fulfilled.match(result)) {
+    const result = await dispatch(regenerateAllIdeas());
+    if (regenerateAllIdeas.fulfilled.match(result)) {
       dispatch(retrieveTitles({ isFresh: true }));
     }
   }, [dispatch]);
 
-  const handleFeedback = useCallback(
-    (topicId: string, feedback: "like" | "dislike" | null) => {
-      dispatch(submitTopicFeedback({ topicId, feedback }));
-    },
-    [dispatch]
-  );
-
-  const handleUseThisTopic = useCallback(
-    async (topicId: string, videoProjectId: string | null) => {
+  const handleUseThisIdea = useCallback(
+    async (ideaId: string, videoProjectId: string | null) => {
       if (videoProjectId) {
         navigate(`/app/project/${videoProjectId}`);
         return;
       }
-      setCreatingForTopicId(topicId);
-      const result = await dispatch(createProject({ topicId }));
+      setCreatingForIdeaId(ideaId);
+      const result = await dispatch(createProject({ ideaId }));
       if (createProject.fulfilled.match(result) && result.payload) {
         navigate(`/app/project/${result.payload.id}`);
       } else if (createProject.rejected.match(result)) {
@@ -211,10 +203,10 @@ const ResearchPage = () => {
 
   // Value-first (§5.1): a contextless user gets the first-run entry (URL → instant
   // ideas), NOT the bare "Generate" empty state — a no-context generate 500s.
-  const showFirstRun = !isOnboarded && !hasTopics && !isRegenerating;
+  const showFirstRun = !isOnboarded && !hasIdeas && !isRegenerating;
   const showEmptyState =
-    isOnboarded && !isLoading && !isRegenerating && !error && !hasTopics;
-  const showGrid = hasTopics || (isOnboarded && (isLoading || isRegenerating));
+    isOnboarded && !isLoading && !isRegenerating && !error && !hasIdeas;
+  const showGrid = hasIdeas || (isOnboarded && (isLoading || isRegenerating));
 
   return (
     <div className="md:w-[90%] mx-auto pb-20">
@@ -224,7 +216,7 @@ const ResearchPage = () => {
       <EnrichNudge />
 
       {/* Page actions */}
-      {hasTopics && (
+      {hasIdeas && (
         <div className="flex items-center justify-end gap-3 mb-6 flex-wrap">
           <Button
             variant="outline"
@@ -245,9 +237,9 @@ const ResearchPage = () => {
             size="sm"
             className="btn-outline-hover"
             onClick={handleRegenerateAll}
-            disabled={isRegenerating || regeneratingTopicId !== null}
+            disabled={isRegenerating || regeneratingIdeaId !== null}
           >
-            {isRegenerating && !regeneratingTopicId ? (
+            {isRegenerating && !regeneratingIdeaId ? (
               <Loader2 className="size-4 animate-spin" />
             ) : (
               <RotateCcw className="size-4" />
@@ -311,21 +303,20 @@ const ResearchPage = () => {
         </div>
       )}
 
-      {/* Topic grid */}
+      {/* Idea grid */}
       {showGrid && (
-        <TopicGrid
-          topics={topics}
+        <IdeaGrid
+          ideas={ideas}
           isLoading={isLoading || isRegenerating}
-          regeneratingTopicId={regeneratingTopicId}
-          creatingForTopicId={creatingForTopicId}
-          onUseThisTopic={handleUseThisTopic}
+          regeneratingIdeaId={regeneratingIdeaId}
+          creatingForIdeaId={creatingForIdeaId}
+          onUseThisIdea={handleUseThisIdea}
           onRegenerate={handleRegenerate}
-          onFeedback={handleFeedback}
         />
       )}
 
       {/* Load more */}
-      {cursor?.hasNextPage && hasTopics && !isRegenerating && (
+      {cursor?.hasNextPage && hasIdeas && !isRegenerating && (
         <div className="flex justify-center mt-6">
           <Button
             variant="outline"
@@ -346,7 +337,7 @@ const ResearchPage = () => {
       )}
 
       {/* Research Intel Panel */}
-      {hasTopics && (
+      {hasIdeas && (
         <section className="mt-12">
           <h2 className="text-heading-lg mb-4">Research Intel</h2>
           <div className="flex gap-2 mb-4" role="tablist" aria-label="Research intelligence tabs">
@@ -408,8 +399,8 @@ const ResearchPage = () => {
               Disconnect from project?
             </DialogTitle>
             <DialogDescription>
-              This topic is linked to an active video project. Regenerating it
-              will create a new topic and disconnect it from the existing
+              This idea is linked to an active video project. Regenerating it
+              will create a new idea and disconnect it from the existing
               project.
             </DialogDescription>
           </DialogHeader>
@@ -433,11 +424,11 @@ const ResearchPage = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertTriangle className="size-5 text-red-400" />
-              Regenerate all topics?
+              Regenerate all ideas?
             </DialogTitle>
             <DialogDescription>
-              This will archive all current topics and generate a fresh batch.
-              Topics linked to active video projects will be disconnected, which
+              This will archive all current ideas and generate a fresh batch.
+              Ideas linked to active video projects will be disconnected, which
               may mark those projects as stale.
             </DialogDescription>
           </DialogHeader>

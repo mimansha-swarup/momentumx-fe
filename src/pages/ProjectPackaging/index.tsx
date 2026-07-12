@@ -33,7 +33,6 @@ import {
   selectIsExporting,
   selectPackagingError,
   selectHasContent,
-  selectItemFeedback,
   setSelectedTitle,
   updateTitleVariation,
   updateDescription,
@@ -53,7 +52,7 @@ import {
   generateTitle,
   generateDescription,
   generateThumbnail,
-  submitPackagingFeedback,
+  selectPackagingTitle,
 } from "@/utils/feature/packaging/packaging.thunk";
 import { selectCurrentScript } from "@/utils/feature/scripts/script.slice";
 import { getScriptById } from "@/utils/feature/scripts/script.thunk";
@@ -114,7 +113,6 @@ const ProjectPackagingPage = () => {
   const error = useAppSelector(selectPackagingError);
   const hasContent = useAppSelector(selectHasContent);
   const currentScript = useAppSelector(selectCurrentScript);
-  const itemFeedback = useAppSelector(selectItemFeedback);
 
   const projectId = project?.id ?? "";
   const packagingId = currentPackaging?.id ?? project?.packagingId ?? "";
@@ -235,11 +233,6 @@ const ProjectPackagingPage = () => {
     }
     dispatch(getPackaging(packagingId));
     dispatch(getProject(projectId));
-  };
-
-  const handleFeedback = (item: PackagingItemName, feedback: "like" | "dislike" | null) => {
-    if (!packagingId) return;
-    dispatch(submitPackagingFeedback({ packagingId, item, feedback }));
   };
 
   // Guard
@@ -416,12 +409,17 @@ const ProjectPackagingPage = () => {
                 ? () => handleRegenerateItem("title")
                 : () => dispatch(generateTitle())
             }
-            onSelectTitle={(index) => dispatch(setSelectedTitle(index))}
+            onSelectTitle={(index) => {
+              // Immediate local selection (feeds downstream description/thumbnail gen)...
+              dispatch(setSelectedTitle(index));
+              // ...and persist it: the server renames the project to this title (§7.3).
+              if (packagingId) {
+                dispatch(selectPackagingTitle({ packagingId, index, projectId }));
+              }
+            }}
             onEditTitle={(index, value) =>
               dispatch(updateTitleVariation({ index, value }))
             }
-            feedback={packagingId ? (itemFeedback.title ?? null) : undefined}
-            onFeedback={packagingId ? (fb) => handleFeedback("title", fb) : undefined}
           />
         </div>
 
@@ -447,8 +445,6 @@ const ProjectPackagingPage = () => {
             onEdit={(content) => dispatch(updateDescription(content))}
             editable
             accentColor="blue"
-            feedback={packagingId ? (itemFeedback.description ?? null) : undefined}
-            onFeedback={packagingId ? (fb) => handleFeedback("description", fb) : undefined}
           />
         </div>
 
@@ -470,8 +466,6 @@ const ProjectPackagingPage = () => {
                 : () => dispatch(generateThumbnail())
             }
             onSelectThumbnail={(index) => dispatch(setSelectedThumbnail(index))}
-            feedback={packagingId ? (itemFeedback.thumbnail ?? null) : undefined}
-            onFeedback={packagingId ? (fb) => handleFeedback("thumbnail", fb) : undefined}
           />
         </div>
 
@@ -489,8 +483,6 @@ const ProjectPackagingPage = () => {
                 ? () => handleRegenerateItem("shorts")
                 : () => dispatch(regenerateShortsScript())
             }
-            feedback={packagingId ? (itemFeedback.shorts ?? null) : undefined}
-            onFeedback={packagingId ? (fb) => handleFeedback("shorts", fb) : undefined}
           />
         </div>
       </div>

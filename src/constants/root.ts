@@ -20,12 +20,12 @@ export const problems = [
   {
     heading: "Running Out of Ideas",
     description:
-      "Constantly struggling to find fresh, engaging topics that will resonate with your audience.",
+      "Constantly struggling to find fresh, engaging ideas that will resonate with your audience.",
   },
   {
     heading: "Running Out of Ideas",
     description:
-      "Constantly struggling to find fresh, engaging topics that will resonate with your audience.",
+      "Constantly struggling to find fresh, engaging ideas that will resonate with your audience.",
   },
   {
     heading: "Inconsistent Uploads",
@@ -43,15 +43,15 @@ export const works = [
   },
   {
     id: 2,
-    title: "Get Viral Topics",
+    title: "Get Viral Ideas",
     description:
-      "Our AI analyzes trending content and generates topic ideas tailored to your audience and channel growth goals.",
+      "Our AI analyzes trending content and generates idea ideas tailored to your audience and channel growth goals.",
   },
   {
     id: 3,
     title: "Generate Full Scripts",
     description:
-      "Select a topic and get a complete script in your voice, with hooks, transitions, and calls to action.",
+      "Select a idea and get a complete script in your voice, with hooks, transitions, and calls to action.",
   },
 ];
 
@@ -86,8 +86,8 @@ export const faqs = [
   },
   {
     id: "item-6",
-    question: "How accurate are the trending topic suggestions?",
+    question: "How accurate are the trending idea suggestions?",
     answer:
-      "Our trending topic algorithm analyzes millions of videos daily across YouTube, social media, and Google Trends to identify what's gaining traction in your specific niche, with approximately 85% accuracy in predicting rising topics.",
+      "Our trending idea algorithm analyzes millions of videos daily across YouTube, social media, and Google Trends to identify what's gaining traction in your specific niche, with approximately 85% accuracy in predicting rising ideas.",
   },
 ];

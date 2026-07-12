@@ -1,10 +1,32 @@
 import { packagingService } from "@/service/packaging";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "@/utils/store";
-import { handleToast } from "@/utils/toast";
+import { handleToast, toastError } from "@/utils/toast";
 import { RegenerateItemResponse } from "@/types/feature/packaging";
+import { getProject } from "@/utils/feature/videoProject/videoProject.thunk";
 
 import { getErrorMessage } from "@/utils/error";
+
+// §7.3 title continuity: persist the chosen title; the server renames the
+// project, so refresh it to reflect the finalized title in the header/dashboard.
+export const selectPackagingTitle = createAsyncThunk(
+  "packaging/selectTitle",
+  async (
+    { packagingId, index, projectId }: { packagingId: string; index: number; projectId?: string },
+    thunkAPI
+  ) => {
+    try {
+      const response = await packagingService.selectTitle(packagingId, index);
+      if (projectId) thunkAPI.dispatch(getProject(projectId));
+      return response?.data;
+    } catch (error) {
+      // Surface the failure — otherwise the optimistic local selection silently
+      // diverges from the (un-persisted) server state with no user feedback.
+      toastError("Couldn't save your title selection");
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
 
 export const generateTitle = createAsyncThunk(
   "packaging/generateTitle",
@@ -174,31 +196,6 @@ export const regenerateItem = createAsyncThunk<
       if (!response.data) {
         return thunkAPI.rejectWithValue("No data returned");
       }
-      return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(getErrorMessage(error));
-    }
-  }
-);
-
-export const submitPackagingFeedback = createAsyncThunk(
-  "packaging/submitFeedback",
-  async (
-    arg: {
-      packagingId: string;
-      item: "title" | "description" | "thumbnail" | "shorts";
-      feedback: "like" | "dislike" | null;
-    },
-    thunkAPI
-  ) => {
-    try {
-      const { packagingId, item, feedback } = arg;
-      const response = await packagingService.submitFeedback(
-        packagingId,
-        item,
-        feedback
-      );
-      handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(getErrorMessage(error));

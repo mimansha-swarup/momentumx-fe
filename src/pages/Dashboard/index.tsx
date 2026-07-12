@@ -20,7 +20,7 @@ const Dashboard = () => {
   // guard reacts to → mount/unmount loop). Projects are safe to fetch here.
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { stats = { topics: 0, scripts: 0, credits: 0 } } =
+  const { stats = { ideas: 0, scripts: 0, credits: 0 } } =
     useAppSelector(currentUser) ?? {};
   const projects = useAppSelector(selectProjects);
   const hasLoaded = useAppSelector(selectProjectsLoaded);
@@ -88,7 +88,7 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5 md:gap-6 mb-12">
         {DASHBOARD_CARD(
-          (stats?.topics ?? 0).toString(),
+          (stats?.ideas ?? 0).toString(),
           (stats?.scripts ?? 0).toString(),
           stats?.credits?.toString() ?? "FREE",
         )?.map((card, index) => (

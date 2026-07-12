@@ -14,7 +14,7 @@ const ProblemStatement = () => {
             Struggling with YouTube Content Creation?
           </h2>
           <p className="text-muted-foreground md:text-xl max-w-[800px]">
-            YouTubers spend an average of 7 hours researching topics and writing
+            YouTubers spend an average of 7 hours researching ideas and writing
             scripts for each video. That's time you could be spending filming,
             editing, or growing your channel.
           </p>

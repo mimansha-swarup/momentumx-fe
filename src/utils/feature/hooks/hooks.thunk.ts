@@ -1,6 +1,5 @@
 import { hooksService } from "@/service/hooks";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { FeedbackValue } from "@/types/feature/hooks";
 import { handleToast } from "@/utils/toast";
 
 import { getErrorMessage } from "@/utils/error";
@@ -51,30 +50,6 @@ export const regenerateHooks = createAsyncThunk(
   ) => {
     try {
       const response = await hooksService.regenerateHooks(hooksId, script);
-      handleToast({ message: response.message ?? '', warning: response.warning ?? '' });
-      return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(getErrorMessage(error));
-    }
-  }
-);
-
-export const submitHookFeedback = createAsyncThunk(
-  "hooks/feedback",
-  async (
-    {
-      hooksId,
-      hookIndex,
-      feedback,
-    }: { hooksId: string; hookIndex: number; feedback: FeedbackValue },
-    thunkAPI
-  ) => {
-    try {
-      const response = await hooksService.submitFeedback(
-        hooksId,
-        hookIndex,
-        feedback
-      );
       handleToast({ message: response.message ?? '', warning: response.warning ?? '' });
       return response.data;
     } catch (error) {

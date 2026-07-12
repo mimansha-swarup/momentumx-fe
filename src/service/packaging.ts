@@ -11,7 +11,6 @@ import {
   ITimestampedSegment,
 } from "@/types/feature/packaging";
 
-type FeedbackValue = "like" | "dislike" | null;
 type PackagingItem = "title" | "description" | "thumbnail" | "shorts";
 
 const URLS = {
@@ -23,7 +22,7 @@ const URLS = {
   list: "/v1/packaging/list",
   get: "/v1/packaging/{{packagingId}}",
   regenerateItem: "/v1/packaging/{{packagingId}}/regenerate/{{item}}",
-  feedback: "/v1/packaging/{{packagingId}}/feedback",
+  selectTitle: "/v1/packaging/{{packagingId}}/select-title",
   export: "/v1/packaging/{{packagingId}}/export",
 };
 
@@ -161,20 +160,16 @@ class PackagingService {
     return response.data;
   }
 
-  async submitFeedback(
+  // §7.3: finalize a title — the server persists the choice and renames the project.
+  async selectTitle(
     packagingId: string,
-    item: PackagingItem,
-    feedback: FeedbackValue
+    index: number
   ): Promise<
-    IBaseFetchResponse<{
-      id: string;
-      item: PackagingItem;
-      feedback: FeedbackValue;
-    }>
+    IBaseFetchResponse<{ id: string; selectedTitleIndex: number; title: string }>
   > {
-    const response = await baseFetch.patch(
-      this.urls.feedback.replace("{{packagingId}}", packagingId),
-      { item, feedback }
+    const response = await baseFetch.post(
+      this.urls.selectTitle.replace("{{packagingId}}", packagingId),
+      { index }
     );
     return response.data;
   }

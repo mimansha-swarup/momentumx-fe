@@ -3,57 +3,54 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import GlassCard from '@/components/shared/glassCard';
 import { cn } from '@/lib/utils';
-import { IGeneratedTopic } from '@/types/components/dashboard';
-import { FeedbackButtons } from './FeedbackButtons';
+import { IGeneratedIdea } from '@/types/components/dashboard';
 
-interface TopicCardProps {
-  topic: IGeneratedTopic;
+interface IdeaCardProps {
+  idea: IGeneratedIdea;
   isRegenerating: boolean;
   isCreating: boolean;
-  onUseThisTopic: (topicId: string, videoProjectId: string | null) => void;
-  onRegenerate: (topicId: string, hasProject: boolean) => void;
-  onFeedback: (topicId: string, feedback: 'like' | 'dislike' | null) => void;
+  onUseThisIdea: (ideaId: string, videoProjectId: string | null) => void;
+  onRegenerate: (ideaId: string, hasProject: boolean) => void;
 }
 
-export const TopicCard: React.FC<TopicCardProps> = ({
-  topic,
+export const IdeaCard: React.FC<IdeaCardProps> = ({
+  idea,
   isRegenerating,
   isCreating,
-  onUseThisTopic,
+  onUseThisIdea,
   onRegenerate,
-  onFeedback,
 }) => {
-  const hasProject = topic.videoProjectId !== null;
+  const hasProject = idea.videoProjectId !== null;
 
   const handleRegenerate = () => {
-    onRegenerate(topic.id, hasProject);
+    onRegenerate(idea.id, hasProject);
   };
 
-  const handleUseThisTopic = () => {
-    onUseThisTopic(topic.id, topic.videoProjectId);
+  const handleUseThisIdea = () => {
+    onUseThisIdea(idea.id, idea.videoProjectId);
   };
 
   return (
     <GlassCard className="hover-scale-sm p-5">
-      <p className="text-title text-sm font-medium line-clamp-2">{topic.title}</p>
+      <p className="text-title text-sm font-medium line-clamp-2">{idea.title}</p>
 
-      {topic.concept && (
+      {idea.concept && (
         <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground line-clamp-3">
-          {topic.concept}
+          {idea.concept}
         </p>
       )}
 
       <div className="mt-3 flex flex-row flex-wrap gap-2">
-        {topic.ideaType && (
+        {idea.ideaType && (
           <Badge
             variant="secondary"
-            className={topic.ideaType === 'short' ? 'text-fuchsia-400' : 'text-sky-400'}
+            className={idea.ideaType === 'short' ? 'text-fuchsia-400' : 'text-sky-400'}
           >
             <Sparkles className="h-3 w-3" />
-            {topic.ideaType === 'short' ? 'Short' : 'Long-form'}
+            {idea.ideaType === 'short' ? 'Short' : 'Long-form'}
           </Badge>
         )}
-        {topic.isScriptGenerated && (
+        {idea.isScriptGenerated && (
           <Badge variant="secondary" className="text-emerald-400">
             <FileText className="h-3 w-3" />
             Script done
@@ -67,24 +64,18 @@ export const TopicCard: React.FC<TopicCardProps> = ({
         )}
       </div>
 
-      {topic.evidence && (
+      {idea.evidence && (
         <p className="mt-2 flex items-start gap-1.5 text-[11px] leading-snug text-muted-foreground/80">
           <TrendingUp className="mt-0.5 h-3 w-3 shrink-0 text-emerald-400/80" />
-          <span className="line-clamp-2">{topic.evidence}</span>
+          <span className="line-clamp-2">{idea.evidence}</span>
         </p>
       )}
 
       <div className="mt-3 flex flex-row items-center justify-between gap-2">
         <div className="flex flex-row items-center gap-1">
-          <FeedbackButtons
-            topicId={topic.id}
-            feedback={topic.userFeedback}
-            disabled={isRegenerating}
-            onFeedback={onFeedback}
-          />
           <button
             type="button"
-            aria-label="Regenerate topic"
+            aria-label="Regenerate idea"
             disabled={isRegenerating || isCreating}
             onClick={handleRegenerate}
             className={cn(
@@ -105,7 +96,7 @@ export const TopicCard: React.FC<TopicCardProps> = ({
         <Button
           size="sm"
           className="btn-primary-glow"
-          onClick={handleUseThisTopic}
+          onClick={handleUseThisIdea}
           disabled={isCreating || isRegenerating}
         >
           {isCreating ? (
@@ -120,7 +111,7 @@ export const TopicCard: React.FC<TopicCardProps> = ({
             </>
           ) : (
             <>
-              Use Topic
+              Use Idea
               <ArrowRight />
             </>
           )}

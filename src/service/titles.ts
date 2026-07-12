@@ -1,14 +1,12 @@
 import { baseFetch, IBaseFetchResponse } from "@/utils/network";
-import { IGeneratedTopic } from "@/types/components/dashboard";
+import { IGeneratedIdea } from "@/types/components/dashboard";
 
-type FeedbackValue = "like" | "dislike" | null;
-
-interface TopicsCursor {
+interface IdeasCursor {
   createdAt: string;
   docId: string;
 }
 
-export interface TopicsListParams {
+export interface IdeasListParams {
   limit?: number;
   createdAt?: string;
   docId?: string;
@@ -16,12 +14,12 @@ export interface TopicsListParams {
   isScriptGenerated?: string;
 }
 
-export interface TopicsListResponse {
+export interface IdeasListResponse {
   meta: {
-    nextCursor: TopicsCursor | null;
+    nextCursor: IdeasCursor | null;
     hasNextPage: boolean;
   };
-  lists: IGeneratedTopic[];
+  lists: IGeneratedIdea[];
 }
 
 // Instant-first-idea (§5.1): a transient, not-yet-persisted channel context the
@@ -35,13 +33,12 @@ export interface IIdeaContextOverride {
 }
 
 const URLS = {
-  titles: "/v1/topics",
-  generate: "/v1/topics/generate",
-  editTitle: "/v1/topics/edit/{{titleId}}",
-  regenerateAll: "/v1/topics/regenerate-all",
-  regenerateOne: "/v1/topics/{{topicId}}/regenerate",
-  feedback: "/v1/topics/{{topicId}}/feedback",
-  export: "/v1/topics/export",
+  titles: "/v1/ideas",
+  generate: "/v1/ideas/generate",
+  editTitle: "/v1/ideas/edit/{{titleId}}",
+  regenerateAll: "/v1/ideas/regenerate-all",
+  regenerateOne: "/v1/ideas/{{ideaId}}/regenerate",
+  export: "/v1/ideas/export",
 };
 
 class TitleService {
@@ -49,7 +46,7 @@ class TitleService {
 
   generateTitles = async (
     context?: IIdeaContextOverride
-  ): Promise<IBaseFetchResponse<TopicsListResponse['lists']>> => {
+  ): Promise<IBaseFetchResponse<IdeasListResponse['lists']>> => {
     const response = await baseFetch.post(
       this.urls.generate,
       context ? { context } : undefined
@@ -58,15 +55,15 @@ class TitleService {
   };
 
   async getGeneratedData(
-    query?: TopicsListParams
-  ): Promise<IBaseFetchResponse<TopicsListResponse>> {
+    query?: IdeasListParams
+  ): Promise<IBaseFetchResponse<IdeasListResponse>> {
     const response = await baseFetch.get(this.urls.titles, {
       params: query,
     });
     return response.data;
   }
 
-  async editTitle(titleId: string, body: Record<string, unknown>): Promise<IBaseFetchResponse<TopicsListResponse['lists'][number]>> {
+  async editTitle(titleId: string, body: Record<string, unknown>): Promise<IBaseFetchResponse<IdeasListResponse['lists'][number]>> {
     const response = await baseFetch.patch(
       this.urls.editTitle.replace("{{titleId}}", titleId),
       body
@@ -74,32 +71,21 @@ class TitleService {
     return response.data;
   }
 
-  async regenerateAll(): Promise<IBaseFetchResponse<IGeneratedTopic[]>> {
+  async regenerateAll(): Promise<IBaseFetchResponse<IGeneratedIdea[]>> {
     const response = await baseFetch.post(this.urls.regenerateAll);
     return response.data;
   }
 
   async regenerateOne(
-    topicId: string
-  ): Promise<IBaseFetchResponse<IGeneratedTopic>> {
+    ideaId: string
+  ): Promise<IBaseFetchResponse<IGeneratedIdea>> {
     const response = await baseFetch.post(
-      this.urls.regenerateOne.replace("{{topicId}}", topicId)
+      this.urls.regenerateOne.replace("{{ideaId}}", ideaId)
     );
     return response.data;
   }
 
-  async submitFeedback(
-    topicId: string,
-    feedback: FeedbackValue
-  ): Promise<IBaseFetchResponse<{ id: string; userFeedback: FeedbackValue }>> {
-    const response = await baseFetch.patch(
-      this.urls.feedback.replace("{{topicId}}", topicId),
-      { feedback }
-    );
-    return response.data;
-  }
-
-  async exportTopics(): Promise<
+  async exportIdeas(): Promise<
     IBaseFetchResponse<{ text: string; count: number }>
   > {
     const response = await baseFetch.get(this.urls.export);

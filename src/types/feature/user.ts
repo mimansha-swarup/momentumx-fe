@@ -34,7 +34,7 @@ export interface IUserProfile {
   channelDescription?: string;
   userTitle?: string[];
 
-  stats?: { credits?: number; topics?: number; scripts?: number };
+  stats?: { credits?: number; ideas?: number; scripts?: number };
   completeness?: IProfileCompleteness;
 }
 

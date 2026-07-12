@@ -56,6 +56,5 @@ export interface IHooksState {
   isRegenerating: boolean;
   isSelecting: boolean;
   isExporting: boolean;
-  isSubmittingFeedback: boolean;
   error: string | null;
 }

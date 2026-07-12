@@ -1,7 +1,7 @@
 import GlassCard from '@/components/shared/glassCard';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export const TopicCardSkeleton: React.FC = () => {
+export const IdeaCardSkeleton: React.FC = () => {
   return (
     <GlassCard className="p-5">
       <div className="space-y-2">

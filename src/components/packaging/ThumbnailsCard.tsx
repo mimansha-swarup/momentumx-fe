@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw, Copy, Check, Image, Star } from "lucide-react";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import GradientSkeleton from "./GradientSkeleton";
-import { FeedbackButtons } from "@/components/research/FeedbackButtons";
 
 interface ThumbnailsCardProps {
   descriptions: string[];
@@ -12,8 +11,6 @@ interface ThumbnailsCardProps {
   error?: string | null;
   onRegenerate: () => void;
   onSelectThumbnail: (index: number) => void;
-  feedback?: "like" | "dislike" | null;
-  onFeedback?: (feedback: "like" | "dislike" | null) => void;
 }
 
 interface ThumbnailItemProps {
@@ -119,8 +116,6 @@ const ThumbnailsCard = ({
   error,
   onRegenerate,
   onSelectThumbnail,
-  feedback,
-  onFeedback,
 }: ThumbnailsCardProps) => {
   // Show 3 placeholders when loading or when no descriptions yet
   const displayDescriptions: (string | null)[] =
@@ -154,13 +149,6 @@ const ThumbnailsCard = ({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {onFeedback && (
-              <FeedbackButtons
-                topicId="thumbnail"
-                feedback={feedback ?? null}
-                onFeedback={(_id, fb) => onFeedback(fb)}
-              />
-            )}
             <Button
               variant="ghost"
               size="sm"

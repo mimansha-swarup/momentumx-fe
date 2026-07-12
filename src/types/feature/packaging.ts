@@ -84,12 +84,8 @@ export interface IPackagingState {
   currentPackaging: GetPackagingResponse | null;
   isDetailLoading: boolean;
 
-  // Per-item feedback state
-  itemFeedback: Partial<Record<PackagingItemName, "like" | "dislike" | null>>;
-
   // Per-operation flags
   isRegeneratingItem: boolean;
-  isSubmittingFeedback: boolean;
   isExporting: boolean;
 
   // Export result
@@ -163,7 +159,9 @@ export interface GetPackagingResponse {
   id: string;
   script: string;
   titles: ITitle[];
-  selectedTitleIndex: number;
+  // Optional/null until the user finalizes a title (matches the backend); the
+  // slice defaults it to 0 on hydrate.
+  selectedTitleIndex?: number | null;
   description: string;
   thumbnail: string[];
   selectedThumbnailIndex: number;

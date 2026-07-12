@@ -15,7 +15,6 @@ import {
   listPackaging,
   getPackaging,
   regenerateItem,
-  submitPackagingFeedback,
   exportPackaging,
 } from "./packaging.thunk";
 
@@ -56,9 +55,7 @@ const initialState: IPackagingState = {
   isListLoading: false,
   currentPackaging: null,
   isDetailLoading: false,
-  itemFeedback: {},
   isRegeneratingItem: false,
-  isSubmittingFeedback: false,
   isExporting: false,
   exportText: null,
   error: null,
@@ -96,7 +93,7 @@ const packagingSlice = createSlice({
       const data = action.payload;
       state.packagingId = data.id;
       state.titles.titles = data.titles;
-      state.titles.selectedIndex = data.selectedTitleIndex;
+      state.titles.selectedIndex = data.selectedTitleIndex ?? 0;
       state.titles.isLoading = false;
       state.titles.error = null;
       state.description.content = data.description;
@@ -309,22 +306,6 @@ const packagingSlice = createSlice({
         state.error = (action.payload as string) ?? "Unknown error";
       })
 
-      // Submit Packaging Feedback
-      .addCase(submitPackagingFeedback.pending, (state) => {
-        state.isSubmittingFeedback = true;
-        state.error = null;
-      })
-      .addCase(submitPackagingFeedback.fulfilled, (state, action) => {
-        state.isSubmittingFeedback = false;
-        if (action.payload) {
-          state.itemFeedback[action.payload.item] = action.payload.feedback;
-        }
-      })
-      .addCase(submitPackagingFeedback.rejected, (state, action) => {
-        state.isSubmittingFeedback = false;
-        state.error = (action.payload as string) ?? "Unknown error";
-      })
-
       // Export Packaging
       .addCase(exportPackaging.pending, (state) => {
         state.isExporting = true;
@@ -375,15 +356,12 @@ export const selectIsDetailLoading = (state: RootState) =>
   state.packaging.isDetailLoading;
 export const selectIsRegeneratingItem = (state: RootState) =>
   state.packaging.isRegeneratingItem;
-export const selectIsSubmittingFeedback = (state: RootState) =>
-  state.packaging.isSubmittingFeedback;
 export const selectIsExporting = (state: RootState) =>
   state.packaging.isExporting;
 export const selectExportText = (state: RootState) =>
   state.packaging.exportText;
 export const selectPackagingError = (state: RootState) =>
   state.packaging.error;
-export const selectItemFeedback = (state: RootState) => state.packaging.itemFeedback;
 export const selectHasContent = (state: RootState) =>
   state.packaging.titles.titles.length > 0 ||
   !!state.packaging.description.content ||

@@ -1,10 +1,10 @@
 import { ReactElement, RefObject } from "react";
 
-export interface IGeneratedTopic {
+export interface IGeneratedIdea {
   title: string;
   // Idea fields (backend phase 2): step 1 now generates video CONCEPTS, not
   // headlines. `title` is the plain-language working title. Optional — legacy
-  // and bring-your-own-title topics lack them.
+  // and bring-your-own-title ideas lack them.
   concept?: string | null;
   ideaType?: "long" | "short" | null;
   evidence?: string | null;
@@ -21,7 +21,7 @@ export interface IGeneratedTopic {
 export interface IGeneratedContentProps {
   heading: string;
   headingClassName?: string;
-  list: IGeneratedTopic[];
+  list: IGeneratedIdea[];
   listRef?: RefObject<HTMLDivElement | null>;
   loading?: boolean;
 }

@@ -2,14 +2,11 @@ import { auth } from "@/utils/firebase/config";
 import { baseFetch, getApiDomain, IBaseFetchResponse } from "@/utils/network";
 import { IGeneratedScript } from "@/types/feature/script";
 
-type FeedbackValue = "like" | "dislike" | null;
-
 const URLS = {
   scripts: "/v1/scripts",
   streamScript: "/v1/scripts/stream/{projectId}",
   scriptById: "/v1/scripts/{scriptId}",
   editScript: "/v1/scripts/edit/{scriptId}",
-  feedback: "/v1/scripts/{scriptId}/feedback",
   export: "/v1/scripts/{scriptId}/export",
   regenerate: "/v1/scripts/{scriptId}/regenerate",
 };
@@ -22,7 +19,7 @@ class ScriptService {
   // SSE via EventSource cannot send custom headers, so the Firebase token
   // is passed as a query parameter. This is the only endpoint that does this.
   // Script generation is project-scoped: pass the video-project id; the server
-  // resolves the topic and links the generated script back to the project.
+  // resolves the idea and links the generated script back to the project.
   startStreamingScripts = async (
     projectId: string,
     setter: (chunk: string) => void,
@@ -85,17 +82,6 @@ class ScriptService {
     const response = await baseFetch.patch(
       this.urls.editScript.replace("{scriptId}", id),
       data
-    );
-    return response.data;
-  }
-
-  async submitFeedback(
-    scriptId: string,
-    feedback: FeedbackValue
-  ): Promise<IBaseFetchResponse<{ id: string; userFeedback: FeedbackValue }>> {
-    const response = await baseFetch.patch(
-      this.urls.feedback.replace("{scriptId}", scriptId),
-      { feedback }
     );
     return response.data;
   }

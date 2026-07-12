@@ -5,7 +5,6 @@ import {
   generateHooks,
   selectHook,
   regenerateHooks,
-  submitHookFeedback,
   exportHooks,
 } from "./hooks.thunk";
 
@@ -16,7 +15,6 @@ const initialState: IHooksState = {
   isRegenerating: false,
   isSelecting: false,
   isExporting: false,
-  isSubmittingFeedback: false,
   error: null,
 };
 
@@ -83,22 +81,6 @@ const hooksSlice = createSlice({
         state.error = (action.payload as string) ?? "Unknown error";
       })
 
-      // Submit Feedback
-      .addCase(submitHookFeedback.pending, (state) => {
-        state.isSubmittingFeedback = true;
-        state.error = null;
-      })
-      .addCase(submitHookFeedback.fulfilled, (state, action) => {
-        state.isSubmittingFeedback = false;
-        if (state.batch && action.payload) {
-          state.batch.hookFeedback[String(action.payload.hookIndex)] = action.payload.feedback;
-        }
-      })
-      .addCase(submitHookFeedback.rejected, (state, action) => {
-        state.isSubmittingFeedback = false;
-        state.error = (action.payload as string) ?? "Unknown error";
-      })
-
       // Export Hooks
       .addCase(exportHooks.pending, (state) => {
         state.isExporting = true;
@@ -125,8 +107,6 @@ export const selectSelectedHookIndex = (state: RootState) =>
   state.hooks.selectedHookIndex;
 export const selectHooksError = (state: RootState) => state.hooks.error;
 export const selectIsExporting = (state: RootState) => state.hooks.isExporting;
-export const selectIsSubmittingFeedback = (state: RootState) =>
-  state.hooks.isSubmittingFeedback;
 export const selectIsSelecting = (state: RootState) => state.hooks.isSelecting;
 
 export default hooksSlice.reducer;

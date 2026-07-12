@@ -1,14 +1,14 @@
 import { Book, Play, PlusCircle } from "lucide-react";
 
 export const DASHBOARD_CARD = (
-  topic: string,
+  idea: string,
   script: string,
   credit: string
 ) => [
   {
     id: "1",
-    label: "Total Topics",
-    value: topic,
+    label: "Total Ideas",
+    value: idea,
     icon: <Book />,
   },
   {

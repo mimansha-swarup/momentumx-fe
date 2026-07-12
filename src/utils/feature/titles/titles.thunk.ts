@@ -1,10 +1,10 @@
-import { titleService, TopicsListParams, IIdeaContextOverride } from "@/service/titles";
+import { titleService, IdeasListParams, IIdeaContextOverride } from "@/service/titles";
 import { handleToast } from "@/utils/toast";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import { getErrorMessage } from "@/utils/error";
 
-type RetrieveTitlesParams = TopicsListParams & { isFresh?: boolean };
+type RetrieveTitlesParams = IdeasListParams & { isFresh?: boolean };
 
 export const retrieveTitles = createAsyncThunk(
   "titles/retrieveTitles",
@@ -43,8 +43,8 @@ export const editTitles = createAsyncThunk(
   }
 );
 
-export const regenerateAllTopics = createAsyncThunk(
-  "titles/regenerateAllTopics",
+export const regenerateAllIdeas = createAsyncThunk(
+  "titles/regenerateAllIdeas",
   async (_, thunkAPI) => {
     try {
       const response = await titleService.regenerateAll();
@@ -56,11 +56,11 @@ export const regenerateAllTopics = createAsyncThunk(
   }
 );
 
-export const regenerateOneTopic = createAsyncThunk(
-  "titles/regenerateOneTopic",
-  async (topicId: string, thunkAPI) => {
+export const regenerateOneIdea = createAsyncThunk(
+  "titles/regenerateOneIdea",
+  async (ideaId: string, thunkAPI) => {
     try {
-      const response = await titleService.regenerateOne(topicId);
+      const response = await titleService.regenerateOne(ideaId);
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
@@ -69,27 +69,11 @@ export const regenerateOneTopic = createAsyncThunk(
   }
 );
 
-export const submitTopicFeedback = createAsyncThunk(
-  "titles/submitTopicFeedback",
-  async (
-    { topicId, feedback }: { topicId: string; feedback: "like" | "dislike" | null },
-    thunkAPI
-  ) => {
-    try {
-      const response = await titleService.submitFeedback(topicId, feedback);
-      handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
-      return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(getErrorMessage(error));
-    }
-  }
-);
-
-export const exportTopics = createAsyncThunk(
-  "titles/exportTopics",
+export const exportIdeas = createAsyncThunk(
+  "titles/exportIdeas",
   async (_, thunkAPI) => {
     try {
-      const response = await titleService.exportTopics();
+      const response = await titleService.exportIdeas();
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {

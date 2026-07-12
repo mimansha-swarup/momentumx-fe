@@ -13,7 +13,6 @@ import {
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import GradientSkeleton from "./GradientSkeleton";
 import { PACKAGING_LIMITS, type ITitle } from "@/types/feature/packaging";
-import { FeedbackButtons } from "@/components/research/FeedbackButtons";
 
 interface TitlesCardProps {
   titles: ITitle[];
@@ -23,8 +22,6 @@ interface TitlesCardProps {
   onRegenerate: () => void;
   onSelectTitle: (index: number) => void;
   onEditTitle: (index: number, value: string) => void;
-  feedback?: "like" | "dislike" | null;
-  onFeedback?: (feedback: "like" | "dislike" | null) => void;
 }
 
 interface TitleItemProps {
@@ -247,8 +244,6 @@ const TitlesCard = ({
   onRegenerate,
   onSelectTitle,
   onEditTitle,
-  feedback,
-  onFeedback,
 }: TitlesCardProps) => {
 
   // Show 3 placeholders when loading or when no titles yet
@@ -283,13 +278,6 @@ const TitlesCard = ({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {onFeedback && (
-              <FeedbackButtons
-                topicId="title"
-                feedback={feedback ?? null}
-                onFeedback={(_id, fb) => onFeedback(fb)}
-              />
-            )}
             <Button
               variant="ghost"
               size="sm"

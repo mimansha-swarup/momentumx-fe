@@ -23,12 +23,10 @@ import {
   exportScript,
   getScriptById,
   regenerateScript,
-  submitScriptFeedback,
 } from "@/utils/feature/scripts/script.thunk";
 import {
   selectScriptsIsRegenerating,
   selectScriptsIsExporting,
-  selectScriptsIsSubmittingFeedback,
   selectScriptsIsEditing,
   selectScriptsError,
   selectCurrentScript,
@@ -42,7 +40,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import GlassCard from "@/components/shared/glassCard";
 import { MarkdownPreview } from "@/components/shared/MarkdownRenderer";
 import MyEditor from "@/components/shared/Editor";
-import { FeedbackButtons } from "@/components/research/FeedbackButtons";
 import { StaleStepBanner } from "@/components/project";
 import { htmlToMarkdown } from "@/utils/markdown";
 
@@ -54,7 +51,6 @@ const ProjectScriptPage = () => {
   const isStale = useAppSelector(selectIsStepStale.script);
   const isRegenerating = useAppSelector(selectScriptsIsRegenerating);
   const isExporting = useAppSelector(selectScriptsIsExporting);
-  const isSubmittingFeedback = useAppSelector(selectScriptsIsSubmittingFeedback);
   const isEditing = useAppSelector(selectScriptsIsEditing);
   const sliceError = useAppSelector(selectScriptsError);
   const currentScript = useAppSelector(selectCurrentScript);
@@ -104,10 +100,6 @@ const ProjectScriptPage = () => {
     dispatch(exportScript(scriptId));
   };
 
-  const handleFeedback = (id: string, feedback: "like" | "dislike" | null) => {
-    dispatch(submitScriptFeedback({ scriptId: id, feedback }));
-  };
-
   const handleSaveEdit = async (htmlContent: string) => {
     const markdown = htmlToMarkdown(htmlContent);
     const result = await dispatch(editScript({ scriptId, script: markdown }));
@@ -153,7 +145,7 @@ const ProjectScriptPage = () => {
         </div>
         <h2 className="text-title text-xl mb-2">Generate Your Script</h2>
         <p className="text-label max-w-md mb-6">
-          Generate an AI-powered script based on your selected topic. The script
+          Generate an AI-powered script based on your selected idea. The script
           will be streamed in real-time.
         </p>
         <Button
@@ -243,13 +235,6 @@ const ProjectScriptPage = () => {
         <h2 className="text-title text-lg">Script</h2>
 
         <div className="flex flex-wrap items-center gap-2">
-          <FeedbackButtons
-            topicId={scriptId}
-            feedback={currentScript.userFeedback ?? null}
-            disabled={isSubmittingFeedback}
-            onFeedback={handleFeedback}
-          />
-
           {!isEditMode && (
             <Button
               variant="ghost"

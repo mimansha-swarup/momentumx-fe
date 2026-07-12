@@ -6,7 +6,6 @@ import {
   getScriptById,
   regenerateScript,
   retrieveScripts,
-  submitScriptFeedback,
 } from "./script.thunk";
 import { IScriptState } from "@/types/feature/script";
 
@@ -17,7 +16,6 @@ const initialState: IScriptState = {
   isLoading: false,
   isDone: false,
   error: null,
-  isSubmittingFeedback: false,
   isExporting: false,
   exportResult: null,
   isRegenerating: false,
@@ -96,31 +94,6 @@ const scriptsSlice = createSlice({
         state.error = action.payload ?? "Unknown error";
       })
 
-      // Submit Feedback
-      .addCase(submitScriptFeedback.pending, (state) => {
-        state.isSubmittingFeedback = true;
-        state.error = null;
-      })
-      .addCase(submitScriptFeedback.fulfilled, (state, action) => {
-        state.isSubmittingFeedback = false;
-        const payload = action.payload;
-        if (payload) {
-          if (state.data) {
-            const script = state.data.find((s) => s.id === payload.id);
-            if (script) {
-              script.userFeedback = payload.userFeedback;
-            }
-          }
-          if (state.currentScript?.id === payload.id) {
-            state.currentScript.userFeedback = payload.userFeedback;
-          }
-        }
-      })
-      .addCase(submitScriptFeedback.rejected, (state, action) => {
-        state.isSubmittingFeedback = false;
-        state.error = action.payload ?? "Unknown error";
-      })
-
       // Export Script
       .addCase(exportScript.pending, (state) => {
         state.isExporting = true;
@@ -175,8 +148,6 @@ export const selectScriptsData = (state: RootState) => state.scripts.data;
 export const selectScriptsLoading = (state: RootState) => state.scripts.isLoading;
 export const selectScriptsDone = (state: RootState) => state.scripts.isDone;
 export const selectScriptsError = (state: RootState) => state.scripts.error;
-export const selectScriptsIsSubmittingFeedback = (state: RootState) =>
-  state.scripts.isSubmittingFeedback;
 export const selectScriptsIsExporting = (state: RootState) => state.scripts.isExporting;
 export const selectScriptsExportResult = (state: RootState) => state.scripts.exportResult;
 export const selectScriptsIsRegenerating = (state: RootState) => state.scripts.isRegenerating;

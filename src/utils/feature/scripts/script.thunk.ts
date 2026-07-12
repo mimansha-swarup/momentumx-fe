@@ -54,25 +54,6 @@ export const editScript = createAsyncThunk<
   }
 );
 
-type FeedbackValue = "like" | "dislike" | null;
-
-export const submitScriptFeedback = createAsyncThunk<
-  { id: string; userFeedback: FeedbackValue } | undefined,
-  { scriptId: string; feedback: FeedbackValue },
-  { rejectValue: string }
->(
-  "scripts/submitFeedback",
-  async ({ scriptId, feedback }, thunkAPI) => {
-    try {
-      const response = await scriptService.submitFeedback(scriptId, feedback);
-      handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
-      return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(getErrorMessage(error));
-    }
-  }
-);
-
 export const exportScript = createAsyncThunk<
   { title: string; text: string } | undefined,
   string,

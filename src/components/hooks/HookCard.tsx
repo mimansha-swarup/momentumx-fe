@@ -1,37 +1,24 @@
 import React from 'react';
 import { Check, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { FeedbackButtons } from '@/components/research/FeedbackButtons';
 import GlassCard from '@/components/shared/glassCard';
 import { cn } from '@/lib/utils';
-import type { FeedbackValue } from '@/types/feature/hooks';
 
 interface HookCardProps {
   hookText: string;
   hookIndex: number;
   isSelected: boolean;
-  feedback: FeedbackValue;
   onSelect: (index: number) => void;
-  onFeedback: (index: number, feedback: FeedbackValue) => void;
   selectingIndex: number | null;
-  isSubmittingFeedback: boolean;
 }
 
 export const HookCard: React.FC<HookCardProps> = ({
   hookText,
   hookIndex,
   isSelected,
-  feedback,
   onSelect,
-  onFeedback,
   selectingIndex,
-  isSubmittingFeedback,
 }) => {
-  // Adapter: FeedbackButtons passes (topicId, fb) but we key by hookIndex
-  const handleFeedback = (_topicId: string, fb: FeedbackValue) => {
-    onFeedback(hookIndex, fb);
-  };
-
   // A selection is in flight somewhere (disable all) vs THIS card is the one
   // being selected (spinner only here).
   const isSelecting = selectingIndex !== null;
@@ -51,14 +38,7 @@ export const HookCard: React.FC<HookCardProps> = ({
 
         <p className="text-sm text-foreground/90 leading-relaxed">{hookText}</p>
 
-        <div className="flex items-center justify-between">
-          <FeedbackButtons
-            topicId={String(hookIndex)}
-            feedback={feedback}
-            disabled={isSubmittingFeedback}
-            onFeedback={handleFeedback}
-          />
-
+        <div className="flex items-center justify-end">
           {isSelected ? (
             <Button
               variant="ghost"

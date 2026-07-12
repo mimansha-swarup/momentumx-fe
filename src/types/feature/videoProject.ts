@@ -28,11 +28,11 @@ export interface IVideoProject {
   id: string;
   createdBy: string;
   title: string;
-  /** The ID of the topic this project was created from. */
-  topicId: string;
+  /** The ID of the idea this project was created from. */
+  ideaId: string;
   /**
-   * The generated script's id — a UUID distinct from `topicId`, set once a
-   * script is generated. Use this (not `topicId`) for script fetch/edit/export/
+   * The generated script's id — a UUID distinct from `ideaId`, set once a
+   * script is generated. Use this (not `ideaId`) for script fetch/edit/export/
    * regenerate/feedback. Script streaming is keyed by the project id instead.
    */
   scriptId: string | null;
@@ -66,9 +66,9 @@ export interface IStepTransitionResponse {
 }
 
 // API Request/Response Types
-// Create a project from an existing topic candidate (`topicId`) OR from a
+// Create a project from an existing idea candidate (`ideaId`) OR from a
 // user-supplied idea (`title`) — exactly one, enforced server-side.
-export type CreateProjectRequest = { topicId: string } | { title: string };
+export type CreateProjectRequest = { ideaId: string } | { title: string };
 
 export interface ListProjectsParams {
   status?: OverallStatus;
