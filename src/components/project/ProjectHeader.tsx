@@ -141,7 +141,8 @@ export const ProjectHeader: React.FC = () => {
               aria-label={`Edit working title: ${project.title}`}
               onClick={handleTitleClick}
               className={cn(
-                "shrink-0 text-muted-foreground opacity-0 hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-200",
+                // Always visible on touch (no hover); hover-reveal on desktop.
+                "shrink-0 text-muted-foreground opacity-60 md:opacity-0 hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-200",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm p-0.5"
               )}
             >

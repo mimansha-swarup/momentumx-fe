@@ -158,21 +158,39 @@ const ProjectHooksPage = () => {
         {error && (
           <p className="text-sm text-destructive">{error}</p>
         )}
-        <Button
-          onClick={handleRegenerate}
-          disabled={isRegenerating || !scriptText || !hooksId}
-          className="btn-primary-glow px-6 py-2.5 rounded-lg"
-        >
-          {isRegenerating ? (
-            <Loader2
-              className="size-4 mr-2 motion-safe:animate-spin"
-              aria-hidden="true"
-            />
-          ) : (
-            <RefreshCw className="size-4 mr-2" aria-hidden="true" />
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          {/* Already picked a hook → let them move forward without regenerating
+              (regenerate would clear the selection and cascade packaging stale). */}
+          {project.selectedHookIndex != null && (
+            <Button
+              onClick={() => navigate(`/app/project/${projectId}/packaging`)}
+              className="btn-primary-glow px-6 py-2.5 rounded-lg"
+            >
+              Continue to Packaging
+              <ArrowRight className="size-4 ml-2" aria-hidden="true" />
+            </Button>
           )}
-          Regenerate Hooks
-        </Button>
+          <Button
+            variant={project.selectedHookIndex != null ? "outline" : "default"}
+            onClick={handleRegenerate}
+            disabled={isRegenerating || !scriptText || !hooksId}
+            className={
+              project.selectedHookIndex != null
+                ? "px-6 py-2.5 rounded-lg"
+                : "btn-primary-glow px-6 py-2.5 rounded-lg"
+            }
+          >
+            {isRegenerating ? (
+              <Loader2
+                className="size-4 mr-2 motion-safe:animate-spin"
+                aria-hidden="true"
+              />
+            ) : (
+              <RefreshCw className="size-4 mr-2" aria-hidden="true" />
+            )}
+            Regenerate Hooks
+          </Button>
+        </div>
       </div>
     );
   }

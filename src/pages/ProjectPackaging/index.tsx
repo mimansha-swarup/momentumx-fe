@@ -162,12 +162,18 @@ const ProjectPackagingPage = () => {
       startStep({ projectId, stepName: "packaging" })
     );
     if (startStep.rejected.match(stepResult)) return;
-    await dispatch(
+    const genResult = await dispatch(
       generateAllPackagingForProject({
         script: scriptText,
         videoProjectId: projectId,
       })
     );
+    // Autosave: generation only lives in Redux — persist it immediately so
+    // navigating away can't discard it (and so the packaging step completes).
+    // Edits after this still need an explicit Save.
+    if (generateAllPackagingForProject.fulfilled.match(genResult)) {
+      await dispatch(savePackaging(projectId));
+    }
     dispatch(getProject(projectId));
   };
 
