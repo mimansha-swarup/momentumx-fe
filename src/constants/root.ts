@@ -1,20 +1,6 @@
-import { cn } from "@/lib/utils";
-
 export const brandName = "Ideofy";
 
 export const LOGGED_IN = "loggedin";
-
-export const GRADIENT_BUTTON_CSS = cn(
-  "relative overflow-hidden px-6 py-2.5",
-  "bg-gradient-to-r from-violet-600 to-blue-600",
-  "hover:from-violet-500 hover:to-blue-500",
-  "text-white font-medium",
-  "shadow-lg shadow-violet-500/25",
-  "transition-all duration-300",
-  "hover:shadow-xl hover:shadow-violet-500/30",
-  "hover:scale-[1.02]",
-  "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100",
-);
 
 export const problems = [
   {
