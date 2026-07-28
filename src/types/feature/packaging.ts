@@ -43,12 +43,6 @@ export interface IThumbnailsOutput {
   error: string | null;
 }
 
-export interface IHooksOutput {
-  hooks: string[]; // Simple string array
-  isLoading: boolean;
-  error: string | null;
-}
-
 export interface IDescriptionOutput {
   content: string;
   isLoading: boolean;
@@ -67,7 +61,6 @@ export interface IPackagingState {
   titles: ITitlesOutput;
   description: IDescriptionOutput;
   thumbnails: IThumbnailsOutput;
-  hooks: IHooksOutput;
   shortsScript: IShortsOutput;
 
   // Meta
@@ -116,14 +109,6 @@ export interface GenerateThumbnailRequest {
 
 export interface GenerateThumbnailResponse {
   descriptions: string[]; // 3 thumbnail brief variations as plain strings
-}
-
-export interface GenerateHooksRequest {
-  script: string;
-}
-
-export interface GenerateHooksResponse {
-  hooks: string[]; // Multiple hook strings
 }
 
 export interface GenerateShortsRequest {

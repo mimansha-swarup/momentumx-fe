@@ -134,13 +134,13 @@ class PackagingService {
     return response.data;
   }
 
-  // Script resolves server-side from the project stored on the packaging doc.
+  // Script resolves server-side from the project stored on the packaging doc;
+  // shorts duration defaults server-side too.
   async regenerateItem(
     packagingId: string,
     item: PackagingItem,
     data: {
       title?: string;
-      duration?: number;
     }
   ): Promise<IBaseFetchResponse<RegenerateItemResponse>> {
     const response = await baseFetch.post(

@@ -184,19 +184,19 @@ export const regenerateItem = createAsyncThunk<
     packagingId: string;
     item: "title" | "description" | "thumbnail" | "shorts";
     title?: string;
-    duration?: number;
   }
 >(
   "packaging/regenerateItem",
   async (arg, thunkAPI) => {
     try {
-      const { packagingId, item, title, duration } = arg;
-      // Script and hook are resolved server-side from the videoProjectId stored
-      // on the packaging document — the client sends only per-item params.
+      const { packagingId, item, title } = arg;
+      // Script, hook, and shorts duration are resolved/defaulted server-side
+      // from the videoProjectId stored on the packaging document — the client
+      // sends only per-item params.
       const response = await packagingService.regenerateItem(
         packagingId,
         item,
-        { title, duration }
+        { title }
       );
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       if (!response.data) {

@@ -36,11 +36,6 @@ const initialState: IPackagingState = {
     isLoading: false,
     error: null,
   },
-  hooks: {
-    hooks: [],
-    isLoading: false,
-    error: null,
-  },
   shortsScript: {
     segments: [],
     totalDuration: undefined,
@@ -99,11 +94,6 @@ const packagingSlice = createSlice({
       state.thumbnails.selectedIndex = data.selectedThumbnailIndex;
       state.thumbnails.isLoading = false;
       state.thumbnails.error = null;
-      // New saves no longer persist hooks — docs created after that change
-      // come back without the field.
-      state.hooks.hooks = data.hooks ?? [];
-      state.hooks.isLoading = false;
-      state.hooks.error = null;
       state.shortsScript.segments = data.shorts?.segments ?? [];
       state.shortsScript.totalDuration = data.shorts?.totalDuration;
       state.shortsScript.isLoading = false;
@@ -115,7 +105,6 @@ const packagingSlice = createSlice({
       state.titles.error = null;
       state.description.error = null;
       state.thumbnails.error = null;
-      state.hooks.error = null;
       state.shortsScript.error = null;
     },
   },
@@ -362,7 +351,6 @@ export const selectHasContent = (state: RootState) =>
   state.packaging.titles.titles.length > 0 ||
   !!state.packaging.description.content ||
   state.packaging.thumbnails.descriptions.length > 0 ||
-  state.packaging.hooks.hooks.length > 0 ||
   state.packaging.shortsScript.segments.length > 0;
 
 export default packagingSlice.reducer;
