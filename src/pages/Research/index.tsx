@@ -18,8 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { IdeaGrid, TrendingTab, CompetitorsTab, KeywordsTab, FirstRunIdea, EnrichNudge } from "@/components/research";
-import { selectIsOnboarded } from "@/utils/feature/user/user.slice";
+import { IdeaGrid, TrendingTab, CompetitorsTab, KeywordsTab, EnrichNudge } from "@/components/research";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import {
   selectActiveIdeas,
@@ -70,7 +69,6 @@ const ResearchPage = () => {
   const exportText = useAppSelector(selectTitlesExportText);
   const error = useAppSelector(selectTitlesError);
   const hasLinkedProjects = useAppSelector(selectHasLinkedProjects);
-  const isOnboarded = useAppSelector(selectIsOnboarded);
   const cursor = useAppSelector(selectIdeasCursor);
   const isCreatingProject = useAppSelector(selectIsCreating);
   const trending = useAppSelector(selectTrending);
@@ -201,12 +199,11 @@ const ResearchPage = () => {
     );
   }, [dispatch, cursor, isLoading]);
 
-  // Value-first (§5.1): a contextless user gets the first-run entry (URL → instant
-  // ideas), NOT the bare "Generate" empty state — a no-context generate 500s.
-  const showFirstRun = !isOnboarded && !hasIdeas && !isRegenerating;
+  // Contextless users never reach this page — the onboarding gate routes them to
+  // /app/onboarding first — so a user here always has channel context.
   const showEmptyState =
-    isOnboarded && !isLoading && !isRegenerating && !error && !hasIdeas;
-  const showGrid = hasIdeas || (isOnboarded && (isLoading || isRegenerating));
+    !isLoading && !isRegenerating && !error && !hasIdeas;
+  const showGrid = hasIdeas || isLoading || isRegenerating;
 
   return (
     <div className="md:w-[90%] mx-auto pb-20">
@@ -262,8 +259,8 @@ const ResearchPage = () => {
         </div>
       )}
 
-      {/* Error banner (the first-run card renders its own errors) */}
-      {error && !showFirstRun && (
+      {/* Error banner */}
+      {error && (
         <div
           role="alert"
           className="rounded-xl border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive mb-6 flex items-center justify-between gap-4"
@@ -278,9 +275,6 @@ const ResearchPage = () => {
           </Button>
         </div>
       )}
-
-      {/* First-run: contextless user → instant ideas from their channel URL */}
-      {showFirstRun && <FirstRunIdea />}
 
       {/* Empty state */}
       {showEmptyState && (

@@ -9,6 +9,7 @@ const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const Login = lazy(() => import("@/pages/Login"));
 const ResearchPage = lazy(() => import("@/pages/Research"));
 const Settings = lazy(() => import("@/pages/Settings"));
+const Onboarding = lazy(() => import("@/pages/Onboarding"));
 
 // Pipeline step pages (lazy-loaded)
 const ProjectScriptPage = lazy(() => import("@/pages/ProjectScript"));
@@ -22,6 +23,14 @@ export const localRouter = createBrowserRouter([
     path: "/app",
     element: <ProtectedLayout />,
     children: [
+      {
+        path: "onboarding",
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <Onboarding />
+          </Suspense>
+        ),
+      },
       {
         path: "dashboard",
         element: (

@@ -4,5 +4,4 @@ export { IdeaGrid } from "./IdeaGrid";
 export { TrendingTab } from "./TrendingTab";
 export { CompetitorsTab } from "./CompetitorsTab";
 export { KeywordsTab } from "./KeywordsTab";
-export { FirstRunIdea } from "./FirstRunIdea";
 export { EnrichNudge } from "./EnrichNudge";
