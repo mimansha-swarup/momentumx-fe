@@ -63,9 +63,6 @@ export interface IShortsOutput {
 }
 
 export interface IPackagingState {
-  // Input
-  script: string;
-
   // Generated outputs (multi-variant)
   titles: ITitlesOutput;
   description: IDescriptionOutput;
@@ -139,15 +136,15 @@ export interface GenerateShortsResponse {
   totalDuration: string;
 }
 
+// script/hooks deliberately absent: the server resolves both from the project;
+// the save persists only what the user actually authored on this page.
 export interface SavePackagingRequest {
   videoProjectId?: string;
-  script: string;
   titles: ITitle[];
   selectedTitleIndex: number;
   description: string;
   thumbnail: string[];
   selectedThumbnailIndex: number;
-  hooks: string[];
   shorts: { segments: ITimestampedSegment[]; totalDuration?: string };
 }
 
@@ -157,7 +154,8 @@ export interface SavePackagingResponse {
 
 export interface GetPackagingResponse {
   id: string;
-  script: string;
+  // Present only on docs saved before script/hooks left the save payload.
+  script?: string;
   titles: ITitle[];
   // Optional/null until the user finalizes a title (matches the backend); the
   // slice defaults it to 0 on hydrate.
@@ -165,7 +163,8 @@ export interface GetPackagingResponse {
   description: string;
   thumbnail: string[];
   selectedThumbnailIndex: number;
-  hooks: string[];
+  // Present only on docs saved before script/hooks left the save payload.
+  hooks?: string[];
   shorts: { segments: ITimestampedSegment[]; totalDuration?: string };
   createdAt: string;
   isStale: boolean;

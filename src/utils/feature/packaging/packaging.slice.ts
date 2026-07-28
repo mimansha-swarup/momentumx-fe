@@ -19,7 +19,6 @@ import {
 } from "./packaging.thunk";
 
 const initialState: IPackagingState = {
-  script: "",
   titles: {
     titles: [],
     selectedIndex: 0,
@@ -65,9 +64,6 @@ const packagingSlice = createSlice({
   name: "packaging",
   initialState,
   reducers: {
-    setScript: (state, action: PayloadAction<string>) => {
-      state.script = action.payload;
-    },
     // Title actions
     updateTitleVariation: (
       state,
@@ -103,7 +99,9 @@ const packagingSlice = createSlice({
       state.thumbnails.selectedIndex = data.selectedThumbnailIndex;
       state.thumbnails.isLoading = false;
       state.thumbnails.error = null;
-      state.hooks.hooks = data.hooks;
+      // New saves no longer persist hooks — docs created after that change
+      // come back without the field.
+      state.hooks.hooks = data.hooks ?? [];
       state.hooks.isLoading = false;
       state.hooks.error = null;
       state.shortsScript.segments = data.shorts?.segments ?? [];
@@ -324,7 +322,6 @@ const packagingSlice = createSlice({
 });
 
 export const {
-  setScript,
   updateTitleVariation,
   setSelectedTitle,
   updateDescription,
@@ -335,7 +332,6 @@ export const {
 } = packagingSlice.actions;
 
 // Selectors
-export const selectScript = (state: RootState) => state.packaging.script;
 export const selectTitles = (state: RootState) => state.packaging.titles;
 export const selectDescription = (state: RootState) =>
   state.packaging.description;

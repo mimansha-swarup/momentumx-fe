@@ -38,7 +38,6 @@ import {
   setSelectedThumbnail,
   resetPackaging,
   clearErrors,
-  setScript,
   hydrateFromResponse,
 } from "@/utils/feature/packaging/packaging.slice";
 import {
@@ -139,13 +138,6 @@ const ProjectPackagingPage = () => {
       dispatch(hydrateFromResponse(currentPackaging));
     }
   }, [currentPackaging, dispatch]);
-
-  // Effect 4 — Set script in packaging state (needed by standalone thunks that read from state.packaging.script)
-  useEffect(() => {
-    if (scriptText) {
-      dispatch(setScript(scriptText));
-    }
-  }, [scriptText, dispatch]);
 
   // Effect 5 — Cleanup on unmount
   useEffect(() => {

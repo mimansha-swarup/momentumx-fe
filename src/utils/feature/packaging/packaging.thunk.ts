@@ -129,18 +129,18 @@ export const savePackaging = createAsyncThunk(
   async (videoProjectId: string | undefined, thunkAPI) => {
     try {
       const state = thunkAPI.getState() as RootState;
-      const { script, titles, description, thumbnails, hooks, shortsScript } =
+      const { titles, description, thumbnails, shortsScript } =
         state.packaging;
 
+      // No script/hooks in the payload: the server resolves both from the
+      // project — sending browser state here used to persist empty snapshots.
       const response = await packagingService.savePackaging({
         ...(videoProjectId !== undefined && { videoProjectId }),
-        script,
         titles: titles.titles,
         selectedTitleIndex: titles.selectedIndex,
         description: description.content,
         thumbnail: thumbnails.descriptions,
         selectedThumbnailIndex: thumbnails.selectedIndex,
-        hooks: hooks.hooks,
         shorts: {
           segments: shortsScript.segments,
           totalDuration: shortsScript.totalDuration,

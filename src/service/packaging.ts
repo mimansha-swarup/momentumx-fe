@@ -109,13 +109,11 @@ class PackagingService {
 
   async savePackaging(data: {
     videoProjectId?: string;
-    script: string;
     titles: ITitle[];
     selectedTitleIndex: number;
     description: string;
     thumbnail: string[];
     selectedThumbnailIndex: number;
-    hooks: string[];
     shorts: { segments: ITimestampedSegment[]; totalDuration?: string };
   }): Promise<IBaseFetchResponse<SavePackagingResponse>> {
     const response = await baseFetch.post(this.urls.save, data);
