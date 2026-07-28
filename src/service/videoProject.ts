@@ -12,7 +12,6 @@ import {
 const URLS = {
   projects: "/v1/video-projects",
   project: "/v1/video-projects/{projectId}",
-  stepStart: "/v1/video-projects/{projectId}/step/{stepName}/start",
   stepComplete: "/v1/video-projects/{projectId}/step/{stepName}/complete",
   linkResource: "/v1/video-projects/{projectId}/link/{resourceType}",
 };
@@ -59,18 +58,6 @@ class VideoProjectService {
   ): Promise<IBaseFetchResponse<{ id: string; isDeleted: boolean; deletedAt: string }>> {
     const response = await baseFetch.delete(
       this.urls.project.replace("{projectId}", projectId)
-    );
-    return response.data;
-  }
-
-  async startStep(
-    projectId: string,
-    stepName: string
-  ): Promise<IBaseFetchResponse<IStepTransitionResponse>> {
-    const response = await baseFetch.patch(
-      this.urls.stepStart
-        .replace("{projectId}", projectId)
-        .replace("{stepName}", stepName)
     );
     return response.data;
   }

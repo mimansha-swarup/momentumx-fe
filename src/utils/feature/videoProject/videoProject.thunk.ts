@@ -85,24 +85,8 @@ export const deleteProject = createAsyncThunk(
   }
 );
 
-export const startStep = createAsyncThunk(
-  "videoProject/startStep",
-  async (
-    { projectId, stepName }: { projectId: string; stepName: StepName },
-    thunkAPI
-  ) => {
-    try {
-      const response = await videoProjectService.startStep(
-        projectId,
-        stepName
-      );
-      handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
-      return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(getErrorMessage(error));
-    }
-  }
-);
+// No startStep thunk: the backend generation endpoints (script stream, hooks
+// generate, packaging save) set in_progress server-side.
 
 export const completeStep = createAsyncThunk(
   "videoProject/completeStep",

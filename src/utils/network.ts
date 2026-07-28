@@ -24,6 +24,9 @@ const apiDomain = getApiDomain();
 
 const baseFetch = axios.create({
   baseURL: apiDomain,
+  // Generous ceiling over the slowest legit call (idea generation with research
+  // signals). Without it any backend stall spins a loading state forever.
+  timeout: 150_000,
 });
 
 baseFetch.interceptors.request.use(

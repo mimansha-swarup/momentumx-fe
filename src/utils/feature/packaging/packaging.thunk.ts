@@ -28,13 +28,20 @@ export const selectPackagingTitle = createAsyncThunk(
   }
 );
 
+// The generate thunks send only videoProjectId — script, hook, and channel
+// context are resolved server-side from the project.
+const currentProjectId = (thunkAPI: { getState: () => unknown }): string => {
+  const state = thunkAPI.getState() as RootState;
+  return state.videoProject.currentProject?.id ?? "";
+};
+
 export const generateTitle = createAsyncThunk(
   "packaging/generateTitle",
   async (_, thunkAPI) => {
     try {
-      const state = thunkAPI.getState() as RootState;
-      const { script } = state.packaging;
-      const response = await packagingService.generateTitle(script);
+      const projectId = currentProjectId(thunkAPI);
+      if (!projectId) return thunkAPI.rejectWithValue("No project loaded");
+      const response = await packagingService.generateTitle(projectId);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(getErrorMessage(error));
@@ -46,12 +53,14 @@ export const generateDescription = createAsyncThunk(
   "packaging/generateDescription",
   async (_, thunkAPI) => {
     try {
+      const projectId = currentProjectId(thunkAPI);
+      if (!projectId) return thunkAPI.rejectWithValue("No project loaded");
       const state = thunkAPI.getState() as RootState;
-      const { script, titles } = state.packaging;
+      const { titles } = state.packaging;
       const selectedTitle = titles.titles[titles.selectedIndex]?.title ?? "";
       const response = await packagingService.generateDescription(
-        script,
-        selectedTitle
+        selectedTitle,
+        projectId
       );
       return response.data;
     } catch (error) {
@@ -64,12 +73,14 @@ export const generateThumbnail = createAsyncThunk(
   "packaging/generateThumbnail",
   async (_, thunkAPI) => {
     try {
+      const projectId = currentProjectId(thunkAPI);
+      if (!projectId) return thunkAPI.rejectWithValue("No project loaded");
       const state = thunkAPI.getState() as RootState;
-      const { script, titles } = state.packaging;
+      const { titles } = state.packaging;
       const selectedTitle = titles.titles[titles.selectedIndex]?.title ?? "";
       const response = await packagingService.generateThumbnail(
-        script,
-        selectedTitle
+        selectedTitle,
+        projectId
       );
       return response.data;
     } catch (error) {
@@ -83,9 +94,9 @@ export const regenerateShortsScript = createAsyncThunk(
   "packaging/regenerateShortsScript",
   async (_, thunkAPI) => {
     try {
-      const state = thunkAPI.getState() as RootState;
-      const { script } = state.packaging;
-      const response = await packagingService.generateShorts(script);
+      const projectId = currentProjectId(thunkAPI);
+      if (!projectId) return thunkAPI.rejectWithValue("No project loaded");
+      const response = await packagingService.generateShorts(projectId);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(getErrorMessage(error));
@@ -95,15 +106,11 @@ export const regenerateShortsScript = createAsyncThunk(
 
 export const generateAllPackagingForProject = createAsyncThunk(
   "packaging/generateAllForProject",
-  async (
-    { script, videoProjectId }: { script: string; videoProjectId?: string },
-    thunkAPI
-  ) => {
+  async ({ videoProjectId }: { videoProjectId: string }, thunkAPI) => {
     try {
       const result = await packagingService.generateTitleDependentContent(
-        script,
-        60,
-        videoProjectId
+        videoProjectId,
+        60
       );
       return {
         title: result.title,
@@ -176,7 +183,6 @@ export const regenerateItem = createAsyncThunk<
   {
     packagingId: string;
     item: "title" | "description" | "thumbnail" | "shorts";
-    script: string;
     title?: string;
     duration?: number;
   }
@@ -184,13 +190,13 @@ export const regenerateItem = createAsyncThunk<
   "packaging/regenerateItem",
   async (arg, thunkAPI) => {
     try {
-      const { packagingId, item, script, title, duration } = arg;
-      // The hook is resolved server-side from the videoProjectId stored on the
-      // packaging document — nothing hook-related is sent from the client.
+      const { packagingId, item, title, duration } = arg;
+      // Script and hook are resolved server-side from the videoProjectId stored
+      // on the packaging document — the client sends only per-item params.
       const response = await packagingService.regenerateItem(
         packagingId,
         item,
-        { script, title, duration }
+        { title, duration }
       );
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       if (!response.data) {

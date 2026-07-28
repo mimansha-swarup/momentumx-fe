@@ -2,10 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { scriptService } from "@/service/script";
 import { markDone, resetState } from "@/utils/feature/scripts/script.slice";
-import {
-  getProject,
-  startStep,
-} from "@/utils/feature/videoProject/videoProject.thunk";
+import { getProject } from "@/utils/feature/videoProject/videoProject.thunk";
 import { SCRIPT_GENERATION_DELAY_MS } from "@/constants/app";
 
 interface UseScriptStreamOptions {
@@ -38,6 +35,7 @@ export const useScriptStream = ({
   const [streamError, setStreamError] = useState(false);
 
   const scrollSentinelRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef("");
   const eventSourceRef = useRef<EventSource | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isStreamingRef = useRef(false);
@@ -52,6 +50,7 @@ export const useScriptStream = ({
 
     setIsStreaming(true);
     setStreamContent("");
+    contentRef.current = "";
     setStreamError(false);
     dispatch(resetState());
 
@@ -63,15 +62,13 @@ export const useScriptStream = ({
     };
 
     const initStream = async () => {
-      // Dispatch startStep to mark pipeline as in_progress before streaming
-      const stepResult = await dispatch(startStep({ projectId, stepName: "script" }));
-      if (startStep.rejected.match(stepResult)) {
-        onError();
-        return;
-      }
+      // No startStep here: the stream endpoint owns the in_progress transition
+      // server-side, and uses it as an in-flight lock — a client-side PATCH
+      // first would trip that lock and 409 the stream it precedes.
 
       const onChunk = (chunk: string) => {
         if (!mountedRef.current) return;
+        contentRef.current += chunk;
         setStreamContent((prev) => prev + chunk);
         scrollSentinelRef.current?.scrollIntoView({
           behavior: "smooth",
@@ -81,6 +78,13 @@ export const useScriptStream = ({
 
       const onDone = () => {
         if (!mountedRef.current) return;
+        // [DONE] with zero content = the server terminated a failed generation
+        // (e.g. Gemini timeout). Surface it as an error so the page offers retry
+        // instead of idling on a blank state.
+        if (!contentRef.current) {
+          onError();
+          return;
+        }
         dispatch(markDone());
         // Backend auto-started, auto-linked, auto-completed the script step.
         // Re-fetch the project to pick up the newly-set scriptId; the page then

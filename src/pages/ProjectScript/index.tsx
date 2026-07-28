@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
-  FileText,
   Pencil,
   RefreshCw,
   Download,
   Loader2,
-  Play,
   AlertCircle,
   ArrowRight,
 } from "lucide-react";
@@ -14,7 +12,6 @@ import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import {
   selectCurrentProject,
   selectIsStepStale,
-  selectStepStatus,
 } from "@/utils/feature/videoProject/videoProject.slice";
 import {
   getProject,
@@ -49,7 +46,6 @@ const ProjectScriptPage = () => {
   const dispatch = useAppDispatch();
 
   const project = useAppSelector(selectCurrentProject);
-  const scriptStepStatus = useAppSelector(selectStepStatus.script);
   const isStale = useAppSelector(selectIsStepStale.script);
   const isRegenerating = useAppSelector(selectScriptsIsRegenerating);
   const isExporting = useAppSelector(selectScriptsIsExporting);
@@ -77,11 +73,15 @@ const ProjectScriptPage = () => {
     };
   }, [projectId, hasScript, scriptId, dispatch]);
 
-  // Effect 2 — Auto-start streaming if the step is in_progress but no script yet
+  // Effect 2 — Auto-start generation on arrival. The user already committed by
+  // clicking "Use Idea"; a second "Generate" click is dead weight. Once per
+  // mount — a failed stream lands on the error state, whose Retry re-triggers.
+  const autoStartedRef = useRef(false);
   useEffect(() => {
-    if (!projectId || hasScript || scriptStepStatus !== "in_progress") return;
+    if (!projectId || hasScript || autoStartedRef.current) return;
+    autoStartedRef.current = true;
     startStreaming();
-  }, [projectId, hasScript, scriptStepStatus, startStreaming]);
+  }, [projectId, hasScript, startStreaming]);
 
   const handleRegenerate = async () => {
     dispatch(clearError());
@@ -130,6 +130,9 @@ const ProjectScriptPage = () => {
             dispatch(clearError());
             if (hasScript) {
               dispatch(getScriptById(scriptId));
+            } else {
+              // Stream failed before any script was saved — retry generation
+              startStreaming();
             }
           }}
         >
@@ -139,68 +142,32 @@ const ProjectScriptPage = () => {
     );
   }
 
-  // Post-stream transition: streaming just ended but the persisted script hasn't
-  // loaded yet (getProject → getScriptById in flight). Keep showing the streamed
-  // content so the page never flashes the empty/blank state in that window.
-  if (!isStreaming && streamContent && !currentScript) {
+  // Generation in flight — covers both live streaming and the post-stream window
+  // where the persisted script hasn't loaded yet (getProject → getScriptById in
+  // flight). Keeping the streamed content up means the page never flashes blank.
+  if (isStreaming || (streamContent && !currentScript)) {
     return (
       <div className="space-y-4">
         <div
           role="status"
           aria-live="polite"
+          aria-busy={isStreaming}
           className="flex items-center gap-2 text-primary"
         >
           <Loader2
             className="size-4 motion-safe:animate-spin"
             aria-hidden="true"
           />
-          <span className="text-sm font-medium">Finalizing script…</span>
-        </div>
-        <GlassCard>
-          <MarkdownPreview content={streamContent} />
-        </GlassCard>
-      </div>
-    );
-  }
-
-  // Empty state — no script generated yet
-  if (!hasScript && !isStreaming && scriptStepStatus !== "in_progress") {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="icon-container mb-4">
-          <FileText className="size-6" aria-hidden="true" />
-        </div>
-        <h2 className="text-title text-xl mb-2">Generate Your Script</h2>
-        <p className="text-label max-w-md mb-6">
-          Generate an AI-powered script based on your selected idea. The script
-          will be streamed in real-time.
-        </p>
-        <Button
-          onClick={startStreaming}
-          className="btn-primary-glow px-6 py-2.5 rounded-lg"
-        >
-          <Play className="size-4 mr-2" aria-hidden="true" />
-          Generate Script
-        </Button>
-      </div>
-    );
-  }
-
-  // Streaming state
-  if (isStreaming) {
-    return (
-      <div className="space-y-4">
-        <div
-          role="status"
-          aria-live="polite"
-          aria-busy={true}
-          className="flex items-center gap-2 text-primary"
-        >
-          <Loader2
-            className="size-4 motion-safe:animate-spin"
-            aria-hidden="true"
-          />
-          <span className="text-sm font-medium">Generating script...</span>
+          <span className="text-sm font-medium">
+            {isStreaming ? (
+              <>
+                Writing your script from &ldquo;{project.title}&rdquo; &mdash;
+                takes about a minute
+              </>
+            ) : (
+              <>Finalizing script&hellip;</>
+            )}
+          </span>
         </div>
         <GlassCard>
           <div className="min-h-40">

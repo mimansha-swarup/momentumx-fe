@@ -33,60 +33,54 @@ class PackagingService {
     this.urls = URLS;
   }
 
-  // The selected hook is resolved server-side from the project's stored
-  // selection — pass `videoProjectId` (optional) instead of hook text.
+  // Script, selected hook, and channel context are all resolved server-side
+  // from the project — the client sends only `videoProjectId`, never the
+  // script text itself.
   async generateTitle(
-    script: string,
-    videoProjectId?: string
+    videoProjectId: string
   ): Promise<IBaseFetchResponse<GenerateTitleResponse>> {
     const response = await baseFetch.post(this.urls.generateTitle, {
-      script,
-      ...(videoProjectId !== undefined && { videoProjectId }),
+      videoProjectId,
     });
     return response.data;
   }
 
   async generateDescription(
-    script: string,
     title: string,
-    videoProjectId?: string
+    videoProjectId: string
   ): Promise<IBaseFetchResponse<GenerateDescriptionResponse>> {
     const response = await baseFetch.post(this.urls.generateDescription, {
-      script,
       title,
-      ...(videoProjectId !== undefined && { videoProjectId }),
+      videoProjectId,
     });
     return response.data;
   }
 
   async generateThumbnail(
-    script: string,
     title: string,
-    videoProjectId?: string
+    videoProjectId: string
   ): Promise<IBaseFetchResponse<GenerateThumbnailResponse>> {
     const response = await baseFetch.post(this.urls.generateThumbnail, {
-      script,
       title,
-      ...(videoProjectId !== undefined && { videoProjectId }),
+      videoProjectId,
     });
     return response.data;
   }
 
   async generateShorts(
-    script: string,
+    videoProjectId: string,
     duration: number = 60
   ): Promise<IBaseFetchResponse<GenerateShortsResponse>> {
     const response = await baseFetch.post(this.urls.generateShorts, {
-      script,
       duration,
+      videoProjectId,
     });
     return response.data;
   }
 
   async generateTitleDependentContent(
-    script: string,
-    duration: number = 60,
-    videoProjectId?: string
+    videoProjectId: string,
+    duration: number = 60
   ): Promise<{
     title: GenerateTitleResponse;
     description: GenerateDescriptionResponse;
@@ -94,15 +88,15 @@ class PackagingService {
     shorts: GenerateShortsResponse;
   }> {
     // First, get titles (returns array of 3)
-    const titleResponse = await this.generateTitle(script, videoProjectId);
+    const titleResponse = await this.generateTitle(videoProjectId);
     // Use the first title for dependent content generation
     const titleText = titleResponse?.data?.titles?.[0]?.title ?? "";
 
     // Then call description, thumbnail, and shorts in parallel with the title
     const [description, thumbnail, shorts] = await Promise.all([
-      this.generateDescription(script, titleText, videoProjectId),
-      this.generateThumbnail(script, titleText, videoProjectId),
-      this.generateShorts(script, duration),
+      this.generateDescription(titleText, videoProjectId),
+      this.generateThumbnail(titleText, videoProjectId),
+      this.generateShorts(videoProjectId, duration),
     ]);
 
     return {
@@ -142,11 +136,11 @@ class PackagingService {
     return response.data;
   }
 
+  // Script resolves server-side from the project stored on the packaging doc.
   async regenerateItem(
     packagingId: string,
     item: PackagingItem,
     data: {
-      script: string;
       title?: string;
       duration?: number;
     }

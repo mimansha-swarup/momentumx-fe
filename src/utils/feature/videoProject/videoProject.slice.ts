@@ -7,7 +7,6 @@ import {
   getProject,
   updateWorkingTitle,
   deleteProject,
-  startStep,
   completeStep,
   linkResource,
 } from "./videoProject.thunk";
@@ -31,8 +30,8 @@ const initialState: IVideoProjectState = {
   isLinkingResource: false,
 };
 
-// startStep and completeStep return the same transition payload and mutate
-// currentProject identically — one helper serves both fulfilled handlers.
+// completeStep (and any future transition thunk) returns the same payload
+// shape — the helper deep-merges it into currentProject.
 const applyStepTransition = (
   state: IVideoProjectState,
   payload?: IStepTransitionResponse
@@ -169,17 +168,7 @@ const videoProjectSlice = createSlice({
         state.projectError = action.payload as string;
       })
 
-      // Start/Complete Step — deep merge only the returned pipeline step(s)
-      .addCase(startStep.pending, (state) => {
-        state.isStepTransitioning = true;
-      })
-      .addCase(startStep.fulfilled, (state, action) => {
-        applyStepTransition(state, action.payload);
-      })
-      .addCase(startStep.rejected, (state, action) => {
-        state.isStepTransitioning = false;
-        state.projectError = action.payload as string;
-      })
+      // Complete Step — deep merge only the returned pipeline step(s)
       .addCase(completeStep.pending, (state) => {
         state.isStepTransitioning = true;
       })

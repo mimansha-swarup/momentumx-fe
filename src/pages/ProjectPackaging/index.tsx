@@ -17,7 +17,6 @@ import {
 } from "@/utils/feature/videoProject/videoProject.slice";
 import {
   getProject,
-  startStep,
   completeStep,
 } from "@/utils/feature/videoProject/videoProject.thunk";
 import {
@@ -158,15 +157,10 @@ const ProjectPackagingPage = () => {
   const handleGenerateAll = async () => {
     if (!projectId || !scriptText || isGeneratingAll) return;
     dispatch(clearErrors());
-    const stepResult = await dispatch(
-      startStep({ projectId, stepName: "packaging" })
-    );
-    if (startStep.rejected.match(stepResult)) return;
+    // No client-side step transition: packaging save marks the step
+    // in_progress → completed server-side (the autosave below triggers it).
     const genResult = await dispatch(
-      generateAllPackagingForProject({
-        script: scriptText,
-        videoProjectId: projectId,
-      })
+      generateAllPackagingForProject({ videoProjectId: projectId })
     );
     // Autosave: generation only lives in Redux — persist it immediately so
     // navigating away can't discard it (and so the packaging step completes).
@@ -191,7 +185,6 @@ const ProjectPackagingPage = () => {
       regenerateItem({
         packagingId,
         item,
-        script: scriptText,
         title: item !== "title" ? selectedTitle : undefined,
       })
     );
@@ -231,7 +224,6 @@ const ProjectPackagingPage = () => {
         regenerateItem({
           packagingId,
           item,
-          script: scriptText,
           title: item !== "title" ? selectedTitle : undefined,
         })
       );

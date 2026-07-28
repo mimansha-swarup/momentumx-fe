@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Anchor,
@@ -16,7 +16,6 @@ import {
 } from "@/utils/feature/videoProject/videoProject.slice";
 import {
   getProject,
-  startStep,
   completeStep,
 } from "@/utils/feature/videoProject/videoProject.thunk";
 import {
@@ -94,15 +93,27 @@ const ProjectHooksPage = () => {
   const handleGenerate = async () => {
     if (!projectId || !scriptText) return;
     dispatch(clearError());
-    // Mark pipeline step as in_progress before generating
-    const stepResult = await dispatch(startStep({ projectId, stepName: "hooks" }));
-    if (startStep.rejected.match(stepResult)) return;
+    // The backend generate endpoint marks the step in_progress itself
     await dispatch(
       generateHooks({ videoProjectId: projectId, script: scriptText })
     );
     // Re-fetch project in both cases to keep pipeline state in sync
     dispatch(getProject(projectId));
   };
+
+  // Effect 4 — Auto-start generation on first arrival (same treatment as the
+  // script step): the user committed by clicking "Continue to Hooks", so don't
+  // ask for a second click. Waits for the script text to load (Effect 2), skips
+  // revisits (hooksId set) — that branch offers Continue / Regenerate instead.
+  // Once per mount; a failure lands on the error state with its Retry.
+  const autoStartedRef = useRef(false);
+  const canAutoStart = !!projectId && !!scriptText && !hasHooks && !project?.hooksId;
+  useEffect(() => {
+    if (!canAutoStart || autoStartedRef.current) return;
+    autoStartedRef.current = true;
+    handleGenerate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- ref-guarded one-shot
+  }, [canAutoStart]);
 
   const handleSelect = async (hookIndex: number) => {
     if (!hooksId || !projectId || isSelecting) return;
@@ -203,9 +214,8 @@ const ProjectHooksPage = () => {
         <p className="text-destructive">{error}</p>
         <Button
           variant="outline"
-          onClick={() => {
-            dispatch(clearError());
-          }}
+          onClick={handleGenerate}
+          disabled={!scriptText}
         >
           Retry
         </Button>
