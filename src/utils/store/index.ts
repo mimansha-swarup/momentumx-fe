@@ -1,7 +1,7 @@
 import { configureStore, Middleware } from "@reduxjs/toolkit";
 import { logger } from "redux-logger";
 import userReducer from "@/utils/feature/user/user.slice";
-import titlesReducer from "@/utils/feature/titles/titles.slice";
+import ideasReducer from "@/utils/feature/ideas/ideas.slice";
 import scriptsReducer from "@/utils/feature/scripts/script.slice";
 import packagingReducer from "@/utils/feature/packaging/packaging.slice";
 import videoProjectReducer from "@/utils/feature/videoProject/videoProject.slice";
@@ -17,7 +17,7 @@ if (["dev", "local"].includes(import.meta.env.VITE_ENV || "production")) {
 export const store = configureStore({
   reducer: {
     user: userReducer,
-    titles: titlesReducer,
+    ideas: ideasReducer,
     scripts: scriptsReducer,
     packaging: packagingReducer,
     videoProject: videoProjectReducer,

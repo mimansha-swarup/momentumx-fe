@@ -33,18 +33,18 @@ export interface IIdeaContextOverride {
 }
 
 const URLS = {
-  titles: "/v1/ideas",
+  list: "/v1/ideas",
   generate: "/v1/ideas/generate",
-  editTitle: "/v1/ideas/edit/{{titleId}}",
+  editIdea: "/v1/ideas/edit/{{ideaId}}",
   regenerateAll: "/v1/ideas/regenerate-all",
   regenerateOne: "/v1/ideas/{{ideaId}}/regenerate",
   export: "/v1/ideas/export",
 };
 
-class TitleService {
+class IdeaService {
   private urls = URLS;
 
-  generateTitles = async (
+  generateIdeas = async (
     context?: IIdeaContextOverride
   ): Promise<IBaseFetchResponse<IdeasListResponse['lists']>> => {
     const response = await baseFetch.post(
@@ -57,15 +57,15 @@ class TitleService {
   async getGeneratedData(
     query?: IdeasListParams
   ): Promise<IBaseFetchResponse<IdeasListResponse>> {
-    const response = await baseFetch.get(this.urls.titles, {
+    const response = await baseFetch.get(this.urls.list, {
       params: query,
     });
     return response.data;
   }
 
-  async editTitle(titleId: string, body: Record<string, unknown>): Promise<IBaseFetchResponse<IdeasListResponse['lists'][number]>> {
+  async editIdea(ideaId: string, body: Record<string, unknown>): Promise<IBaseFetchResponse<IdeasListResponse['lists'][number]>> {
     const response = await baseFetch.patch(
-      this.urls.editTitle.replace("{{titleId}}", titleId),
+      this.urls.editIdea.replace("{{ideaId}}", ideaId),
       body
     );
     return response.data;
@@ -93,4 +93,4 @@ class TitleService {
   }
 }
 
-export const titleService = new TitleService();
+export const ideaService = new IdeaService();

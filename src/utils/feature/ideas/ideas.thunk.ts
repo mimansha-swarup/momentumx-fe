@@ -1,4 +1,4 @@
-import { titleService, IdeasListParams, IIdeaContextOverride } from "@/service/titles";
+import { ideaService, IdeasListParams, IIdeaContextOverride } from "@/service/ideas";
 import { handleToast } from "@/utils/toast";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
@@ -6,23 +6,23 @@ import { getErrorMessage } from "@/utils/error";
 
 type RetrieveTitlesParams = IdeasListParams & { isFresh?: boolean };
 
-export const retrieveTitles = createAsyncThunk(
-  "titles/retrieveTitles",
+export const retrieveIdeas = createAsyncThunk(
+  "ideas/retrieveIdeas",
   async (filter: RetrieveTitlesParams | undefined, thunkAPI) => {
     try {
       const { isFresh, ...restFilter } = filter || {};
-      const response = await titleService.getGeneratedData(restFilter);
+      const response = await ideaService.getGeneratedData(restFilter);
       return { data: response?.data, isFresh };
     } catch (error) {
       return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
-export const generateTitles = createAsyncThunk(
-  "titles/generateTitles",
+export const generateIdeas = createAsyncThunk(
+  "ideas/generateIdeas",
   async (context: IIdeaContextOverride | undefined, thunkAPI) => {
     try {
-      const response = await titleService.generateTitles(context);
+      const response = await ideaService.generateIdeas(context);
       handleToast({ message: response?.message ?? "", warning: response?.warning ?? "" });
       return { data: response?.data };
     } catch (error) {
@@ -30,11 +30,11 @@ export const generateTitles = createAsyncThunk(
     }
   }
 );
-export const editTitles = createAsyncThunk(
-  "titles/editTitles",
-  async ({ titleId, title }: { titleId: string; title: string }, thunkAPI) => {
+export const editIdeas = createAsyncThunk(
+  "ideas/editIdeas",
+  async ({ ideaId, title }: { ideaId: string; title: string }, thunkAPI) => {
     try {
-      const response = await titleService.editTitle(titleId, { title });
+      const response = await ideaService.editIdea(ideaId, { title });
       handleToast({ message: response?.message ?? "", warning: response?.warning ?? "" });
       return response?.data;
     } catch (error) {
@@ -44,10 +44,10 @@ export const editTitles = createAsyncThunk(
 );
 
 export const regenerateAllIdeas = createAsyncThunk(
-  "titles/regenerateAllIdeas",
+  "ideas/regenerateAllIdeas",
   async (_, thunkAPI) => {
     try {
-      const response = await titleService.regenerateAll();
+      const response = await ideaService.regenerateAll();
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
@@ -57,10 +57,10 @@ export const regenerateAllIdeas = createAsyncThunk(
 );
 
 export const regenerateOneIdea = createAsyncThunk(
-  "titles/regenerateOneIdea",
+  "ideas/regenerateOneIdea",
   async (ideaId: string, thunkAPI) => {
     try {
-      const response = await titleService.regenerateOne(ideaId);
+      const response = await ideaService.regenerateOne(ideaId);
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {
@@ -70,10 +70,10 @@ export const regenerateOneIdea = createAsyncThunk(
 );
 
 export const exportIdeas = createAsyncThunk(
-  "titles/exportIdeas",
+  "ideas/exportIdeas",
   async (_, thunkAPI) => {
     try {
-      const response = await titleService.exportIdeas();
+      const response = await ideaService.exportIdeas();
       handleToast({ message: response.message ?? "", warning: response.warning ?? "" });
       return response.data;
     } catch (error) {

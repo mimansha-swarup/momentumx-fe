@@ -24,13 +24,13 @@ import {
   selectActiveIdeas,
   selectHasLinkedProjects,
   selectIdeasCursor,
-  selectTitlesLoading,
-  selectTitlesIsRegenerating,
-  selectTitlesIsExporting,
-  selectTitlesExportText,
-  selectTitlesError,
+  selectIdeasLoading,
+  selectIdeasIsRegenerating,
+  selectIdeasIsExporting,
+  selectIdeasExportText,
+  selectIdeasError,
   clearExportText,
-} from "@/utils/feature/titles/titles.slice";
+} from "@/utils/feature/ideas/ideas.slice";
 import {
   selectTrending,
   selectCompetitors,
@@ -42,12 +42,12 @@ import {
   fetchKeywords,
 } from "@/utils/feature/research/research.thunk";
 import {
-  retrieveTitles,
-  generateTitles,
+  retrieveIdeas,
+  generateIdeas,
   regenerateAllIdeas,
   regenerateOneIdea,
   exportIdeas,
-} from "@/utils/feature/titles/titles.thunk";
+} from "@/utils/feature/ideas/ideas.thunk";
 import { createProject } from "@/utils/feature/videoProject/videoProject.thunk";
 import { selectIsCreating } from "@/utils/feature/videoProject/videoProject.slice";
 import { toastError, toastSuccess } from "@/utils/toast";
@@ -63,11 +63,11 @@ const ResearchPage = () => {
   const navigate = useNavigate();
 
   const ideas = useAppSelector(selectActiveIdeas);
-  const isLoading = useAppSelector(selectTitlesLoading);
-  const isRegenerating = useAppSelector(selectTitlesIsRegenerating);
-  const isExporting = useAppSelector(selectTitlesIsExporting);
-  const exportText = useAppSelector(selectTitlesExportText);
-  const error = useAppSelector(selectTitlesError);
+  const isLoading = useAppSelector(selectIdeasLoading);
+  const isRegenerating = useAppSelector(selectIdeasIsRegenerating);
+  const isExporting = useAppSelector(selectIdeasIsExporting);
+  const exportText = useAppSelector(selectIdeasExportText);
+  const error = useAppSelector(selectIdeasError);
   const hasLinkedProjects = useAppSelector(selectHasLinkedProjects);
   const cursor = useAppSelector(selectIdeasCursor);
   const isCreatingProject = useAppSelector(selectIsCreating);
@@ -87,7 +87,7 @@ const ResearchPage = () => {
   const hasIdeas = ideas.length > 0;
 
   useEffect(() => {
-    dispatch(retrieveTitles({ isFresh: true }));
+    dispatch(retrieveIdeas({ isFresh: true }));
   }, [dispatch]);
 
   // Copy export text to clipboard when it arrives, then clear
@@ -127,7 +127,7 @@ const ResearchPage = () => {
   }, [activeIntelTab, hasIdeas, trending, competitors, dispatch]);
 
   const handleGenerate = useCallback(() => {
-    dispatch(generateTitles());
+    dispatch(generateIdeas());
   }, [dispatch]);
 
   const handleExport = useCallback(() => {
@@ -160,7 +160,7 @@ const ResearchPage = () => {
     }
     const result = await dispatch(regenerateAllIdeas());
     if (regenerateAllIdeas.fulfilled.match(result)) {
-      dispatch(retrieveTitles({ isFresh: true }));
+      dispatch(retrieveIdeas({ isFresh: true }));
     }
   }, [dispatch, hasLinkedProjects]);
 
@@ -168,7 +168,7 @@ const ResearchPage = () => {
     setConfirmDialog(null);
     const result = await dispatch(regenerateAllIdeas());
     if (regenerateAllIdeas.fulfilled.match(result)) {
-      dispatch(retrieveTitles({ isFresh: true }));
+      dispatch(retrieveIdeas({ isFresh: true }));
     }
   }, [dispatch]);
 
@@ -192,7 +192,7 @@ const ResearchPage = () => {
   const handleLoadMore = useCallback(() => {
     if (!cursor?.hasNextPage || !cursor.nextCursor || isLoading) return;
     dispatch(
-      retrieveTitles({
+      retrieveIdeas({
         createdAt: cursor.nextCursor.createdAt,
         docId: cursor.nextCursor.docId,
       })
@@ -269,7 +269,7 @@ const ResearchPage = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => dispatch(retrieveTitles({ isFresh: true }))}
+            onClick={() => dispatch(retrieveIdeas({ isFresh: true }))}
           >
             Try again
           </Button>

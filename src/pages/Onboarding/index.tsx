@@ -15,13 +15,13 @@ import {
   selectIsPrefilling,
   selectUserError,
 } from "@/utils/feature/user/user.slice";
-import { generateTitles } from "@/utils/feature/titles/titles.thunk";
+import { generateIdeas } from "@/utils/feature/ideas/ideas.thunk";
 import {
   selectActiveIdeas,
-  selectTitlesLoading,
-  selectTitlesError,
-} from "@/utils/feature/titles/titles.slice";
-import type { IIdeaContextOverride } from "@/service/titles";
+  selectIdeasLoading,
+  selectIdeasError,
+} from "@/utils/feature/ideas/ideas.slice";
+import type { IIdeaContextOverride } from "@/service/ideas";
 
 type Phase = "input" | "confirm" | "ideas";
 
@@ -39,9 +39,9 @@ const OnboardingPage = () => {
 
   const isOnboarded = useAppSelector(selectIsOnboarded);
   const isPrefilling = useAppSelector(selectIsPrefilling);
-  const isGenerating = useAppSelector(selectTitlesLoading);
+  const isGenerating = useAppSelector(selectIdeasLoading);
   const prefillError = useAppSelector(selectUserError);
-  const genError = useAppSelector(selectTitlesError);
+  const genError = useAppSelector(selectIdeasError);
   const ideas = useAppSelector(selectActiveIdeas);
 
   // Already-onboarded users don't need the gate. Capture the value at mount so
@@ -97,8 +97,8 @@ const OnboardingPage = () => {
       ...(brandName.trim() && { brandName: brandName.trim() }),
       ...(topTitlesRef.current.length && { topTitles: topTitlesRef.current }),
     };
-    const res = await dispatch(generateTitles(ctx));
-    if (!generateTitles.fulfilled.match(res)) return; // error shown; stay put
+    const res = await dispatch(generateIdeas(ctx));
+    if (!generateIdeas.fulfilled.match(res)) return; // error shown; stay put
     // Background: persist the real detected fields (not the URL) so the profile
     // and completeness score reflect what we actually inferred.
     dispatch(

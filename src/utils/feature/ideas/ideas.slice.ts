@@ -1,20 +1,20 @@
 import { createSlice, createSelector, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/utils/store";
 import {
-  editTitles,
+  editIdeas,
   exportIdeas,
-  generateTitles,
+  generateIdeas,
   regenerateAllIdeas,
   regenerateOneIdea,
-  retrieveTitles,
+  retrieveIdeas,
 } from "./titles.thunk";
 import { IGeneratedIdea } from "@/types/components/dashboard";
-import { ITitleParams, ITitleState, TitleFilters } from "@/types/feature/title";
+import { IIdeaParams, IIdeaState, IdeaFilters } from "@/types/feature/idea";
 
-const initialState: ITitleState = {
+const initialState: IIdeaState = {
   data: null,
   params: {
-    filter: TitleFilters.ALL,
+    filter: IdeaFilters.ALL,
     searchText: "",
   },
   isLoading: false,
@@ -25,8 +25,8 @@ const initialState: ITitleState = {
   exportText: null,
   error: null,
 };
-const titlesSlice = createSlice({
-  name: "titles",
+const ideasSlice = createSlice({
+  name: "ideas",
   initialState,
   reducers: {
     resetState: (state) => {
@@ -41,7 +41,7 @@ const titlesSlice = createSlice({
       state.isLoading = false;
     },
 
-    updateFilter: (state, action: PayloadAction<Partial<ITitleParams>>) => {
+    updateFilter: (state, action: PayloadAction<Partial<IIdeaParams>>) => {
       state.params = {
         ...state.params,
         ...action.payload,
@@ -55,11 +55,11 @@ const titlesSlice = createSlice({
     // Add reducers for additional action types here, and handle loading state as needed
     builder
 
-      .addCase(retrieveTitles.pending, (state) => {
+      .addCase(retrieveIdeas.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(retrieveTitles.fulfilled, (state, action) => {
+      .addCase(retrieveIdeas.fulfilled, (state, action) => {
         const { isFresh, data } = action.payload ?? {};
         if (isFresh) {
           state.data = data ?? null;
@@ -76,15 +76,15 @@ const titlesSlice = createSlice({
         }
         state.isLoading = false;
       })
-      .addCase(retrieveTitles.rejected, (state, action) => {
+      .addCase(retrieveIdeas.rejected, (state, action) => {
         state.isLoading = false;
         state.error = (action.payload as string) ?? "Unknown error";
       })
-      .addCase(generateTitles.pending, (state) => {
+      .addCase(generateIdeas.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(generateTitles.fulfilled, (state, action) => {
+      .addCase(generateIdeas.fulfilled, (state, action) => {
         state.isLoading = false;
         state.data = {
           ...state.data,
@@ -98,17 +98,17 @@ const titlesSlice = createSlice({
           ],
         };
       })
-      .addCase(generateTitles.rejected, (state, action) => {
+      .addCase(generateIdeas.rejected, (state, action) => {
         state.isLoading = false;
         state.isDone = false;
         state.error = (action.payload as string) ?? "Unknown error";
       })
 
-      .addCase(editTitles.pending, (state) => {
+      .addCase(editIdeas.pending, (state) => {
         state.isEditing = true;
         state.error = null;
       })
-      .addCase(editTitles.fulfilled, (state, action) => {
+      .addCase(editIdeas.fulfilled, (state, action) => {
         state.isEditing = false;
         if (!state.data?.lists) return;
         state.data = {
@@ -118,7 +118,7 @@ const titlesSlice = createSlice({
           ),
         };
       })
-      .addCase(editTitles.rejected, (state, action) => {
+      .addCase(editIdeas.rejected, (state, action) => {
         state.isEditing = false;
         state.error = (action.payload as string) ?? "Unknown error";
       })
@@ -129,7 +129,7 @@ const titlesSlice = createSlice({
       })
       .addCase(regenerateAllIdeas.fulfilled, (state) => {
         state.isRegenerating = false;
-        // The new batch will be fetched via retrieveTitles after regeneration.
+        // The new batch will be fetched via retrieveIdeas after regeneration.
         // Clear existing list so the next fetch replaces rather than appends.
         state.data = null;
       })
@@ -178,29 +178,29 @@ export const {
   resetTitle,
   updateFilter,
   clearExportText,
-} = titlesSlice.actions;
+} = ideasSlice.actions;
 
-export const selectTitlesData = (state: RootState) => state.titles.data;
-export const selectTitlesLoading = (state: RootState) => state.titles.isLoading;
-export const selectTitlesDone = (state: RootState) => state.titles.isDone;
-export const selectTitlesIsEditing = (state: RootState) => state.titles.isEditing;
-export const selectTitlesIsRegenerating = (state: RootState) => state.titles.isRegenerating;
-export const selectTitlesIsExporting = (state: RootState) => state.titles.isExporting;
-export const selectTitlesExportText = (state: RootState) => state.titles.exportText;
-export const selectTitlesError = (state: RootState) => state.titles.error;
+export const selectIdeasData = (state: RootState) => state.ideas.data;
+export const selectIdeasLoading = (state: RootState) => state.ideas.isLoading;
+export const selectIdeasDone = (state: RootState) => state.ideas.isDone;
+export const selectIdeasIsEditing = (state: RootState) => state.ideas.isEditing;
+export const selectIdeasIsRegenerating = (state: RootState) => state.ideas.isRegenerating;
+export const selectIdeasIsExporting = (state: RootState) => state.ideas.isExporting;
+export const selectIdeasExportText = (state: RootState) => state.ideas.exportText;
+export const selectIdeasError = (state: RootState) => state.ideas.error;
 
 // Memoized: a plain `.filter()` selector returns a new array every call and
 // would re-render its consumer on every dispatch app-wide.
 export const selectActiveIdeas = createSelector(
-  selectTitlesData,
+  selectIdeasData,
   (data): IGeneratedIdea[] =>
     data?.lists.filter((t) => !t.archived) ?? []
 );
 
 export const selectHasLinkedProjects = (state: RootState): boolean =>
-  (state.titles.data?.lists ?? []).some((t) => !t.archived && t.videoProjectId !== null);
+  (state.ideas.data?.lists ?? []).some((t) => !t.archived && t.videoProjectId !== null);
 
 export const selectIdeasCursor = (state: RootState) =>
-  state.titles.data?.meta ?? null;
+  state.ideas.data?.meta ?? null;
 
-export default titlesSlice.reducer;
+export default ideasSlice.reducer;

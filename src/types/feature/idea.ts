@@ -1,6 +1,6 @@
 import { IGeneratedIdea } from "@/types/components/dashboard";
 
-export interface ITitleData {
+export interface IIdeaData {
   meta: {
     nextCursor: {
       createdAt: string;
@@ -10,19 +10,19 @@ export interface ITitleData {
   };
   lists: IGeneratedIdea[];
 }
-export const enum TitleFilters {
+export const enum IdeaFilters {
   ALL = "all",
   GENERATED = "generated",
   // STARED= "stared",
 }
-export interface ITitleParams {
+export interface IIdeaParams {
   searchText: string;
-  filter: `${TitleFilters}`;
+  filter: `${IdeaFilters}`;
   // isFresh?: boolean;
 }
-export interface ITitleState {
-  data: ITitleData | null;
-  params: ITitleParams;
+export interface IIdeaState {
+  data: IIdeaData | null;
+  params: IIdeaParams;
   isLoading: boolean;
   isDone: boolean;
   isEditing: boolean;
