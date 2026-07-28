@@ -224,6 +224,12 @@ const ProjectScriptPage = () => {
         />
       )}
 
+      {/* Inline error for export/edit/regenerate failures — same slot the
+          hooks and packaging pages have; without it these failed silently. */}
+      {sliceError && (
+        <p className="text-sm text-destructive" role="alert">{sliceError}</p>
+      )}
+
       {/* Action bar */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-title text-lg">Script</h2>
