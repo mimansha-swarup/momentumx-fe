@@ -3,7 +3,10 @@ import { useAppDispatch } from "@/hooks/useRedux";
 import { scriptService } from "@/service/script";
 import { markDone, resetState } from "@/utils/feature/scripts/script.slice";
 import { getProject } from "@/utils/feature/videoProject/videoProject.thunk";
-import { SCRIPT_GENERATION_DELAY_MS } from "@/constants/app";
+import {
+  SCRIPT_SAVE_POLL_INTERVAL_MS,
+  SCRIPT_SAVE_POLL_MAX_ATTEMPTS,
+} from "@/constants/app";
 
 interface UseScriptStreamOptions {
   projectId: string;
@@ -86,15 +89,28 @@ export const useScriptStream = ({
           return;
         }
         dispatch(markDone());
-        // Backend auto-started, auto-linked, auto-completed the script step.
-        // Re-fetch the project to pick up the newly-set scriptId; the page then
-        // loads the script once project.scriptId is available.
-        timeoutRef.current = setTimeout(() => {
+        // The server persists the script AFTER [DONE], so poll the project
+        // until scriptId lands instead of guessing with a fixed delay — a slow
+        // or failed save used to strand the page on "Finalizing…" forever.
+        // isStreaming drops now so the page shows the finalizing state.
+        setIsStreaming(false);
+        isStreamingRef.current = false;
+        const poll = async (attempt: number) => {
           if (!mountedRef.current) return;
-          dispatch(getProject(projectId));
-          setIsStreaming(false);
-          isStreamingRef.current = false;
-        }, SCRIPT_GENERATION_DELAY_MS);
+          const res = await dispatch(getProject(projectId));
+          if (!mountedRef.current) return;
+          if (getProject.fulfilled.match(res) && res.payload?.scriptId) return;
+          if (attempt >= SCRIPT_SAVE_POLL_MAX_ATTEMPTS) {
+            // Save never landed — surface the retry state, not a spinner.
+            setStreamError(true);
+            return;
+          }
+          timeoutRef.current = setTimeout(
+            () => poll(attempt + 1),
+            SCRIPT_SAVE_POLL_INTERVAL_MS
+          );
+        };
+        poll(0);
       };
 
       try {
