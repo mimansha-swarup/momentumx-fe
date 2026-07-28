@@ -7,7 +7,7 @@ import {
   regenerateAllIdeas,
   regenerateOneIdea,
   retrieveIdeas,
-} from "./titles.thunk";
+} from "./ideas.thunk";
 import { IGeneratedIdea } from "@/types/components/dashboard";
 import { IIdeaParams, IIdeaState, IdeaFilters } from "@/types/feature/idea";
 
